@@ -176,7 +176,7 @@ body.dark-mode .footer {
 .modal {
   display: none;
   position: fixed;
-  z-index: 1000;
+  z-index: 10000;
   left: 0;
   top: 0;
   width: 100%;
@@ -184,10 +184,15 @@ body.dark-mode .footer {
   background: rgba(0, 0, 0, 0.5);
   align-items: center;
   justify-content: center;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
 .modal.show {
   display: flex;
+  visibility: visible;
+  opacity: 1;
 }
 
 .modal__content {
