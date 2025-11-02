@@ -1590,10 +1590,20 @@
   const DATA_DIR_NAME = 'data';
   
   // Check if File System Access API is supported
+  // Note: Requires Chromium-based browser (Chrome, Edge, Brave) and HTTPS (or localhost)
   const fileSystemSupported = 'showDirectoryPicker' in window;
   console.log('File System Access API supported:', fileSystemSupported);
   console.log('Browser:', navigator.userAgent);
   console.log('Protocol:', window.location.protocol);
+  console.log('Hostname:', window.location.hostname);
+  
+  // Additional check for Brave browser
+  if (navigator.brave && navigator.brave.isBrave) {
+    console.log('Brave browser detected');
+    navigator.brave.isBrave().then(isBrave => {
+      console.log('Confirmed Brave browser:', isBrave);
+    });
+  }
   
   // Initialize file storage - try to load saved directory handle
   async function initFileStorage() {
@@ -3948,11 +3958,26 @@
   fileStorageBtn.style.fontSize = '14px';
   fileStorageBtn.title = fileSystemSupported 
     ? 'Select a folder to store data files (will create a "data" subdirectory)' 
-    : 'File System Access API not supported. Requires Chrome/Edge (Chromium) and HTTPS or localhost.';
+    : 'File System Access API not supported. Requires Chrome/Edge/Brave (Chromium) and HTTPS or localhost. Firefox/Safari not supported.';
   fileStorageBtn.disabled = !fileSystemSupported;
   if (!fileSystemSupported) {
     fileStorageBtn.addEventListener('click', () => {
-      showToast('File System Access API not available. Requires Chrome/Edge browser and HTTPS (or localhost).');
+      const browserInfo = navigator.userAgent.includes('Firefox') ? 'Firefox' : 
+                         navigator.userAgent.includes('Brave') ? 'Brave' :
+                         navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome') ? 'Safari' : 'Unknown';
+      const protocol = window.location.protocol;
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      
+      let message = 'File System Access API not available. ';
+      if (browserInfo === 'Firefox') {
+        message += 'Firefox does not support this feature. Please use Chrome, Edge, or Brave.';
+      } else if (protocol === 'http:' && !isLocalhost) {
+        message += 'Requires HTTPS (or localhost). Your site is using HTTP.';
+      } else {
+        message += `Requires Chrome/Edge/Brave browser and HTTPS (or localhost). Detected: ${browserInfo}, Protocol: ${protocol}`;
+      }
+      showToast(message);
+      console.log('File storage button clicked but API not available:', { browserInfo, protocol, isLocalhost });
     });
   } else {
     fileStorageBtn.addEventListener('click', async () => {
