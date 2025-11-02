@@ -1497,6 +1497,27 @@
   }
   
   showDebug('Script loaded, initializing...');
+  
+  // Debug helper function - can be called from console
+  window.debugGenerators = function() {
+    console.log('=== Generator Debug Info ===');
+    const userGens = loadUserGenerators();
+    const deleted = loadDeletedGeneratorDefaults();
+    const edited = loadEditedDefaults();
+    console.log('User generators:', userGens);
+    console.log('Deleted defaults:', deleted);
+    console.log('Edited defaults:', edited);
+    console.log('Merged battle cries:', getMergedGenerators('battleCries'));
+    console.log('Merged insults:', getMergedGenerators('insults'));
+    console.log('Merged compliments:', getMergedGenerators('compliments'));
+    console.log('Raw localStorage:', {
+      generators: localStorage.getItem(generatorsKey),
+      deletedDefaults: localStorage.getItem(deletedGeneratorDefaultsKey),
+      editedDefaults: localStorage.getItem(editedDefaultsKey)
+    });
+    return { userGens, deleted, edited };
+  };
+  
   const sectionSelect = $('#sectionSelect');
   const categorySelect = $('#categorySelect');
   const adultToggle = $('#adultToggle');
