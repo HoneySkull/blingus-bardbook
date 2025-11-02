@@ -1824,17 +1824,41 @@
   // Get all user data
   function getAllUserData() {
     return {
+      // Default content (complete datasets)
+      defaultSpells: spells,
+      defaultAdultSpells: adultSpells,
+      defaultBardic: bardic,
+      defaultMockery: mockery,
+      defaultActions: characterActions,
+      defaultGenerators: {
+        battleCries: battleCries,
+        insults: insults,
+        compliments: compliments
+      },
+      
+      // User preferences
       favorites: JSON.parse(localStorage.getItem(favoritesKey) || '[]'),
+      darkMode: localStorage.getItem(darkModeKey) === 'true',
+      
+      // User-added content
       userItems: JSON.parse(localStorage.getItem(userItemsKey) || '{}'),
-      deletedDefaults: JSON.parse(localStorage.getItem(deletedDefaultsKey) || '{}'),
-      history: JSON.parse(localStorage.getItem(historyKey) || '[]'),
-      voicePresets: JSON.parse(localStorage.getItem(voicePresetsKey) || '[]'),
       generators: JSON.parse(localStorage.getItem(generatorsKey) || '{"battleCries":[],"insults":[],"compliments":[]}'),
+      
+      // Default item modifications (edits and deletions)
+      deletedDefaults: JSON.parse(localStorage.getItem(deletedDefaultsKey) || '{}'),
       editedGeneratorDefaults: JSON.parse(localStorage.getItem(editedDefaultsKey) || '{"battleCries":{},"insults":{},"compliments":{}}'),
       deletedGeneratorDefaults: JSON.parse(localStorage.getItem(deletedGeneratorDefaultsKey) || '{"battleCries":[],"insults":[],"compliments":[]}'),
-      darkMode: localStorage.getItem(darkModeKey) === 'true',
+      
+      // Usage history
+      history: JSON.parse(localStorage.getItem(historyKey) || '[]'),
+      
+      // Voice presets
+      voicePresets: JSON.parse(localStorage.getItem(voicePresetsKey) || '[]'),
+      
+      // Metadata
       version: '1.3',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      exportNote: 'Complete export including all default items (spells, bardic, mockery, actions, generators) plus all user customizations (favorites, custom items, edits, deletions, presets, history).'
     };
   }
   
