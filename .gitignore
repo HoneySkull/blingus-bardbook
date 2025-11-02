@@ -17,4 +17,7 @@ desktop.ini
 
 # User data (contains sensitive information)
 /data/
+*.db
+*.sqlite
+*.sqlite3
 

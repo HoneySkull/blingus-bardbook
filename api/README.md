@@ -4,7 +4,16 @@ This directory contains the server-side API for syncing Blingus Bardbook data ac
 
 ## Setup Instructions
 
-1. **Copy the PHP file to your web server:**
+1. **Ensure PHP SQLite extension is enabled:**
+   ```bash
+   # Check if SQLite is available
+   php -m | grep sqlite
+   # If not installed, install it:
+   # Ubuntu/Debian: sudo apt-get install php-sqlite3
+   # Fedora/RHEL: sudo dnf install php-pdo_sqlite
+   ```
+
+2. **Copy the PHP file to your web server:**
    ```bash
    # On your web server
    cd /var/www/html
@@ -12,13 +21,13 @@ This directory contains the server-side API for syncing Blingus Bardbook data ac
    cp api/blingus-sync.php /var/www/html/api/
    ```
 
-2. **Create the data directory:**
+3. **Create the data directory:**
    ```bash
    mkdir -p /var/www/html/data
    chmod 755 /var/www/html/data
    ```
 
-3. **Set proper permissions:**
+4. **Set proper permissions:**
    ```bash
    # Make sure the web server can write to the data directory
    chown -R www-data:www-data /var/www/html/data
@@ -26,7 +35,7 @@ This directory contains the server-side API for syncing Blingus Bardbook data ac
    chown -R nginx:nginx /var/www/html/data
    ```
 
-4. **Test the API:**
+5. **Test the API:**
    ```bash
    curl -X POST http://blingus.knospe.org/api/blingus-sync.php \
      -H "Content-Type: application/json" \
@@ -66,7 +75,8 @@ This directory contains the server-side API for syncing Blingus Bardbook data ac
 
 - **Save:** POSTs user data to `/api/blingus-sync.php?action=save`
 - **Load:** GETs user data from `/api/blingus-sync.php?action=load`
-- **Storage:** Data is saved in `/data/blingus-user-data.json`
+- **Storage:** Data is saved in SQLite database `/data/blingus-sync.db`
+- **Database:** Uses SQLite with a `user_data` table storing key-value pairs
 
 ## Usage
 
