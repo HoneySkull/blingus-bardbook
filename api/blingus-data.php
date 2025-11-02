@@ -35,9 +35,34 @@ if (!is_dir($dataDir)) {
 // Get action from query string or POST data
 $action = $_GET['action'] ?? $_POST['action'] ?? '';
 
+// If no action and it's a POST request, try to parse JSON body
+if (empty($action) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = file_get_contents('php://input');
+    $request = json_decode($input, true);
+    if ($request && isset($request['action'])) {
+        $action = $request['action'];
+    }
+}
+
+// Reject non-POST requests for save action
+if ($action === 'save' && $_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Method not allowed. Use POST for save action.',
+        'received_method' => $_SERVER['REQUEST_METHOD']
+    ]);
+    exit;
+}
+
 try {
     switch ($action) {
         case 'save':
+            // Verify it's a POST request
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                throw new Exception('POST method required for save action');
+            }
+            
             // Save data to JSON file
             $input = file_get_contents('php://input');
             $request = json_decode($input, true);
