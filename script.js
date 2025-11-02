@@ -1607,22 +1607,99 @@
     fileSystemSupported
   });
   
-  // Initialize file storage - try to load saved directory handle
+  // Initialize file storage - detect mode and load data
   async function initFileStorage() {
-    if (!fileSystemSupported) {
-      return false;
-    }
-    
-    try {
-      // Try to get saved directory handle from IndexedDB
-      const savedHandle = await getSavedDirectoryHandle();
-      if (savedHandle) {
-        dataDirectoryHandle = savedHandle;
-        return true;
+    if (isOnServer) {
+      // On server: use server-side API
+      return await loadDataFromServer();
+    } else {
+      // Local: try File System Access API
+      if (!fileSystemSupported) {
+        return false;
       }
       
+      try {
+        // Try to get saved directory handle from IndexedDB
+        const savedHandle = await getSavedDirectoryHandle();
+        if (savedHandle) {
+          dataDirectoryHandle = savedHandle;
+          return await loadDataFromFile();
+        }
+        
+        return false;
+      } catch (error) {
+        return false;
+      }
+    }
+  }
+  
+  // Server-side storage functions
+  async function saveDataToServer() {
+    if (!isOnServer) return false;
+    
+    try {
+      const data = getAllUserData();
+      const response = await fetch(API_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'save',
+          data: data
+        })
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        return result.success;
+      }
       return false;
     } catch (error) {
+      console.error('Error saving to server:', error);
+      return false;
+    }
+  }
+  
+  async function loadDataFromServer() {
+    if (!isOnServer) return false;
+    
+    try {
+      const response = await fetch(API_ENDPOINT + '?action=load');
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.data) {
+          // Apply loaded data to localStorage
+          const data = result.data;
+          if (data.favorites !== undefined) localStorage.setItem(favoritesKey, JSON.stringify(data.favorites));
+          if (data.userItems !== undefined) localStorage.setItem(userItemsKey, JSON.stringify(data.userItems));
+          if (data.deletedDefaults !== undefined) localStorage.setItem(deletedDefaultsKey, JSON.stringify(data.deletedDefaults));
+          if (data.history !== undefined) localStorage.setItem(historyKey, JSON.stringify(data.history));
+          if (data.voicePresets !== undefined) localStorage.setItem(voicePresetsKey, JSON.stringify(data.voicePresets));
+          if (data.generators !== undefined) {
+            // Normalize generators structure
+            let generators = data.generators;
+            if (typeof generators === 'object' && generators !== null) {
+              generators = {
+                battleCries: Array.isArray(generators.battleCries) ? generators.battleCries : [],
+                insults: Array.isArray(generators.insults) ? generators.insults : [],
+                compliments: Array.isArray(generators.compliments) ? generators.compliments : []
+              };
+            } else {
+              generators = { battleCries: [], insults: [], compliments: [] };
+            }
+            localStorage.setItem(generatorsKey, JSON.stringify(generators));
+          }
+          if (data.editedGeneratorDefaults !== undefined) localStorage.setItem(editedDefaultsKey, JSON.stringify(data.editedGeneratorDefaults));
+          if (data.deletedGeneratorDefaults !== undefined) localStorage.setItem(deletedGeneratorDefaultsKey, JSON.stringify(data.deletedGeneratorDefaults));
+          if (data.darkMode !== undefined) localStorage.setItem(darkModeKey, data.darkMode ? 'true' : 'false');
+          
+          return true;
+        }
+      }
+      return false;
+    } catch (error) {
+      console.error('Error loading from server:', error);
       return false;
     }
   }
@@ -1782,14 +1859,16 @@
     }
   }
   
-  // Debounced auto-save to file
+  // Debounced auto-save (works for both file and server)
   let fileSaveTimeout = null;
   function scheduleFileSave() {
-    if (!dataDirectoryHandle) return;
-    
     if (fileSaveTimeout) clearTimeout(fileSaveTimeout);
     fileSaveTimeout = setTimeout(() => {
-      saveDataToFile();
+      if (isOnServer) {
+        saveDataToServer();
+      } else if (dataDirectoryHandle) {
+        saveDataToFile();
+      }
     }, 1000); // Wait 1 second after last change
   }
   
@@ -3952,44 +4031,60 @@
   historyBtn.style.fontSize = '14px';
   historyBtn.addEventListener('click', showHistoryModal);
 
-  // File storage button
+  // File storage button - behavior depends on server vs local
   const fileStorageBtn = document.createElement('button');
   fileStorageBtn.id = 'fileStorageBtn';
   fileStorageBtn.className = 'btn';
-  fileStorageBtn.textContent = fileSystemSupported ? '📁 Select Data Folder' : '📁 File Storage (N/A)';
-  fileStorageBtn.style.fontSize = '14px';
-  fileStorageBtn.title = fileSystemSupported 
-    ? 'Select a folder to store data files (will create a "data" subdirectory)' 
-    : 'File System Access API not supported. Requires Chrome/Edge/Brave (Chromium) and HTTPS or localhost. Firefox/Safari not supported.';
-  fileStorageBtn.disabled = !fileSystemSupported;
-  if (!fileSystemSupported) {
-    fileStorageBtn.addEventListener('click', () => {
-      const browserInfo = navigator.userAgent.includes('Firefox') ? 'Firefox' : 
-                         navigator.userAgent.includes('Brave') ? 'Brave' :
-                         navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome') ? 'Safari' : 'Unknown';
-      const protocol = window.location.protocol;
-      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      
-      let message = 'File System Access API not available. ';
-      if (browserInfo === 'Firefox') {
-        message += 'Firefox does not support this feature. Please use Chrome, Edge, or Brave.';
-      } else if (protocol === 'http:' && !isLocalhost) {
-        message += 'Requires HTTPS (or localhost). Your site is using HTTP.';
+  
+  if (isOnServer) {
+    // On server: show server storage status
+    fileStorageBtn.textContent = '💾 Server Storage';
+    fileStorageBtn.style.fontSize = '14px';
+    fileStorageBtn.title = 'Data is automatically saved to server';
+    fileStorageBtn.disabled = false;
+    fileStorageBtn.addEventListener('click', async () => {
+      const success = await saveDataToServer();
+      if (success) {
+        showToast('✓ Data saved to server');
       } else {
-        message += `Requires Chrome/Edge/Brave browser and HTTPS (or localhost). Detected: ${browserInfo}, Protocol: ${protocol}`;
+        showToast('✗ Failed to save to server');
       }
-      showToast(message);
-      console.log('File storage button clicked but API not available:', { browserInfo, protocol, isLocalhost });
     });
   } else {
-    fileStorageBtn.addEventListener('click', async () => {
-      const success = await promptForDataDirectory();
-      if (success) {
-        // Save current data to file
-        await saveDataToFile();
-        showToast('✓ Data directory set and data saved');
-      }
-    });
+    // Local: use File System Access API
+    fileStorageBtn.textContent = fileSystemSupported ? '📁 Select Data Folder' : '📁 File Storage (N/A)';
+    fileStorageBtn.style.fontSize = '14px';
+    fileStorageBtn.title = fileSystemSupported 
+      ? 'Select a folder to store data files (will create a "data" subdirectory)' 
+      : 'File System Access API not supported. Requires Chrome/Edge/Brave (Chromium) and HTTPS or localhost. Firefox/Safari not supported.';
+    fileStorageBtn.disabled = !fileSystemSupported;
+    if (!fileSystemSupported) {
+      fileStorageBtn.addEventListener('click', () => {
+        const browserInfo = navigator.userAgent.includes('Firefox') ? 'Firefox' : 
+                           navigator.userAgent.includes('Brave') ? 'Brave' :
+                           navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome') ? 'Safari' : 'Unknown';
+        const protocol = window.location.protocol;
+        
+        let message = 'File System Access API not available. ';
+        if (browserInfo === 'Firefox') {
+          message += 'Firefox does not support this feature. Please use Chrome, Edge, or Brave.';
+        } else if (protocol === 'http:' && !isLocalhost) {
+          message += 'Requires HTTPS (or localhost). Your site is using HTTP.';
+        } else {
+          message += `Requires Chrome/Edge/Brave browser and HTTPS (or localhost). Detected: ${browserInfo}, Protocol: ${protocol}`;
+        }
+        showToast(message);
+      });
+    } else {
+      fileStorageBtn.addEventListener('click', async () => {
+        const success = await promptForDataDirectory();
+        if (success) {
+          // Save current data to file
+          await saveDataToFile();
+          showToast('✓ Data directory set and data saved');
+        }
+      });
+    }
   }
 
   generatorRow.appendChild(battleCryBtn);
