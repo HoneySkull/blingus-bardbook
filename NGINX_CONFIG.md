@@ -14,8 +14,9 @@ server {
     index index.html;
 
     # PHP configuration - CRITICAL for API to work
+    # Ubuntu 24.04 default: unix:/run/php/php8.3-fpm.sock
     location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php-fpm.sock;  # or 127.0.0.1:9000
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;  # Ubuntu 24.04 default
         fastcgi_index index.php;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         include fastcgi_params;
@@ -30,7 +31,7 @@ server {
         
         # Ensure PHP execution
         location ~ \.php$ {
-            fastcgi_pass unix:/var/run/php/php-fpm.sock;
+            fastcgi_pass unix:/run/php/php8.3-fpm.sock;  # Ubuntu 24.04 default
             fastcgi_index index.php;
             fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
             include fastcgi_params;
@@ -46,17 +47,18 @@ server {
 
 ## Steps to Fix
 
-1. **Find your PHP-FPM socket:**
+1. **Find your PHP-FPM socket (Ubuntu 24.04):**
    ```bash
    # Check if PHP-FPM is running
-   systemctl status php-fpm
-   # or
-   systemctl status php8.1-fpm  # adjust version
+   systemctl status php8.3-fpm  # Ubuntu 24.04 default
    
    # Find the socket path
-   ls -la /var/run/php/
-   # or check config
-   grep "listen" /etc/php-fpm.d/www.conf
+   ls -la /run/php/
+   # Should show: php8.3-fpm.sock
+   
+   # Or check config
+   sudo grep "listen" /etc/php/8.3/fpm/pool.d/www.conf
+   # Should show: listen = /run/php/php8.3-fpm.sock
    ```
 
 2. **Edit your Nginx config:**
@@ -77,18 +79,20 @@ server {
    sudo systemctl reload nginx
    ```
 
-6. **Check PHP-FPM is running:**
+6. **Check PHP-FPM is running (Ubuntu 24.04):**
    ```bash
-   sudo systemctl status php-fpm
+   sudo systemctl status php8.3-fpm
    # If not running:
-   sudo systemctl start php-fpm
+   sudo systemctl start php8.3-fpm
+   sudo systemctl enable php8.3-fpm  # enable on boot
    ```
 
 ## Troubleshooting
 
 - **405 Error**: Usually means Nginx isn't configured to execute PHP
 - **File downloads**: PHP-FPM not configured or not running
-- **Check PHP-FPM socket**: `ls -la /var/run/php/` to find correct path
+- **Check PHP-FPM socket (Ubuntu 24.04)**: `ls -la /run/php/` to find correct path (usually `php8.3-fpm.sock`)
+- **Socket mismatch**: Make sure the socket path in Nginx config matches what PHP-FPM is using
 
 ## Quick Test
 
