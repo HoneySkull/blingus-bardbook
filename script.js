@@ -1518,6 +1518,27 @@
     return { userGens, deleted, edited };
   };
   
+  // Clear all Blingus data - can be called from console
+  window.clearBlingusData = function() {
+    if (confirm('Clear ALL Blingus data? This will delete favorites, custom items, presets, history, generators, and all customizations. This cannot be undone!')) {
+      const keys = [
+        favoritesKey,
+        userItemsKey,
+        deletedDefaultsKey,
+        historyKey,
+        voicePresetsKey,
+        generatorsKey,
+        editedDefaultsKey,
+        deletedGeneratorDefaultsKey,
+        darkModeKey
+      ];
+      keys.forEach(key => localStorage.removeItem(key));
+      console.log('✓ Cleared all Blingus data');
+      showToast('All data cleared. Reloading...');
+      setTimeout(() => location.reload(), 1000);
+    }
+  };
+  
   const sectionSelect = $('#sectionSelect');
   const categorySelect = $('#categorySelect');
   const adultToggle = $('#adultToggle');
