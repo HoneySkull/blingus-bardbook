@@ -19,6 +19,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
+// Log request method for debugging
+error_log('Blingus API: Request method = ' . $_SERVER['REQUEST_METHOD']);
+error_log('Blingus API: Request URI = ' . $_SERVER['REQUEST_URI']);
+
 // Configuration
 $dataDir = __DIR__ . '/../data/';
 $dataFile = $dataDir . 'blingus-data.json';

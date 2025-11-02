@@ -1588,7 +1588,10 @@
   let dataDirectoryHandle = null;
   const DATA_FILENAME = 'blingus-data.json';
   const DATA_DIR_NAME = 'data';
-  const API_ENDPOINT = '/api/blingus-data.php';
+  // Try to detect the correct API path
+  const API_ENDPOINT = window.location.pathname.includes('/api/') 
+    ? 'blingus-data.php'  // If already in /api/ directory
+    : '/api/blingus-data.php';  // Standard path
   
   // Detect if running on a web server (not localhost)
   const isLocalhost = window.location.hostname === 'localhost' || 
