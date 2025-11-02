@@ -1,4 +1,14 @@
 (function(){
+  // Debug mode: enable via URL parameter ?debug=true or hostname is localhost
+  const DEBUG = new URLSearchParams(window.location.search).has('debug') || 
+                window.location.hostname === 'localhost' || 
+                window.location.hostname === '127.0.0.1';
+  
+  // Debug logging helper
+  const debugLog = (...args) => {
+    if (DEBUG) console.log(...args);
+  };
+  
   const spells = {
     'Druidcraft': [
       {t:"Here comes the sprout, doo-doo-doo-doo—little leaf, it's all right; bask in the glow, grow in the light.", s:"Here Comes the Sun", a:"The Beatles"},
@@ -1478,25 +1488,27 @@
   const content = $('#content');
   
   
-  // Debug helper function - can be called from console
-  window.debugGenerators = function() {
-    console.log('=== Generator Debug Info ===');
-    const userGens = loadUserGenerators();
-    const deleted = loadDeletedGeneratorDefaults();
-    const edited = loadEditedDefaults();
-    console.log('User generators:', userGens);
-    console.log('Deleted defaults:', deleted);
-    console.log('Edited defaults:', edited);
-    console.log('Merged battle cries:', getMergedGenerators('battleCries'));
-    console.log('Merged insults:', getMergedGenerators('insults'));
-    console.log('Merged compliments:', getMergedGenerators('compliments'));
-    console.log('Raw localStorage:', {
-      generators: localStorage.getItem(generatorsKey),
-      deletedDefaults: localStorage.getItem(deletedGeneratorDefaultsKey),
-      editedDefaults: localStorage.getItem(editedDefaultsKey)
-    });
-    return { userGens, deleted, edited };
-  };
+  // Debug helper function - can be called from console (only in debug mode)
+  if (DEBUG) {
+    window.debugGenerators = function() {
+      debugLog('=== Generator Debug Info ===');
+      const userGens = loadUserGenerators();
+      const deleted = loadDeletedGeneratorDefaults();
+      const edited = loadEditedDefaults();
+      debugLog('User generators:', userGens);
+      debugLog('Deleted defaults:', deleted);
+      debugLog('Edited defaults:', edited);
+      debugLog('Merged battle cries:', getMergedGenerators('battleCries'));
+      debugLog('Merged insults:', getMergedGenerators('insults'));
+      debugLog('Merged compliments:', getMergedGenerators('compliments'));
+      debugLog('Raw localStorage:', {
+        generators: localStorage.getItem(generatorsKey),
+        deletedDefaults: localStorage.getItem(deletedGeneratorDefaultsKey),
+        editedDefaults: localStorage.getItem(editedDefaultsKey)
+      });
+      return { userGens, deleted, edited };
+    };
+  }
   
   // Clear all Blingus data - can be called from console
   window.clearBlingusData = function() {
@@ -1513,7 +1525,7 @@
         darkModeKey
       ];
       keys.forEach(key => localStorage.removeItem(key));
-      console.log('✓ Cleared all Blingus data');
+      debugLog('✓ Cleared all Blingus data');
       showToast('All data cleared. Reloading...');
       setTimeout(() => location.reload(), 1000);
     }
@@ -1592,8 +1604,8 @@
   const API_ENDPOINT = '/api/blingus-data.php';
   
   // Debug: Log the endpoint being used
-  console.log('API Endpoint:', API_ENDPOINT);
-  console.log('Full API URL:', window.location.origin + API_ENDPOINT);
+  debugLog('API Endpoint:', API_ENDPOINT);
+  debugLog('Full API URL:', window.location.origin + API_ENDPOINT);
   
   // Detect if running on a web server (not localhost)
   const isLocalhost = window.location.hostname === 'localhost' || 
@@ -1604,7 +1616,7 @@
   // Check if File System Access API is supported (for local use)
   const fileSystemSupported = 'showDirectoryPicker' in window;
   
-  console.log('Storage mode detection:', {
+  debugLog('Storage mode detection:', {
     isLocalhost,
     isOnServer,
     protocol: window.location.protocol,
@@ -1649,7 +1661,7 @@
         data: data
       };
       
-      console.log('Attempting to save to server:', {
+      debugLog('Attempting to save to server:', {
         endpoint: API_ENDPOINT,
         fullUrl: window.location.origin + API_ENDPOINT,
         method: 'POST',
@@ -1664,7 +1676,7 @@
         body: JSON.stringify(requestBody)
       });
       
-      console.log('Response received:', {
+      debugLog('Response received:', {
         status: response.status,
         statusText: response.statusText,
         headers: Object.fromEntries(response.headers.entries())
@@ -2084,7 +2096,7 @@
       if (!result.battleCries) result.battleCries = [];
       if (!result.insults) result.insults = [];
       if (!result.compliments) result.compliments = [];
-      console.log('loadDeletedGeneratorDefaults:', result);
+      debugLog('loadDeletedGeneratorDefaults:', result);
       return result;
     } catch(e) {
       console.error('Error loading deleted generator defaults:', e);
@@ -2113,16 +2125,16 @@
     const editedDefaults = loadEditedDefaults();
     const deletedDefaults = loadDeletedGeneratorDefaults();
     
-    console.log('getMergedGenerators for', type);
-    console.log('Deleted defaults:', deletedDefaults[type]);
-    console.log('User added:', userAdded[type]);
+    debugLog('getMergedGenerators for', type);
+    debugLog('Deleted defaults:', deletedDefaults[type]);
+    debugLog('User added:', userAdded[type]);
     
     // Get default items, applying edits and filtering deletions
     const defaultItems = (defaults[type] || []).map((item, index) => {
       const itemId = `${type}_${index}`;
       // Check if deleted
       if ((deletedDefaults[type] || []).includes(itemId)) {
-        console.log('Filtering out deleted item:', itemId, item);
+        debugLog('Filtering out deleted item:', itemId, item);
         return null;
       }
       // Check if edited
@@ -2136,8 +2148,8 @@
     const userItems = Array.isArray(userAdded[type]) ? userAdded[type] : [];
     
     const merged = [...defaultItems, ...userItems];
-    console.log('Merged list length:', merged.length, 'Default items:', defaultItems.length, 'User added:', userItems.length);
-    console.log('User added items:', userItems);
+    debugLog('Merged list length:', merged.length, 'Default items:', defaultItems.length, 'User added:', userItems.length);
+    debugLog('User added items:', userItems);
     return merged;
   }
   
@@ -2153,8 +2165,8 @@
   let deletedDefaults = loadDeletedDefaults();
   
   // Debug: Log user items on load
-  console.log('Loaded user items:', userItems);
-  console.log('Loaded deleted defaults:', deletedDefaults);
+  debugLog('Loaded user items:', userItems);
+  debugLog('Loaded deleted defaults:', deletedDefaults);
   
   // Safety check: Clear deletedDefaults if it seems corrupted (has non-array values)
   let needsReset = false;
@@ -2195,11 +2207,11 @@
   window.resetDeletedDefaults = function() {
     deletedDefaults = { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {} };
     saveDeletedDefaults(deletedDefaults);
-    console.log('Deleted defaults reset. Reloading page...');
+    debugLog('Deleted defaults reset. Reloading page...');
     location.reload();
   };
   
-  console.log('To reset deleted defaults manually, run: resetDeletedDefaults()');
+      debugLog('To reset deleted defaults manually, run: resetDeletedDefaults()');
   
   // Merge user items with default items, filtering out deleted defaults
   function getMergedData(section, category) {
@@ -2213,9 +2225,9 @@
     
     // Debug logging
     if (defaultList.length > 0) {
-      console.log(`getMergedData: ${section}/${category} - Defaults: ${defaultList.length}, Deleted IDs: ${deletedIds.length}`);
+      debugLog(`getMergedData: ${section}/${category} - Defaults: ${defaultList.length}, Deleted IDs: ${deletedIds.length}`);
       if (deletedIds.length > 0) {
-        console.log(`Deleted IDs for ${section}/${category}:`, deletedIds);
+        debugLog(`Deleted IDs for ${section}/${category}:`, deletedIds);
       }
     }
     
@@ -2223,7 +2235,7 @@
       const itemId = getItemId(section, item);
       const isDeleted = deletedIds.includes(itemId);
       if (isDeleted) {
-        console.log(`Filtering out deleted item: ${itemId}`);
+        debugLog(`Filtering out deleted item: ${itemId}`);
       }
       return !isDeleted;
     });
@@ -2240,13 +2252,13 @@
       }
       // Return the full default list since we cleared the deletions or there were none
       const userList = userItems[section]?.[category] || [];
-      console.log(`Returning full list after clearing deletions: ${defaultList.length} defaults + ${userList.length} user items`);
+      debugLog(`Returning full list after clearing deletions: ${defaultList.length} defaults + ${userList.length} user items`);
       return section === 'actions' ? [...defaultList, ...userList] : [...defaultList, ...userList];
     }
     
     const userList = userItems[section]?.[category] || [];
     const result = section === 'actions' ? [...filteredList, ...userList] : [...filteredList, ...userList];
-    console.log(`getMergedData result: ${section}/${category} - Returning ${result.length} items (${filteredList.length} filtered defaults + ${userList.length} user)`);
+    debugLog(`getMergedData result: ${section}/${category} - Returning ${result.length} items (${filteredList.length} filtered defaults + ${userList.length} user)`);
     return result;
   }
   
@@ -2353,7 +2365,7 @@
     const section = sectionSelect.value;
     const cat = categorySelect.value;
     
-    console.log(`getActiveList: section=${section}, category=${cat}`);
+    debugLog(`getActiveList: section=${section}, category=${cat}`);
     
     if (!cat) {
       console.warn('getActiveList: No category selected!');
@@ -2364,19 +2376,19 @@
       const base = getMergedData('spells', cat);
       const add = adultToggle.checked ? getMergedAdultSpells(cat) : [];
       const result = [...base, ...add];
-      console.log(`getActiveList spells: base=${base.length}, add=${add.length}, result=${result.length}`);
+      debugLog(`getActiveList spells: base=${base.length}, add=${add.length}, result=${result.length}`);
       return result;
     } else if (section === 'bardic') {
       const result = getMergedData('bardic', cat);
-      console.log(`getActiveList bardic: result=${result.length}`);
+      debugLog(`getActiveList bardic: result=${result.length}`);
       return result;
     } else if (section === 'actions') {
       const result = getMergedData('actions', cat);
-      console.log(`getActiveList actions: result=${result.length}`);
+      debugLog(`getActiveList actions: result=${result.length}`);
       return result;
     } else {
       const result = getMergedData('mockery', cat);
-      console.log(`getActiveList mockery: result=${result.length}`);
+      debugLog(`getActiveList mockery: result=${result.length}`);
       return result;
     }
   }
@@ -2384,7 +2396,7 @@
   function render() {
     const section = sectionSelect.value;
     
-    console.log(`render() called for section: ${section}`);
+    debugLog(`render() called for section: ${section}`);
     
     // Special rendering for character actions
     if (section === 'actions') {
@@ -2454,7 +2466,7 @@
       baseList = [...baseList, ...userList];
     }
     
-    console.log(`render: baseList length=${baseList.length} for ${section}/${cat}`);
+    debugLog(`render: baseList length=${baseList.length} for ${section}/${cat}`);
     
     // Apply filters
     let list = baseList;
@@ -2468,14 +2480,14 @@
     });
     }
     
-    console.log(`render: after search filter, list length=${list.length}`);
+    debugLog(`render: after search filter, list length=${list.length}`);
     
     if (favoritesOnly && favoritesOnly.checked) {
       list = list.filter(isFav);
-      console.log(`render: after favorites filter, list length=${list.length}`);
+      debugLog(`render: after favorites filter, list length=${list.length}`);
     }
     
-    console.log(`render: final list length=${list.length} for ${section}`);
+    debugLog(`render: final list length=${list.length} for ${section}`);
     
     content.innerHTML = '';
     
@@ -3245,8 +3257,8 @@
               saveEditedDefaults(edited);
             }
             saveDeletedGeneratorDefaults(deleted);
-            console.log('Deleted default item (from manage modal):', itemMeta.itemId);
-            console.log('Deleted list for', type, ':', deleted[type]);
+            debugLog('Deleted default item (from manage modal):', itemMeta.itemId);
+            debugLog('Deleted list for', type, ':', deleted[type]);
             showToast('Default item deleted');
           } else {
             // Delete user-added item
@@ -3389,15 +3401,15 @@
           saveEditedDefaults(edited);
         }
         saveDeletedGeneratorDefaults(deleted);
-        console.log('Deleted default item:', currentEditingGeneratorItemId);
-        console.log('Deleted list for', currentGeneratorType, ':', deleted[currentGeneratorType]);
+        debugLog('Deleted default item:', currentEditingGeneratorItemId);
+        debugLog('Deleted list for', currentGeneratorType, ':', deleted[currentGeneratorType]);
         showToast('Default item deleted');
       } else {
         // Delete user-added item
         const userGenerators = loadUserGenerators();
         userGenerators[currentGeneratorType].splice(currentEditingGeneratorIndex, 1);
         saveUserGenerators(userGenerators);
-        console.log('Deleted user-added item at index:', currentEditingGeneratorIndex);
+        debugLog('Deleted user-added item at index:', currentEditingGeneratorIndex);
         showToast('Item deleted');
       }
       refreshGeneratorsList();
@@ -3683,7 +3695,7 @@
     }
     
     saveUserItems(userItems);
-    console.log('Saved user items:', userItems);
+    debugLog('Saved user items:', userItems);
     closeEditModal();
     render();
   }
@@ -3745,7 +3757,7 @@
     }
     
     saveUserItems(userItems);
-    console.log('Saved user items after delete:', userItems);
+    debugLog('Saved user items after delete:', userItems);
     closeEditModal();
     showToast('Item deleted');
     render();
@@ -4035,7 +4047,7 @@
               localStorage.setItem(generatorsKey, JSON.stringify(generators));
               importedCount++;
               importedCategories.push('generators');
-              console.log('Imported generators:', generators);
+              debugLog('Imported generators:', generators);
             }
             if (data.editedGeneratorDefaults !== undefined) {
               localStorage.setItem(editedDefaultsKey, JSON.stringify(data.editedGeneratorDefaults));
@@ -4366,7 +4378,7 @@
   });
 
   // Initialize on page load
-  console.log('Initializing...');
+  debugLog('Initializing...');
   
   // Initialize file storage and load data
   (async function initializeFileStorage() {
@@ -4393,7 +4405,7 @@
   // Ensure section select has a value
   if (!sectionSelect.value && sectionSelect.options.length > 0) {
     sectionSelect.selectedIndex = 0;
-    console.log(`Initial section selected: ${sectionSelect.value}`);
+    debugLog(`Initial section selected: ${sectionSelect.value}`);
   }
   
   try {
@@ -4405,13 +4417,13 @@
   // Ensure a category is selected
   if (categorySelect.options.length > 0 && !categorySelect.value) {
     categorySelect.selectedIndex = 0;
-    console.log(`Initial category selected: ${categorySelect.value}`);
+    debugLog(`Initial category selected: ${categorySelect.value}`);
   }
   
   // Initialize preset select
   updatePresetSelect();
   
-  console.log('Initial render...');
+  debugLog('Initial render...');
   try {
     render();
   } catch (error) {
@@ -4419,5 +4431,5 @@
     content.innerHTML = '<div class="card">Error loading content. Please refresh the page.</div>';
   }
   
-  console.log('Initialization complete');
+  debugLog('Initialization complete');
 })();
