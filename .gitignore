@@ -15,3 +15,6 @@ desktop.ini
 *.log
 *.bak
 
+# User data (contains sensitive information)
+/data/
+

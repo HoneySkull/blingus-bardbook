@@ -3734,10 +3734,197 @@
   historyBtn.style.fontSize = '14px';
   historyBtn.addEventListener('click', showHistoryModal);
 
+  // Cloud Sync functionality
+  const syncBtn = document.createElement('button');
+  syncBtn.id = 'syncBtn';
+  syncBtn.className = 'btn';
+  syncBtn.textContent = '☁️ Sync';
+  syncBtn.style.fontSize = '14px';
+  syncBtn.title = 'Sync data to/from server (works across browsers)';
+  
+  let syncInProgress = false;
+  syncBtn.addEventListener('click', async () => {
+    if (syncInProgress) {
+      showToast('Sync already in progress...');
+      return;
+    }
+    
+    syncInProgress = true;
+    syncBtn.disabled = true;
+    syncBtn.textContent = '☁️ Syncing...';
+    
+    try {
+      // Get all current data
+      const data = getAllDataForSync();
+      
+      // Try to upload to server
+      const response = await fetch('/api/blingus-sync.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'save',
+          data: data
+        })
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          // Then download from server (merge with local)
+          const downloadResponse = await fetch('/api/blingus-sync.php?action=load');
+          if (downloadResponse.ok) {
+            const serverData = await downloadResponse.json();
+            if (serverData.success && serverData.data) {
+              // Merge server data with local (server takes precedence)
+              mergeDataFromServer(serverData.data);
+              showToast('✓ Synced successfully!');
+            } else {
+              showToast('✓ Uploaded successfully');
+            }
+          } else {
+            showToast('✓ Uploaded successfully');
+          }
+        } else {
+          showToast('Sync failed: ' + (result.error || 'Unknown error'));
+        }
+      } else {
+        // If server endpoint doesn't exist, show helpful message
+        if (response.status === 404) {
+          showToast('⚠️ Server sync not configured. See console for setup instructions.');
+          console.log('To enable cloud sync, create /api/blingus-sync.php on your server. See README for details.');
+        } else {
+          showToast('Sync failed: ' + response.statusText);
+        }
+      }
+    } catch (error) {
+      console.error('Sync error:', error);
+      showToast('Sync failed: ' + error.message);
+    } finally {
+      syncInProgress = false;
+      syncBtn.disabled = false;
+      syncBtn.textContent = '☁️ Sync';
+    }
+  });
+  
+  // Auto-sync on data changes (debounced)
+  let autoSyncTimeout = null;
+  function scheduleAutoSync() {
+    if (autoSyncTimeout) clearTimeout(autoSyncTimeout);
+    autoSyncTimeout = setTimeout(async () => {
+      // Check if auto-sync is enabled
+      const autoSyncEnabled = localStorage.getItem('blingusAutoSync') === 'true';
+      if (!autoSyncEnabled) return;
+      
+      try {
+        const data = getAllDataForSync();
+        await fetch('/api/blingus-sync.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'save', data: data })
+        });
+        console.log('Auto-synced to server');
+      } catch (e) {
+        // Silent fail for auto-sync
+        console.log('Auto-sync failed (server may not be configured)');
+      }
+    }, 2000); // Wait 2 seconds after last change
+  }
+  
+  // Function to get all data for sync
+  function getAllDataForSync() {
+    return {
+      version: '1.3',
+      timestamp: new Date().toISOString(),
+      favorites: JSON.parse(localStorage.getItem(favoritesKey) || '[]'),
+      userItems: JSON.parse(localStorage.getItem(userItemsKey) || '{}'),
+      deletedDefaults: JSON.parse(localStorage.getItem(deletedDefaultsKey) || '{}'),
+      history: JSON.parse(localStorage.getItem(historyKey) || '[]'),
+      voicePresets: JSON.parse(localStorage.getItem(voicePresetsKey) || '[]'),
+      generators: JSON.parse(localStorage.getItem(generatorsKey) || '{"battleCries":[],"insults":[],"compliments":[]}'),
+      editedGeneratorDefaults: JSON.parse(localStorage.getItem(editedDefaultsKey) || '{"battleCries":{},"insults":{},"compliments":{}}'),
+      deletedGeneratorDefaults: JSON.parse(localStorage.getItem(deletedGeneratorDefaultsKey) || '{"battleCries":[],"insults":[],"compliments":[]}'),
+      darkMode: localStorage.getItem(darkModeKey) === 'true'
+    };
+  }
+  
+  // Function to merge server data with local
+  function mergeDataFromServer(serverData) {
+    if (!serverData) return;
+    
+    // Merge strategy: Server data takes precedence if it's newer
+    const serverTimestamp = serverData.timestamp ? new Date(serverData.timestamp) : null;
+    const localTimestamp = localStorage.getItem('blingusLastSync');
+    
+    if (serverTimestamp && localTimestamp) {
+      const localDate = new Date(localTimestamp);
+      if (serverTimestamp <= localDate) {
+        console.log('Local data is newer, keeping local');
+        return;
+      }
+    }
+    
+    // Import server data
+    if (serverData.favorites !== undefined) localStorage.setItem(favoritesKey, JSON.stringify(serverData.favorites));
+    if (serverData.userItems !== undefined) localStorage.setItem(userItemsKey, JSON.stringify(serverData.userItems));
+    if (serverData.deletedDefaults !== undefined) localStorage.setItem(deletedDefaultsKey, JSON.stringify(serverData.deletedDefaults));
+    if (serverData.history !== undefined) localStorage.setItem(historyKey, JSON.stringify(serverData.history));
+    if (serverData.voicePresets !== undefined) localStorage.setItem(voicePresetsKey, JSON.stringify(serverData.voicePresets));
+    if (serverData.generators !== undefined) localStorage.setItem(generatorsKey, JSON.stringify(serverData.generators));
+    if (serverData.editedGeneratorDefaults !== undefined) localStorage.setItem(editedDefaultsKey, JSON.stringify(serverData.editedGeneratorDefaults));
+    if (serverData.deletedGeneratorDefaults !== undefined) localStorage.setItem(deletedGeneratorDefaultsKey, JSON.stringify(serverData.deletedGeneratorDefaults));
+    if (serverData.darkMode !== undefined) localStorage.setItem(darkModeKey, serverData.darkMode ? 'true' : 'false');
+    
+    localStorage.setItem('blingusLastSync', new Date().toISOString());
+    
+    // Reload the page to apply changes
+    showToast('Data synced from server. Reloading...');
+    setTimeout(() => location.reload(), 500);
+  }
+  
+  // Auto-load from server on page load
+  (async function autoLoadFromServer() {
+    try {
+      const response = await fetch('/api/blingus-sync.php?action=load');
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.data) {
+          mergeDataFromServer(result.data);
+        }
+      }
+    } catch (e) {
+      // Silent fail - server may not be configured
+      console.log('Auto-load from server failed (server may not be configured)');
+    }
+  })();
+  
+  // Hook into save functions to trigger auto-sync
+  const originalSaveFunctions = {
+    saveFavorites: saveFavorites,
+    saveUserItems: saveUserItems,
+    saveDeletedDefaults: saveDeletedDefaults,
+    saveHistory: saveHistory,
+    savePresets: savePresets,
+    saveUserGenerators: saveUserGenerators,
+    saveEditedDefaults: saveEditedDefaults,
+    saveDeletedGeneratorDefaults: saveDeletedGeneratorDefaults
+  };
+  
+  // Wrap save functions to trigger auto-sync
+  if (typeof saveFavorites === 'function') {
+    const _saveFavorites = saveFavorites;
+    window.saveFavorites = function(...args) {
+      _saveFavorites.apply(this, args);
+      scheduleAutoSync();
+    };
+  }
+  
   generatorRow.appendChild(battleCryBtn);
   generatorRow.appendChild(insultBtn);
   generatorRow.appendChild(complimentBtn);
   generatorRow.appendChild(historyBtn);
+  generatorRow.appendChild(syncBtn);
   generatorRow.appendChild(exportBtn);
   generatorRow.appendChild(importBtn);
   document.querySelector('.toolbar').appendChild(generatorRow);
