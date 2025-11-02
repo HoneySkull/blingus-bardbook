@@ -1658,7 +1658,25 @@
   function loadUserGenerators() {
     try {
       const raw = localStorage.getItem(generatorsKey);
-      return raw ? JSON.parse(raw) : { battleCries: [], insults: [], compliments: [] };
+      let parsed = raw ? JSON.parse(raw) : { battleCries: [], insults: [], compliments: [] };
+      
+      // Ensure structure is correct - each type should be an array
+      if (!parsed.battleCries || !Array.isArray(parsed.battleCries)) {
+        parsed.battleCries = [];
+      }
+      if (!parsed.insults || !Array.isArray(parsed.insults)) {
+        parsed.insults = [];
+      }
+      if (!parsed.compliments || !Array.isArray(parsed.compliments)) {
+        parsed.compliments = [];
+      }
+      
+      // Filter out any non-string values (cleanup)
+      parsed.battleCries = parsed.battleCries.filter(item => typeof item === 'string');
+      parsed.insults = parsed.insults.filter(item => typeof item === 'string');
+      parsed.compliments = parsed.compliments.filter(item => typeof item === 'string');
+      
+      return parsed;
     } catch(e) {
       console.error('Error loading generators:', e);
       return { battleCries: [], insults: [], compliments: [] };
@@ -1749,8 +1767,12 @@
       return item;
     }).filter(item => item !== null);
     
-    const merged = [...defaultItems, ...(userAdded[type] || [])];
-    console.log('Merged list length:', merged.length, 'Default items:', defaultItems.length, 'User added:', (userAdded[type] || []).length);
+    // Ensure userAdded[type] is an array
+    const userItems = Array.isArray(userAdded[type]) ? userAdded[type] : [];
+    
+    const merged = [...defaultItems, ...userItems];
+    console.log('Merged list length:', merged.length, 'Default items:', defaultItems.length, 'User added:', userItems.length);
+    console.log('User added items:', userItems);
     return merged;
   }
   
@@ -3644,9 +3666,26 @@
               importedCategories.push('presets');
             }
             if (data.generators !== undefined) {
-              localStorage.setItem(generatorsKey, JSON.stringify(data.generators));
+              // Ensure generators structure is correct - normalize the data
+              let generators = data.generators;
+              
+              // Handle different possible structures
+              if (typeof generators === 'object' && generators !== null) {
+                // If it's already the correct structure
+                generators = {
+                  battleCries: Array.isArray(generators.battleCries) ? generators.battleCries : [],
+                  insults: Array.isArray(generators.insults) ? generators.insults : [],
+                  compliments: Array.isArray(generators.compliments) ? generators.compliments : []
+                };
+              } else {
+                // Fallback to empty structure
+                generators = { battleCries: [], insults: [], compliments: [] };
+              }
+              
+              localStorage.setItem(generatorsKey, JSON.stringify(generators));
               importedCount++;
               importedCategories.push('generators');
+              console.log('Imported generators:', generators);
             }
             if (data.editedGeneratorDefaults !== undefined) {
               localStorage.setItem(editedDefaultsKey, JSON.stringify(data.editedGeneratorDefaults));
@@ -3873,7 +3912,21 @@
     if (serverData.deletedDefaults !== undefined) localStorage.setItem(deletedDefaultsKey, JSON.stringify(serverData.deletedDefaults));
     if (serverData.history !== undefined) localStorage.setItem(historyKey, JSON.stringify(serverData.history));
     if (serverData.voicePresets !== undefined) localStorage.setItem(voicePresetsKey, JSON.stringify(serverData.voicePresets));
-    if (serverData.generators !== undefined) localStorage.setItem(generatorsKey, JSON.stringify(serverData.generators));
+    if (serverData.generators !== undefined) {
+      // Normalize generators structure
+      let generators = serverData.generators;
+      if (typeof generators === 'object' && generators !== null) {
+        generators = {
+          battleCries: Array.isArray(generators.battleCries) ? generators.battleCries : [],
+          insults: Array.isArray(generators.insults) ? generators.insults : [],
+          compliments: Array.isArray(generators.compliments) ? generators.compliments : []
+        };
+      } else {
+        generators = { battleCries: [], insults: [], compliments: [] };
+      }
+      localStorage.setItem(generatorsKey, JSON.stringify(generators));
+      console.log('Merged generators from server:', generators);
+    }
     if (serverData.editedGeneratorDefaults !== undefined) localStorage.setItem(editedDefaultsKey, JSON.stringify(serverData.editedGeneratorDefaults));
     if (serverData.deletedGeneratorDefaults !== undefined) localStorage.setItem(deletedGeneratorDefaultsKey, JSON.stringify(serverData.deletedGeneratorDefaults));
     if (serverData.darkMode !== undefined) localStorage.setItem(darkModeKey, serverData.darkMode ? 'true' : 'false');
