@@ -8,6 +8,7 @@
  * SECURITY: For production use, add authentication!
  */
 
+// Set headers first
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
@@ -19,9 +20,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Log request method for debugging
+// Log request details for debugging
 error_log('Blingus API: Request method = ' . $_SERVER['REQUEST_METHOD']);
 error_log('Blingus API: Request URI = ' . $_SERVER['REQUEST_URI']);
+error_log('Blingus API: Query string = ' . ($_SERVER['QUERY_STRING'] ?? 'none'));
+error_log('Blingus API: Content-Type = ' . ($_SERVER['CONTENT_TYPE'] ?? 'none'));
+error_log('Blingus API: POST data = ' . print_r($_POST, true));
+error_log('Blingus API: GET data = ' . print_r($_GET, true));
 
 // Configuration
 $dataDir = __DIR__ . '/../data/';
@@ -32,28 +37,25 @@ if (!is_dir($dataDir)) {
     mkdir($dataDir, 0755, true);
 }
 
-// Get action from query string or POST data
+// Get action from query string, POST data, or JSON body
 $action = $_GET['action'] ?? $_POST['action'] ?? '';
 
 // If no action and it's a POST request, try to parse JSON body
 if (empty($action) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = file_get_contents('php://input');
+    error_log('Blingus API: Raw input = ' . substr($input, 0, 200));
     $request = json_decode($input, true);
     if ($request && isset($request['action'])) {
         $action = $request['action'];
+        error_log('Blingus API: Parsed action from JSON = ' . $action);
     }
 }
 
-// Reject non-POST requests for save action
-if ($action === 'save' && $_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode([
-        'success' => false,
-        'error' => 'Method not allowed. Use POST for save action.',
-        'received_method' => $_SERVER['REQUEST_METHOD']
-    ]);
-    exit;
-}
+error_log('Blingus API: Final action = ' . $action);
+error_log('Blingus API: Request method = ' . $_SERVER['REQUEST_METHOD']);
+
+// Don't reject here - let the switch handle it
+// The 405 might be coming from web server, not PHP
 
 try {
     switch ($action) {

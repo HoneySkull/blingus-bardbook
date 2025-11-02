@@ -1674,7 +1674,13 @@
         }
         console.error('HTTP error:', response.status, response.statusText, errorText);
         if (response.status === 405) {
-          throw new Error('405 Method Not Allowed - Server may be blocking POST requests. Check server configuration.');
+          console.error('405 Error Details:', {
+            url: window.location.origin + API_ENDPOINT,
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            bodySize: JSON.stringify({ action: 'save', data: data }).length
+          });
+          throw new Error('405 Method Not Allowed - Server/web server is blocking POST requests. Check nginx/apache configuration or PHP setup.');
         }
         throw new Error(`HTTP ${response.status}: ${response.statusText}${errorText ? ' - ' + errorText : ''}`);
       }
