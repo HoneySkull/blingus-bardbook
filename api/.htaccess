@@ -1,3 +1,18 @@
 # Allow PHP execution in this directory
-AddHandler application/x-httpd-php .php
+<IfModule mod_php.c>
+    AddHandler application/x-httpd-php .php
+</IfModule>
+
+# Allow POST requests
+<Limit POST>
+    Order allow,deny
+    Allow from all
+</Limit>
+
+# Allow all HTTP methods
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} ^(GET|POST|OPTIONS)$
+    RewriteRule .* - [L]
+</IfModule>
 

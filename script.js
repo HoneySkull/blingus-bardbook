@@ -1642,15 +1642,30 @@
     
     try {
       const data = getAllUserData();
+      const requestBody = {
+        action: 'save',
+        data: data
+      };
+      
+      console.log('Attempting to save to server:', {
+        endpoint: API_ENDPOINT,
+        fullUrl: window.location.origin + API_ENDPOINT,
+        method: 'POST',
+        bodySize: JSON.stringify(requestBody).length
+      });
+      
       const response = await fetch(API_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          action: 'save',
-          data: data
-        })
+        body: JSON.stringify(requestBody)
+      });
+      
+      console.log('Response received:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
       });
       
       if (response.ok) {
