@@ -3422,7 +3422,12 @@
   battleCryBtn.textContent = '⚔️ Battle Cry';
   battleCryBtn.style.fontSize = '14px';
   battleCryBtn.addEventListener('click', () => {
-    const cry = battleCries[Math.floor(Math.random() * battleCries.length)];
+    const mergedCries = getMergedGenerators('battleCries');
+    if (mergedCries.length === 0) {
+      showToast('No battle cries available');
+      return;
+    }
+    const cry = mergedCries[Math.floor(Math.random() * mergedCries.length)];
     showGeneratorModal('⚔️ Battle Cry', cry);
   });
 
@@ -3432,7 +3437,12 @@
   insultBtn.textContent = '🗡️ Insult';
   insultBtn.style.fontSize = '14px';
   insultBtn.addEventListener('click', () => {
-    const insult = insults[Math.floor(Math.random() * insults.length)];
+    const mergedInsults = getMergedGenerators('insults');
+    if (mergedInsults.length === 0) {
+      showToast('No insults available');
+      return;
+    }
+    const insult = mergedInsults[Math.floor(Math.random() * mergedInsults.length)];
     showGeneratorModal('🗡️ Insult', insult);
   });
 
@@ -3442,7 +3452,12 @@
   complimentBtn.textContent = '💬 Compliment';
   complimentBtn.style.fontSize = '14px';
   complimentBtn.addEventListener('click', () => {
-    const compliment = compliments[Math.floor(Math.random() * compliments.length)];
+    const mergedCompliments = getMergedGenerators('compliments');
+    if (mergedCompliments.length === 0) {
+      showToast('No compliments available');
+      return;
+    }
+    const compliment = mergedCompliments[Math.floor(Math.random() * mergedCompliments.length)];
     showGeneratorModal('💬 Compliment', compliment);
   });
 
