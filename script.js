@@ -1933,15 +1933,35 @@
   
   // Debounced auto-save (works for both file and server)
   let fileSaveTimeout = null;
+  let isSavingToServer = false;
+  let lastAutoSaveToast = 0;
   function scheduleFileSave() {
     if (fileSaveTimeout) clearTimeout(fileSaveTimeout);
-    fileSaveTimeout = setTimeout(() => {
+    fileSaveTimeout = setTimeout(async () => {
       if (isOnServer) {
-        saveDataToServer();
+        if (!isSavingToServer) {
+          isSavingToServer = true;
+          try {
+            const success = await saveDataToServer();
+            if (success) {
+              // Only show toast occasionally (every 10 seconds max) to avoid spam
+              const now = Date.now();
+              if (now - lastAutoSaveToast > 10000) {
+                showToast('💾 Auto-saved', 1500);
+                lastAutoSaveToast = now;
+              }
+            }
+          } catch (error) {
+            console.error('Auto-save failed:', error);
+            showToast('⚠️ Auto-save failed', 3000);
+          } finally {
+            isSavingToServer = false;
+          }
+        }
       } else if (dataDirectoryHandle) {
         saveDataToFile();
       }
-    }, 1000); // Wait 1 second after last change
+    }, 500); // Wait 500ms after last change for faster feedback
   }
   
   // Load user items from localStorage
