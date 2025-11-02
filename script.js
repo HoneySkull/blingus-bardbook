@@ -1662,9 +1662,21 @@
           throw new Error(result.error || result.message || 'Unknown server error');
         }
       } else {
-        const errorText = await response.text();
+        let errorText = '';
+        try {
+          errorText = await response.text();
+          const errorJson = JSON.parse(errorText);
+          if (errorJson.error) {
+            throw new Error(errorJson.error);
+          }
+        } catch (e) {
+          // Not JSON, use raw text
+        }
         console.error('HTTP error:', response.status, response.statusText, errorText);
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        if (response.status === 405) {
+          throw new Error('405 Method Not Allowed - Server may be blocking POST requests. Check server configuration.');
+        }
+        throw new Error(`HTTP ${response.status}: ${response.statusText}${errorText ? ' - ' + errorText : ''}`);
       }
     } catch (error) {
       console.error('Error saving to server:', error);
