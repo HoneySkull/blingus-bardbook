@@ -3389,17 +3389,43 @@
   exportBtn.textContent = '📥 Export';
   exportBtn.style.fontSize = '14px';
   exportBtn.addEventListener('click', () => {
+      // Export COMPLETE dataset including all defaults and user customizations
       const data = {
+        // Default content (complete datasets)
+        defaultSpells: spells,
+        defaultAdultSpells: adultSpells,
+        defaultBardic: bardic,
+        defaultMockery: mockery,
+        defaultActions: characterActions,
+        defaultGenerators: {
+          battleCries: battleCries,
+          insults: insults,
+          compliments: compliments
+        },
+        
+        // User preferences
         favorites: JSON.parse(localStorage.getItem(favoritesKey) || '[]'),
+        darkMode: localStorage.getItem(darkModeKey) === 'true',
+        
+        // User-added content
         userItems: JSON.parse(localStorage.getItem(userItemsKey) || '{}'),
-        deletedDefaults: JSON.parse(localStorage.getItem(deletedDefaultsKey) || '{}'),
-        history: JSON.parse(localStorage.getItem(historyKey) || '[]'),
-        presets: JSON.parse(localStorage.getItem(voicePresetsKey) || '[]'),
         generators: JSON.parse(localStorage.getItem(generatorsKey) || '{"battleCries":[],"insults":[],"compliments":[]}'),
+        
+        // Default item modifications (edits and deletions)
+        deletedDefaults: JSON.parse(localStorage.getItem(deletedDefaultsKey) || '{}'),
         editedGeneratorDefaults: JSON.parse(localStorage.getItem(editedDefaultsKey) || '{"battleCries":{},"insults":{},"compliments":{}}'),
         deletedGeneratorDefaults: JSON.parse(localStorage.getItem(deletedGeneratorDefaultsKey) || '{"battleCries":[],"insults":[],"compliments":[]}'),
-        version: '1.0',
-        timestamp: new Date().toISOString()
+        
+        // Usage history
+        history: JSON.parse(localStorage.getItem(historyKey) || '[]'),
+        
+        // Voice presets
+        presets: JSON.parse(localStorage.getItem(voicePresetsKey) || '[]'),
+        
+        // Metadata
+        version: '1.2',
+        timestamp: new Date().toISOString(),
+        exportNote: 'Complete export including all default items (spells, bardic, mockery, actions, generators) plus all user customizations (favorites, custom items, edits, deletions, presets, history).'
       };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -3428,15 +3454,66 @@
         try {
           const data = JSON.parse(event.target.result);
           if (confirm('This will overwrite your current data. Continue?')) {
-            if (data.favorites) localStorage.setItem(favoritesKey, JSON.stringify(data.favorites));
-            if (data.userItems) localStorage.setItem(userItemsKey, JSON.stringify(data.userItems));
-            if (data.deletedDefaults) localStorage.setItem(deletedDefaultsKey, JSON.stringify(data.deletedDefaults));
-            if (data.history) localStorage.setItem(historyKey, JSON.stringify(data.history));
-            if (data.presets) localStorage.setItem(voicePresetsKey, JSON.stringify(data.presets));
-            if (data.generators) localStorage.setItem(generatorsKey, JSON.stringify(data.generators));
-            if (data.editedGeneratorDefaults) localStorage.setItem(editedDefaultsKey, JSON.stringify(data.editedGeneratorDefaults));
-            if (data.deletedGeneratorDefaults) localStorage.setItem(deletedGeneratorDefaultsKey, JSON.stringify(data.deletedGeneratorDefaults));
-            location.reload();
+            // Import all data types (backward compatible - only import if present)
+            let importedCount = 0;
+            const importedCategories = [];
+            
+            // Note: Default items (spells, bardic, etc.) are in the code and don't need importing
+            // But we check for them in case someone wants to verify the export is complete
+            
+            if (data.favorites !== undefined) {
+              localStorage.setItem(favoritesKey, JSON.stringify(data.favorites));
+              importedCount++;
+              importedCategories.push('favorites');
+            }
+            if (data.userItems !== undefined) {
+              localStorage.setItem(userItemsKey, JSON.stringify(data.userItems));
+              importedCount++;
+              importedCategories.push('user items');
+            }
+            if (data.deletedDefaults !== undefined) {
+              localStorage.setItem(deletedDefaultsKey, JSON.stringify(data.deletedDefaults));
+              importedCount++;
+              importedCategories.push('deleted defaults');
+            }
+            if (data.history !== undefined) {
+              localStorage.setItem(historyKey, JSON.stringify(data.history));
+              importedCount++;
+              importedCategories.push('history');
+            }
+            if (data.presets !== undefined) {
+              localStorage.setItem(voicePresetsKey, JSON.stringify(data.presets));
+              importedCount++;
+              importedCategories.push('presets');
+            }
+            if (data.generators !== undefined) {
+              localStorage.setItem(generatorsKey, JSON.stringify(data.generators));
+              importedCount++;
+              importedCategories.push('generators');
+            }
+            if (data.editedGeneratorDefaults !== undefined) {
+              localStorage.setItem(editedDefaultsKey, JSON.stringify(data.editedGeneratorDefaults));
+              importedCount++;
+              importedCategories.push('edited generator defaults');
+            }
+            if (data.deletedGeneratorDefaults !== undefined) {
+              localStorage.setItem(deletedGeneratorDefaultsKey, JSON.stringify(data.deletedGeneratorDefaults));
+              importedCount++;
+              importedCategories.push('deleted generator defaults');
+            }
+            if (data.darkMode !== undefined) {
+              localStorage.setItem(darkModeKey, data.darkMode ? 'true' : 'false');
+              importedCount++;
+              importedCategories.push('dark mode');
+            }
+            
+            const message = importedCount > 0 
+              ? `Imported ${importedCount} categories: ${importedCategories.join(', ')}. Reloading...`
+              : 'No data found to import.';
+            showToast(message);
+            if (importedCount > 0) {
+              setTimeout(() => location.reload(), 500);
+            }
           }
         } catch (error) {
           showToast('Import failed: Invalid file');
