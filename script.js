@@ -4632,7 +4632,7 @@
   generatorRow.appendChild(fileStorageBtn);
   generatorRow.appendChild(exportBtn);
   generatorRow.appendChild(importBtn);
-  $('.toolbar').appendChild(generatorRow);
+  // generatorRow is already in the HTML DOM, no need to append
 
   // History modal event listeners
   historyCloseBtn.addEventListener('click', closeHistoryModal);
