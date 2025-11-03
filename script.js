@@ -2869,8 +2869,6 @@
     }
     
     // Render filtered actions
-    const fullActions = getMergedData('actions', cat);
-    const defaults = characterActions[cat] || [];
     const filteredDefaultCount = fullActions.length - (userItems.actions[cat] || []).length;
     
     for (let i = 0; i < filteredActions.length; i++) {
