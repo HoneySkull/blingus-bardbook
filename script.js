@@ -3636,6 +3636,9 @@
           ? (currentEditingItem._actionText || currentEditingItem)
           : currentEditingItem;
         const originalId = getItemId(section, originalItem);
+        if (!deletedDefaults.actions) {
+          deletedDefaults.actions = {};
+        }
         if (!deletedDefaults.actions[category]) {
           deletedDefaults.actions[category] = [];
         }
