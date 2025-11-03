@@ -2776,7 +2776,12 @@
     
     if (!cat) {
       console.warn('No category selected for actions');
-      content.innerHTML = '<div class="card">Please select a category</div>';
+      content.innerHTML = '<div class="card">Please select a category from the dropdown above</div>';
+      // Try to select first category if available
+      if (categorySelect.options.length > 0) {
+        categorySelect.selectedIndex = 0;
+        setTimeout(() => renderActions(), RENDER_DELAY_MS);
+      }
       return;
     }
     
