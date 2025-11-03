@@ -1512,13 +1512,12 @@
   
   // Clear all Blingus data - can be called from console
   window.clearBlingusData = function() {
-    if (confirm('Clear ALL Blingus data? This will delete favorites, custom items, presets, history, generators, and all customizations. This cannot be undone!')) {
+    if (confirm('Clear ALL Blingus data? This will delete favorites, custom items, history, generators, and all customizations. This cannot be undone!')) {
       const keys = [
         favoritesKey,
         userItemsKey,
         deletedDefaultsKey,
         historyKey,
-        voicePresetsKey,
         generatorsKey,
         editedDefaultsKey,
         deletedGeneratorDefaultsKey,
@@ -1562,15 +1561,7 @@
   const historyList = $('#historyList');
   const historyModalClose = $('#historyModalClose');
   const historyCloseBtn = $('#historyCloseBtn');
-  const presetSelect = $('#presetSelect');
-  const managePresetsBtn = $('#managePresetsBtn');
   const manageGeneratorsBtn = $('#manageGeneratorsBtn');
-  const presetModal = $('#presetModal');
-  const presetModalTitle = $('#presetModalTitle');
-  const presetModalClose = $('#presetModalClose');
-  const presetCloseBtn = $('#presetCloseBtn');
-  const saveCurrentPresetBtn = $('#saveCurrentPresetBtn');
-  const presetsList = $('#presetsList');
   const generatorManageModal = $('#generatorManageModal');
   const generatorManageTitle = $('#generatorManageTitle');
   const generatorManageClose = $('#generatorManageClose');
@@ -1636,7 +1627,6 @@
   const userItemsKey = 'blingusUserItemsV1';
   const deletedDefaultsKey = 'blingusDeletedDefaultsV1';
   const historyKey = 'blingusHistoryV1';
-  const voicePresetsKey = 'blingusVoicePresetsV1';
   const darkModeKey = 'blingusDarkModeV1';
   const generatorsKey = 'blingusGeneratorsV1';
   const editedDefaultsKey = 'blingusEditedDefaultsV1';
@@ -1781,7 +1771,6 @@
           if (data.userItems !== undefined) localStorage.setItem(userItemsKey, JSON.stringify(data.userItems));
           if (data.deletedDefaults !== undefined) localStorage.setItem(deletedDefaultsKey, JSON.stringify(data.deletedDefaults));
           if (data.history !== undefined) localStorage.setItem(historyKey, JSON.stringify(data.history));
-          if (data.voicePresets !== undefined) localStorage.setItem(voicePresetsKey, JSON.stringify(data.voicePresets));
           if (data.generators !== undefined) {
             // Normalize generators structure
             let generators = data.generators;
@@ -1910,13 +1899,10 @@
       // Usage history
       history: JSON.parse(localStorage.getItem(historyKey) || '[]'),
       
-      // Voice presets
-      voicePresets: JSON.parse(localStorage.getItem(voicePresetsKey) || '[]'),
-      
       // Metadata
       version: '1.3',
       timestamp: new Date().toISOString(),
-      exportNote: 'Complete export including all default items (spells, bardic, mockery, actions, generators) plus all user customizations (favorites, custom items, edits, deletions, presets, history).'
+      exportNote: 'Complete export including all default items (spells, bardic, mockery, actions, generators) plus all user customizations (favorites, custom items, edits, deletions, history).'
     };
   }
   
@@ -3330,190 +3316,6 @@
     saveHistory(filtered);
   }
 
-  // Voice Preset functions
-  function loadPresets() {
-    try {
-      const raw = localStorage.getItem(voicePresetsKey);
-      return raw ? JSON.parse(raw) : [];
-    } catch(e) {
-      console.error('Error loading presets:', e);
-      return [];
-    }
-  }
-
-  function savePresets(presets) {
-    try {
-      localStorage.setItem(voicePresetsKey, JSON.stringify(presets));
-      scheduleFileSave();
-    } catch(e) {
-      console.error('Failed to save presets:', e);
-      showToast('Failed to save preset');
-    }
-  }
-
-  function getCurrentState() {
-    return {
-      section: sectionSelect.value,
-      category: categorySelect.value,
-      adultToggle: adultToggle.checked,
-      favoritesOnly: favoritesOnly ? favoritesOnly.checked : false,
-      search: searchInput.value.trim(),
-      name: '', // Will be set by user
-      timestamp: Date.now()
-    };
-  }
-
-  function applyPreset(preset) {
-    if (preset.section) {
-      sectionSelect.value = preset.section;
-      buildCategories();
-    }
-    if (preset.category && categorySelect.options.length > 0) {
-      // Wait a moment for categories to build
-      setTimeout(() => {
-        categorySelect.value = preset.category;
-        if (preset.adultToggle !== undefined) adultToggle.checked = preset.adultToggle;
-        if (preset.favoritesOnly !== undefined && favoritesOnly) {
-          favoritesOnly.checked = preset.favoritesOnly;
-        }
-        if (preset.search !== undefined) searchInput.value = preset.search;
-        render();
-      }, 50);
-    } else {
-      if (preset.adultToggle !== undefined) adultToggle.checked = preset.adultToggle;
-      if (preset.favoritesOnly !== undefined && favoritesOnly) {
-        favoritesOnly.checked = preset.favoritesOnly;
-      }
-      if (preset.search !== undefined) searchInput.value = preset.search;
-      render();
-    }
-    showToast(`Applied preset: ${preset.name}`);
-  }
-
-  function saveCurrentStateAsPreset() {
-    const name = prompt('Enter a name for this preset:');
-    if (!name || !name.trim()) return;
-
-    const currentState = getCurrentState();
-    currentState.name = name.trim();
-
-    const presets = loadPresets();
-    // Check if name already exists
-    const existingIndex = presets.findIndex(p => p.name === currentState.name);
-    if (existingIndex >= 0) {
-      if (!confirm(`A preset named "${currentState.name}" already exists. Overwrite it?`)) {
-        return;
-      }
-      presets[existingIndex] = currentState;
-    } else {
-      presets.push(currentState);
-    }
-
-    savePresets(presets);
-    updatePresetSelect();
-    showToast(`Preset "${currentState.name}" saved!`);
-    refreshPresetsList();
-  }
-
-  function updatePresetSelect() {
-    const presets = loadPresets();
-    presetSelect.innerHTML = '<option value="">-- Select Preset --</option>';
-    
-    presets.forEach((preset, index) => {
-      const opt = document.createElement('option');
-      opt.value = index.toString();
-      opt.textContent = preset.name;
-      presetSelect.appendChild(opt);
-    });
-  }
-
-  function refreshPresetsList() {
-    const presets = loadPresets();
-    presetsList.innerHTML = '';
-
-    if (presets.length === 0) {
-      presetsList.innerHTML = '<div style="text-align: center; padding: 20px; opacity: 0.7;">No presets saved yet. Save your current state to create one!</div>';
-      return;
-    }
-
-    const isDark = document.body.classList.contains('dark-mode');
-    presets.forEach((preset, index) => {
-      const presetCard = document.createElement('div');
-      presetCard.style.display = 'flex';
-      presetCard.style.justifyContent = 'space-between';
-      presetCard.style.alignItems = 'center';
-      presetCard.style.padding = '12px';
-      presetCard.style.border = '1px solid var(--burnt)';
-      presetCard.style.borderRadius = '6px';
-      presetCard.style.background = isDark ? '#2d2d44' : 'white';
-      presetCard.style.gap = '8px';
-
-      const presetInfo = document.createElement('div');
-      presetInfo.style.flex = '1';
-      const nameDiv = document.createElement('div');
-      nameDiv.style.fontWeight = 'bold';
-      nameDiv.style.marginBottom = '4px';
-      nameDiv.textContent = preset.name;
-      const detailsDiv = document.createElement('div');
-      detailsDiv.style.fontSize = '12px';
-      detailsDiv.style.opacity = '0.8';
-      const sectionName = preset.section === 'spells' ? 'Spell Parodies' :
-                         preset.section === 'bardic' ? 'Bardic Inspiration' :
-                         preset.section === 'mockery' ? 'Vicious Mockery' :
-                         preset.section === 'actions' ? 'Character Actions' : preset.section;
-      detailsDiv.textContent = `${sectionName} • ${preset.category || 'Any'}${preset.search ? ` • Search: "${preset.search}"` : ''}`;
-      presetInfo.appendChild(nameDiv);
-      presetInfo.appendChild(detailsDiv);
-
-      const buttonsDiv = document.createElement('div');
-      buttonsDiv.style.display = 'flex';
-      buttonsDiv.style.gap = '4px';
-
-      const applyBtn = document.createElement('button');
-      applyBtn.className = 'btn';
-      applyBtn.textContent = 'Apply';
-      applyBtn.style.fontSize = '12px';
-      applyBtn.addEventListener('click', () => {
-        applyPreset(preset);
-        closePresetModal();
-      });
-
-      const deleteBtn = document.createElement('button');
-      deleteBtn.className = 'btn';
-      deleteBtn.textContent = 'Delete';
-      deleteBtn.style.fontSize = '12px';
-      deleteBtn.style.background = '#c44';
-      deleteBtn.style.color = 'white';
-      deleteBtn.addEventListener('click', () => {
-        if (confirm(`Delete preset "${preset.name}"?`)) {
-          const presets = loadPresets();
-          presets.splice(index, 1);
-          savePresets(presets);
-          updatePresetSelect();
-          refreshPresetsList();
-          showToast('Preset deleted');
-        }
-      });
-
-      buttonsDiv.appendChild(applyBtn);
-      buttonsDiv.appendChild(deleteBtn);
-      presetCard.appendChild(presetInfo);
-      presetCard.appendChild(buttonsDiv);
-      presetsList.appendChild(presetCard);
-    });
-  }
-
-  function showPresetModal() {
-    refreshPresetsList();
-    presetModal.classList.add('show');
-    presetModal.setAttribute('aria-hidden', 'false');
-  }
-
-  function closePresetModal() {
-    presetModal.classList.remove('show');
-    presetModal.setAttribute('aria-hidden', 'true');
-  }
-
   // Generator Management functions
   let currentGeneratorType = 'battleCries';
   let currentEditingGeneratorIndex = null;
@@ -4385,13 +4187,10 @@
         // Usage history
         history: JSON.parse(localStorage.getItem(historyKey) || '[]'),
         
-        // Voice presets
-        presets: JSON.parse(localStorage.getItem(voicePresetsKey) || '[]'),
-        
         // Metadata
         version: '1.2',
         timestamp: new Date().toISOString(),
-        exportNote: 'Complete export including all default items (spells, bardic, mockery, actions, generators) plus all user customizations (favorites, custom items, edits, deletions, presets, history).'
+        exportNote: 'Complete export including all default items (spells, bardic, mockery, actions, generators) plus all user customizations (favorites, custom items, edits, deletions, history).'
       };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -4445,11 +4244,6 @@
               localStorage.setItem(historyKey, JSON.stringify(data.history));
               importedCount++;
               importedCategories.push('history');
-            }
-            if (data.presets !== undefined) {
-              localStorage.setItem(voicePresetsKey, JSON.stringify(data.presets));
-              importedCount++;
-              importedCategories.push('presets');
             }
             if (data.generators !== undefined) {
               // Ensure generators structure is correct - normalize the data
@@ -4643,31 +4437,6 @@
     }
   });
 
-  // Voice Preset event listeners
-  presetSelect.addEventListener('change', (e) => {
-    if (e.target.value !== '') {
-      const presets = loadPresets();
-      const presetIndex = parseInt(e.target.value);
-      if (presets[presetIndex]) {
-        applyPreset(presets[presetIndex]);
-      }
-      // Reset select after applying
-      setTimeout(() => {
-        presetSelect.value = '';
-      }, 100);
-    }
-  });
-
-  managePresetsBtn.addEventListener('click', showPresetModal);
-  saveCurrentPresetBtn.addEventListener('click', saveCurrentStateAsPreset);
-  presetCloseBtn.addEventListener('click', closePresetModal);
-  presetModalClose.addEventListener('click', closePresetModal);
-  presetModal.addEventListener('click', (e) => {
-    if (e.target === presetModal) {
-      closePresetModal();
-    }
-  });
-
   // Generator Management event listeners
   if (manageGeneratorsBtn) {
     manageGeneratorsBtn.addEventListener('click', (e) => {
@@ -4749,10 +4518,6 @@
         closeHistoryModal();
         return;
       }
-      if (presetModal.classList.contains('show')) {
-        closePresetModal();
-        return;
-      }
       if (generatorManageModal && generatorManageModal.classList.contains('show')) {
         closeGeneratorManageModal();
         return;
@@ -4767,7 +4532,6 @@
     if ((editModal && editModal.classList.contains('show')) || 
         (generatorManageModal && generatorManageModal.classList.contains('show')) ||
         (generatorEditModal && generatorEditModal.classList.contains('show')) ||
-        (presetModal && presetModal.classList.contains('show')) ||
         document.activeElement.tagName === 'INPUT' || 
         document.activeElement.tagName === 'TEXTAREA' ||
         document.activeElement.tagName === 'SELECT') {
@@ -4838,10 +4602,6 @@
     categorySelect.selectedIndex = 0;
     debugLog(`Initial category selected: ${categorySelect.value}`);
   }
-  
-  // Initialize preset select
-  updatePresetSelect();
-  
   debugLog('Initial render...');
   try {
     render();

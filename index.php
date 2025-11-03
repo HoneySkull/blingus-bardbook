@@ -53,8 +53,11 @@ $stylesVersion = file_exists($stylesCss) ? filemtime($stylesCss) : time();
         <input id="searchInput" type="search" placeholder="Search all lyrics, songs, artists, or actions..." />
       </label>
 
-      <div class="toolbar__spacer"></div>
+      <button id="clearBtn" class="btn btn--secondary">Clear</button>
+      </div>
 
+      <!-- Checkbox Filters Row -->
+      <div class="toolbar__row toolbar__row--filters">
       <label class="toggle">
         <input type="checkbox" id="adultToggle" />
         <span>Show adult/risqué</span>
@@ -73,17 +76,9 @@ $stylesVersion = file_exists($stylesCss) ? filemtime($stylesCss) : time();
 
       <!-- Action Buttons Row -->
       <div class="toolbar__row toolbar__row--actions">
-      <button id="clearBtn" class="btn btn--secondary">Clear</button>
       <button id="clearCacheBtn" class="btn btn--secondary btn--cache" title="Force reload and clear browser cache">🔄 Clear Cache</button>
       <button id="addEditBtn" class="btn">Add/Edit Items</button>
       <button id="manageGeneratorsBtn" class="btn">🎲 Manage Generators</button>
-      <button id="managePresetsBtn" class="btn">⚙️ Manage Presets</button>
-      
-      <div class="toolbar__spacer"></div>
-
-      <label id="presetLabel">Voice Preset
-        <select id="presetSelect"></select>
-      </label>
       </div>
 
       <!-- Generator Row (dynamically added) -->
@@ -178,25 +173,6 @@ $stylesVersion = file_exists($stylesCss) ? filemtime($stylesCss) : time();
         <button id="saveGeneratorBtn" class="btn">Save</button>
         <button id="cancelGeneratorBtn" class="btn">Cancel</button>
         <button id="deleteGeneratorBtn" class="btn" style="background: #c44; color: white; display: none;">Delete</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Voice Preset Modal -->
-  <div id="presetModal" class="modal" role="dialog" aria-labelledby="presetModalTitle" aria-hidden="true">
-    <div class="modal__content" style="max-width: 600px;">
-      <div class="modal__header">
-        <h2 id="presetModalTitle">Manage Voice Presets</h2>
-        <button class="modal__close" id="presetModalClose" aria-label="Close">&times;</button>
-      </div>
-      <div class="modal__body">
-        <div style="margin-bottom: 16px;">
-          <button id="saveCurrentPresetBtn" class="btn" style="width: 100%; margin-bottom: 8px;">💾 Save Current State as Preset</button>
-        </div>
-        <div id="presetsList" style="display: flex; flex-direction: column; gap: 8px; max-height: 400px; overflow-y: auto;"></div>
-      </div>
-      <div class="modal__footer">
-        <button id="presetCloseBtn" class="btn">Close</button>
       </div>
     </div>
   </div>
