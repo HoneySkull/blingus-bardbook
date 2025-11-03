@@ -11,7 +11,7 @@ server {
     listen 80;
     server_name blingus.knospe.org;
     root /var/www/html;
-    index index.html;
+    index index.php index.html;
 
     # PHP configuration - CRITICAL for API to work
     # Ubuntu 24.04 default: unix:/run/php/php8.3-fpm.sock
