@@ -3831,7 +3831,13 @@
       adultToggle.parentElement.style.display = '';
       favoritesOnly.parentElement.style.display = '';
     }
-    render(); 
+    // Ensure a category is selected after building categories
+    setTimeout(() => {
+      if (categorySelect.options.length > 0 && !categorySelect.value) {
+        categorySelect.selectedIndex = 0;
+      }
+      render();
+    }, RENDER_DELAY_MS);
   });
   categorySelect.addEventListener('change', render);
   adultToggle.addEventListener('change', render);
