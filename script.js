@@ -2790,8 +2790,11 @@
     const defaults = characterActions[cat] || [];
     let filteredActions = fullActions;
     
+    debugLog(`renderActions: category=${cat}, fullActions=${fullActions.length}, defaults=${defaults.length}`);
+    
     if (q) {
       filteredActions = fullActions.filter(a => a.toLowerCase().includes(q));
+      debugLog(`renderActions: after search filter, filteredActions=${filteredActions.length}`);
     }
     
     // Apply favorites filter if enabled
@@ -2800,7 +2803,10 @@
         const itemId = getItemId('actions', action);
         return favorites.has(itemId);
       });
+      debugLog(`renderActions: after favorites filter, filteredActions=${filteredActions.length}`);
     }
+    
+    debugLog(`renderActions: final filteredActions=${filteredActions.length}, will render ${filteredActions.length} cards`);
     
     content.innerHTML = '';
     
@@ -2875,6 +2881,8 @@
     
     // Render filtered actions
     const filteredDefaultCount = fullActions.length - (userItems.actions[cat] || []).length;
+    
+    debugLog(`renderActions: Starting loop, filteredActions.length=${filteredActions.length}`);
     
     for (let i = 0; i < filteredActions.length; i++) {
       const action = filteredActions[i];
