@@ -4226,6 +4226,27 @@
   });
   searchInput.addEventListener('input', render);
   clearBtn.addEventListener('click', () => { searchInput.value = ''; render(); });
+  
+  // Clear cache button - only show on web server
+  const clearCacheBtn = $('#clearCacheBtn');
+  if (clearCacheBtn && isOnServer) {
+    clearCacheBtn.style.display = 'inline-block';
+    clearCacheBtn.addEventListener('click', () => {
+      // Force a hard reload with cache-busting
+      const url = new URL(window.location.href);
+      url.searchParams.set('nocache', Date.now());
+      // Also try to clear service worker cache if present
+      if ('serviceWorker' in navigator && 'caches' in window) {
+        caches.keys().then(names => {
+          names.forEach(name => caches.delete(name));
+        }).catch(() => {});
+      }
+      // Force reload
+      window.location.href = url.toString();
+    });
+  } else if (clearCacheBtn) {
+    clearCacheBtn.style.display = 'none';
+  }
 
   // Modal event listeners
   addEditBtn.addEventListener('click', () => {
