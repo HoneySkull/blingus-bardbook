@@ -1484,6 +1484,350 @@
     ]
   };
 
+  // Critical Hit Descriptions
+  const criticalHits = {
+    'Arrows': [
+      'I watch as my arrow pierces through a gap in their armor, striking true and drawing a spray of crimson',
+      'My arrow finds its mark, sinking deep into their flesh with a satisfying thud',
+      'My arrowhead digs between their ribs, and I see them gasp and stagger backward',
+      'A perfectly aimed shot sends my arrow through their guard, embedding itself deep in their shoulder',
+      'I watch my arrow strike with deadly precision, catching the light as it slices through the air before impact',
+      'My arrow finds the weak point in their armor, piercing through like a hot knife through butter',
+      'My projectile strikes true, and I see splinters of broken armor fly as it buries itself deep',
+      'A masterful shot sends my arrow through their defenses, hitting with such force they stumble',
+      'My arrowhead strikes with a crack, shattering through bone and I see shockwaves ripple through their body',
+      'My arrow whistles through the air before striking home, drawing a line of blood across their skin',
+      'My projectile embeds itself with a wet thud, the shaft quivering as they clutch at the wound',
+      'A well-placed arrow finds its way through a joint in their armor, and they cry out in pain',
+      'My arrow strikes with brutal force, tearing through fabric and flesh alike',
+      'My shot is true—the arrowhead buries itself so deep that only the fletching remains visible',
+      'My arrow pierces cleanly through, leaving a perfect hole as it exits their other side',
+      'A perfectly timed shot sends my arrow through their raised arm, pinning it to their side',
+      'My arrowhead buries itself in their leg, and they drop to one knee with a grunt',
+      'My arrow strikes with such force it knocks them backward, the impact audible across the battlefield'
+    ],
+    'Crossbolts': [
+      'I watch my crossbolt tear through their armor like paper, its heavy head finding its mark with devastating force',
+      'My bolt strikes with a thunderous impact, the sound echoing as it pierces deep into my target',
+      'My crossbolt embeds itself with such force that I see splinters of bone fly outward',
+      'A perfectly aimed bolt finds the gap between armor plates, sinking in with a sickening crunch',
+      'My heavy projectile strikes true, its momentum carrying it through flesh and out the other side',
+      'My crossbolt hits with brutal efficiency, the thick shaft quivering as it stands embedded',
+      'My bolt strikes with a crack like thunder, shattering armor and bone in equal measure',
+      'A masterful shot sends my crossbolt through their defenses, leaving a gaping wound in its wake',
+      'My heavy bolt tears through their guard, the impact so strong it sends them reeling backward',
+      'My bolt finds its mark with deadly precision, the broad head causing catastrophic damage',
+      'My crossbolt strikes with such force it pins them to a nearby surface, leaving them helpless',
+      'A well-placed bolt tears through their armor, the serrated edges catching and ripping',
+      'My heavy projectile embeds itself deep, and I see the wound bleeding profusely as they struggle to remove it',
+      'My crossbolt strikes with a wet thud, sinking in up to the fletching in an instant',
+      'My bolt pierces through multiple layers, leaving a trail of destruction in its path',
+      'A perfectly timed shot sends my crossbolt through their raised shield, hitting the arm beneath',
+      'My heavy bolt strikes with devastating force, the impact audible even over the sounds of battle',
+      'My projectile finds the perfect angle, slipping through their defenses like a bolt of lightning'
+    ],
+    'Swords': [
+      'My blade cuts deep, drawing a line of red as it slices through their armor and flesh',
+      'My sword strikes true, its edge finding a gap and biting deep into their side',
+      'A masterful swing sends my blade through their guard, the steel singing as it cuts air then flesh',
+      'My weapon strikes with deadly precision, and I see sparks fly as metal meets metal',
+      'My sword cuts cleanly through, leaving a perfect slice that immediately begins to weep crimson',
+      'My blade finds its mark, the sharp edge tearing through fabric and leather like parchment',
+      'A perfectly timed strike sends my sword through their defenses, the impact staggering them',
+      'My weapon strikes with brutal force, cleaving through armor and leaving a gaping wound',
+      'My sword cuts with surgical precision, finding the exact spot between their ribs',
+      'My blade strikes with a resounding clang before biting deep, and I hear metal grinding against bone',
+      'A well-placed thrust sends my sword tip through their armor, sinking in up to the hilt',
+      'My weapon cuts through their guard like butter, leaving a trail of destruction in its wake',
+      'My sword strikes with such force it sends them spinning, blood arcing through the air',
+      'A masterful cut sends my blade through their shoulder, the impact audible across the field',
+      'My weapon finds the weak point, the edge catching and tearing through with brutal efficiency',
+      'My blade strikes with deadly accuracy, cutting through chainmail links like they were thread',
+      'A perfectly executed strike sends my sword through their defenses, leaving them reeling',
+      'My weapon cuts deep, the steel glinting as it pulls free, leaving a wound that gapes wide'
+    ],
+    'Polearms': [
+      'My polearm strikes with devastating reach, the blade finding its mark from an impossible angle',
+      'My weapon extends my reach perfectly, the tip piercing through their armor with deadly precision',
+      'My polearm cuts through the air before striking true, its length giving me the advantage',
+      'A masterful thrust sends my weapon\'s tip through their defenses, sinking deep into flesh',
+      'My polearm strikes with brutal force, the heavy blade cleaving through armor like paper',
+      'My weapon\'s reach catches them off guard, the blade finding a gap they never saw coming',
+      'A perfectly timed swing sends my polearm through their guard, the impact sending them backward',
+      'My weapon strikes with such force that the shaft bends before springing back, the blade buried deep',
+      'My polearm cuts through their defenses with surgical precision, finding the exact weak point',
+      'A well-placed strike sends my blade through their armor, the wound immediately beginning to bleed',
+      'My weapon finds its mark with deadly accuracy, the long reach ensuring they can\'t escape',
+      'My polearm strikes with a thunderous impact, the sound echoing as metal meets flesh',
+      'A masterful cut sends my blade through their side, leaving a trail of crimson in its wake',
+      'My weapon strikes with brutal efficiency, the blade tearing through multiple layers',
+      'My polearm cuts deep, the sharp edge leaving a perfect line that immediately starts to weep',
+      'A perfectly executed thrust sends the tip through their guard, sinking in up to the crossguard',
+      'My weapon strikes with such force it knocks them off balance, the blade buried in their shoulder',
+      'My polearm finds its mark with deadly precision, the long weapon giving me the perfect angle'
+    ],
+    'Knives': [
+      'My dagger finds its mark with deadly precision, slipping between armor plates like a whisper',
+      'My blade strikes true, the small weapon finding a gap and sinking in up to the hilt',
+      'A masterful throw sends my knife spinning through the air before embedding itself deep',
+      'My dagger cuts with surgical precision, its edge finding exactly the right spot between ribs',
+      'My blade strikes with unexpected force, the small weapon delivering a devastating blow',
+      'My knife finds its way through their defenses, the sharp tip piercing through leather and flesh',
+      'A perfectly timed strike sends my dagger through their guard, the blade sinking in silently',
+      'My weapon strikes with deadly accuracy, the small size allowing it to slip through gaps',
+      'My dagger cuts deep, drawing a line of crimson as it slides along bone',
+      'A well-placed thrust sends my blade tip through their armor, finding the soft flesh beneath',
+      'My knife strikes with brutal efficiency, the edge tearing through fabric and skin',
+      'My dagger embeds itself with a wet thud, the hilt quivering as they clutch at the wound',
+      'A masterful cut sends my blade through their defenses, leaving a trail of destruction',
+      'My weapon finds its mark with deadly precision, the small blade delivering a fatal blow',
+      'My knife strikes with such force it sends them staggering, the blade buried deep in their side',
+      'A perfectly executed throw sends my dagger spinning end over end before striking true',
+      'My blade cuts through their guard like a hot knife, the impact sending them reeling backward',
+      'My dagger finds the perfect angle, slipping through their defenses with deadly silence'
+    ],
+    'Blunt Weapons': [
+      'My weapon strikes with bone-crushing force, the impact audible even over the sounds of battle',
+      'My mace finds its mark with devastating power, the heavy head crushing through armor and bone',
+      'A masterful swing sends my weapon through their defenses, the impact sending them flying',
+      'My blunt weapon strikes with thunderous force, the sound echoing as metal meets flesh',
+      'My weapon hits with brutal efficiency, the weight behind it shattering armor and bone alike',
+      'My mace strikes true, its spiked head tearing through leather and crushing what lies beneath',
+      'A perfectly timed swing sends my weapon through their guard, the impact staggering them',
+      'My weapon strikes with such force that armor buckles inward, and I hear the metal groaning under the pressure',
+      'My blunt weapon finds its mark with deadly accuracy, crushing through layers of protection',
+      'A well-placed strike sends my mace through their defenses, leaving a gaping wound',
+      'My weapon hits with devastating power, the impact sending shockwaves through their body',
+      'My weapon strikes with brutal force, the heavy head leaving a depression in their armor',
+      'A masterful swing sends my weapon through their side, the impact audible across the battlefield',
+      'My mace finds its mark with deadly precision, crushing through bone with a sickening crack',
+      'My weapon strikes with such force it knocks them backward, the impact leaving them breathless',
+      'A perfectly executed strike sends my blunt weapon through their guard, the sound echoing',
+      'My weapon hits with devastating efficiency, the weight behind it ensuring maximum damage',
+      'My mace strikes with bone-crushing force, leaving a perfect imprint of the weapon\'s head'
+    ],
+    'Axes and Hammers': [
+      'My axe cleaves through armor and flesh with brutal force, leaving a gaping wound in its wake',
+      'My weapon strikes true, the heavy blade finding its mark and cutting deep into my foe',
+      'A masterful swing sends my axe through their defenses, the impact sending them spinning',
+      'My hammer strikes with thunderous force, crushing through armor like it was made of tin',
+      'My weapon finds its mark with devastating power, the sharp edge tearing through multiple layers',
+      'My axe cuts through the air before striking home, its weight ensuring maximum damage',
+      'A perfectly timed strike sends my weapon through their guard, the blade sinking deep',
+      'My hammer strikes with bone-crushing force, the impact audible even over the din of battle',
+      'My axe cleaves through their defenses with surgical precision, finding the exact weak point',
+      'A well-placed swing sends my weapon through their side, leaving a trail of destruction',
+      'My hammer finds its mark with deadly accuracy, crushing through bone with a sickening crack',
+      'My weapon strikes with such force it sends them flying backward, the impact devastating',
+      'A masterful cut sends my axe through their armor, the blade leaving a perfect gash',
+      'My hammer strikes with brutal efficiency, the weight behind it ensuring catastrophic damage',
+      'My axe finds its mark with deadly precision, cutting through flesh and bone alike',
+      'A perfectly executed strike sends my weapon through their defenses, the impact staggering',
+      'My hammer hits with thunderous force, the sound echoing as metal meets flesh and bone',
+      'My weapon strikes with devastating power, leaving a perfect imprint of destruction in its wake'
+    ],
+    'Other Weapons': [
+      'My weapon strikes with devastating force, finding its mark with deadly precision',
+      'My unconventional weapon catches them off guard, striking from an angle they never expected',
+      'A masterful strike sends my weapon through their defenses, the impact sending them reeling',
+      'My weapon finds its mark with brutal efficiency, the unique design maximizing damage',
+      'My weapon strikes true, its unusual form allowing it to slip through gaps in their armor',
+      'A perfectly timed attack sends my weapon through their guard, leaving a gaping wound',
+      'My weapon strikes with unexpected force, the impact catching them completely off guard',
+      'My weapon finds its mark with deadly accuracy, the specialized design ensuring maximum damage',
+      'A well-placed strike sends my weapon through their defenses, the impact audible across the field',
+      'My weapon hits with devastating power, the unique shape allowing it to tear through armor',
+      'My weapon strikes with brutal force, leaving a trail of destruction in its wake',
+      'A masterful swing sends my weapon through their side, the impact staggering them backward',
+      'My weapon finds its mark with surgical precision, the specialized tip finding the perfect angle',
+      'My weapon strikes with such force it sends them spinning, blood arcing through the air',
+      'A perfectly executed attack sends my weapon through their guard, leaving them helpless',
+      'My weapon hits with devastating efficiency, the impact crushing through multiple layers',
+      'My weapon strikes with thunderous force, the sound echoing as it meets its target',
+      'My weapon finds its mark with deadly precision, leaving a perfect wound that gapes wide'
+    ],
+    'Fire': [
+      'Flames erupt from my spell with searing intensity, scorching through their armor and flesh alike',
+      'My fire magic strikes true, the heat so intense it leaves their metal glowing red-hot',
+      'A burst of flame ignites their clothing, and I watch the fire spread with vicious hunger',
+      'My magical fire burns with supernatural intensity, leaving charred marks in its wake',
+      'My spell unleashes a torrent of flame that engulfs them, the heat blistering their skin',
+      'Fire erupts from the point of impact, and I watch the flames dance as they consume everything in their path',
+      'My magical flames strike with devastating force, leaving a trail of smoke and ash',
+      'My fire magic burns through their defenses, the heat so intense it warps metal',
+      'A perfectly aimed fire spell ignites their flesh, and I watch the flames spread with terrifying speed',
+      'My spell unleashes a conflagration that wraps around them, burning away protection',
+      'My fire magic strikes with such heat that steam rises from their wet armor',
+      'Flames burst forth with explosive force, catching them completely off guard',
+      'My magical fire burns with an otherworldly glow, leaving glowing embers in its wake',
+      'My spell sends fire racing across their body, leaving trails of blackened flesh',
+      'A masterful fire spell strikes true, the flames so hot they turn stone to glass',
+      'The fire erupts with brutal efficiency, consuming everything in its path',
+      'My spell unleashes a firestorm that surrounds them, the heat overwhelming',
+      'Flames strike with deadly precision, leaving perfect burn patterns in their wake'
+    ],
+    'Cold': [
+      'Ice forms instantly at the point of impact, spreading across their body like a frozen web',
+      'My cold magic strikes true, the chill so intense it freezes their blood in their veins',
+      'A blast of freezing energy encases them in ice, and I watch frost spread across their armor',
+      'My magical cold bites deep, leaving patches of frostbite and frozen flesh',
+      'My spell unleashes a wave of cold that freezes everything it touches',
+      'Ice crystals form around the impact, the cold so severe it cracks their armor',
+      'My freezing magic strikes with brutal force, leaving them shivering and numb',
+      'My cold spell hits with such intensity that icicles form from their breath',
+      'A perfectly aimed cold spell freezes their limbs solid, and I watch the ice spread rapidly',
+      'My magical frost burns like fire, leaving pale, deadened patches of skin',
+      'My cold magic strikes with deadly precision, freezing their blood as it flows',
+      'Ice erupts from the spell impact, the cold so intense it shatters metal',
+      'My freezing energy wraps around them, leaving a trail of frost in its wake',
+      'My spell sends a wave of absolute zero that freezes everything it touches',
+      'A masterful cold spell strikes true, and I watch the ice form intricate patterns as it spreads',
+      'My cold magic hits with such force that condensation freezes mid-air',
+      'My spell unleashes a blizzard that surrounds them, the cold overwhelming',
+      'Freezing energy strikes with surgical precision, leaving perfect icicle formations'
+    ],
+    'Lightning': [
+      'Lightning arcs from my spell with crackling intensity, electricity dancing across their body',
+      'My lightning magic strikes true, the bolt so powerful it leaves their hair standing on end',
+      'A bolt of lightning sears through the air before striking home, leaving scorch marks',
+      'My magical electricity courses through their body, and I see their muscles spasm uncontrollably',
+      'My spell unleashes a chain of lightning that dances between them and nearby objects',
+      'Lightning erupts from the point of impact, the electricity so intense it lights up the area',
+      'My magical bolt strikes with thunderous force, leaving them smoking and stunned',
+      'My lightning spell hits with such power that sparks fly from their metal equipment',
+      'A perfectly aimed lightning bolt strikes true, the electricity arcing through their armor',
+      'My spell unleashes a storm of electricity that wraps around them, crackling with energy',
+      'My lightning magic strikes with devastating precision, leaving them convulsing',
+      'Electricity bursts forth with explosive force, the bolt finding the path of least resistance',
+      'My magical lightning burns with an otherworldly glow, leaving charred paths in its wake',
+      'My spell sends lightning racing through their body, leaving trails of scorched flesh',
+      'A masterful lightning spell strikes true, the bolt so powerful it splits the air',
+      'The electricity erupts with brutal efficiency, coursing through everything it touches',
+      'My spell unleashes a web of lightning that surrounds them, the energy overwhelming',
+      'Lightning strikes with deadly precision, leaving perfect branching patterns in its wake'
+    ],
+    'Thunder': [
+      'My spell unleashes a concussive blast that reverberates through their body, shaking bones',
+      'My thunder magic strikes true, the sound so intense it leaves their ears bleeding',
+      'A wave of sonic force crashes into them, the impact audible for miles around',
+      'My magical sound strikes with devastating force, leaving them disoriented and reeling',
+      'My spell unleashes a thunderclap that echoes across the battlefield, deafening all nearby',
+      'Sonic energy erupts from the point of impact, the sound so powerful it shatters nearby glass',
+      'My thunderous magic strikes with brutal intensity, and I see them clutching their ears',
+      'My sound spell hits with such force that the shockwave knocks them backward',
+      'A perfectly aimed thunder spell strikes true, the concussive blast spreading outward',
+      'My spell unleashes a roar that shakes the very ground, the vibration traveling through them',
+      'My thunder magic strikes with deadly precision, the sound waves tearing at their flesh',
+      'Sonic energy bursts forth with explosive force, the impact creating visible shockwaves',
+      'My magical sound burns with an otherworldly intensity, leaving them dazed and confused',
+      'My spell sends a wave of pure sound that tears through their defenses',
+      'A masterful thunder spell strikes true, the blast so powerful it cracks stone',
+      'The sonic energy erupts with brutal efficiency, leaving them deafened and disoriented',
+      'My spell unleashes a storm of sound that surrounds them, the noise overwhelming',
+      'Thunder strikes with surgical precision, leaving perfect patterns of destruction in its wake'
+    ],
+    'Psychic': [
+      'My spell strikes their mind with crushing force, and I see them grasping at their head',
+      'My psychic magic attacks their thoughts directly, the mental assault overwhelming',
+      'A wave of psychic energy tears through their consciousness, leaving them reeling',
+      'My magical mental attack strikes with devastating precision, targeting their deepest fears',
+      'My spell unleashes a storm of psychic energy that batters their mind',
+      'Psychic force erupts from the spell impact, the mental damage leaving them gasping',
+      'My magical mind attack strikes with brutal intensity, leaving them disoriented',
+      'My psychic spell hits with such force that blood trickles from their nose and ears',
+      'A perfectly aimed mental assault strikes true, the psychic energy bypassing all defenses',
+      'My spell unleashes a torrent of psychic power that overwhelms their senses',
+      'My psychic magic strikes with deadly precision, leaving them mentally shattered',
+      'Mental energy bursts forth with explosive force, the attack invisible but devastating',
+      'My magical psychic assault burns with an otherworldly intensity, leaving them dazed',
+      'My spell sends waves of psychic energy that tear through their mind',
+      'A masterful psychic spell strikes true, the mental attack so powerful it leaves them catatonic',
+      'The psychic energy erupts with brutal efficiency, leaving them unable to think clearly',
+      'My spell unleashes a storm of mental energy that surrounds them, the attack overwhelming',
+      'Psychic force strikes with surgical precision, leaving perfect patterns of mental damage'
+    ],
+    'Force': [
+      'Pure magical energy erupts from my spell, the force so intense it pushes everything back',
+      'My force magic strikes true, the raw power leaving no visible mark but devastating damage',
+      'A blast of pure force crashes into them, the impact sending them flying backward',
+      'My magical force strikes with devastating precision, bypassing all physical defenses',
+      'My spell unleashes a wave of pure energy that tears through armor and flesh',
+      'Force erupts from the point of impact, the magical energy so intense it distorts space',
+      'My magical force strikes with brutal intensity, leaving them battered and bruised',
+      'My force spell hits with such power that it creates visible ripples in the air',
+      'A perfectly aimed force blast strikes true, the energy spreading outward like a shockwave',
+      'My spell unleashes a torrent of raw magic that overwhelms their defenses',
+      'My force magic strikes with deadly precision, the energy leaving perfect impact craters',
+      'Pure magical energy bursts forth with explosive force, the blast invisible but devastating',
+      'My magical force burns with an otherworldly glow, leaving them reeling from the impact',
+      'My spell sends waves of pure force that tear through everything in their path',
+      'A masterful force spell strikes true, the energy so powerful it creates a vacuum',
+      'The force erupts with brutal efficiency, leaving them unable to maintain their footing',
+      'My spell unleashes a storm of magical energy that surrounds them, the force overwhelming',
+      'Pure force strikes with surgical precision, leaving perfect patterns of destruction'
+    ],
+    'Necrotic': [
+      'Dark energy erupts from my spell, the necrotic power withering everything it touches',
+      'My necrotic magic strikes true, the decay spreading rapidly across their flesh',
+      'A wave of death energy washes over them, leaving their skin gray and lifeless',
+      'My magical decay strikes with devastating force, aging them visibly before my eyes',
+      'My spell unleashes a cloud of necrotic energy that withers flesh and bone',
+      'Death magic erupts from the point of impact, the dark energy consuming their life force',
+      'My necrotic spell strikes with brutal intensity, leaving patches of decayed flesh',
+      'My death magic hits with such force that their life force visibly drains away',
+      'A perfectly aimed necrotic spell strikes true, and I watch the decay spread like a disease',
+      'My spell unleashes a torrent of dark energy that overwhelms their natural healing',
+      'My necrotic magic strikes with deadly precision, leaving them looking aged and weak',
+      'Death energy bursts forth with explosive force, the decay spreading rapidly',
+      'My magical necrotic power burns with an otherworldly darkness, leaving them pale',
+      'My spell sends waves of death energy that tear through their vitality',
+      'A masterful necrotic spell strikes true, the decay so powerful it turns flesh to dust',
+      'The death magic erupts with brutal efficiency, leaving them visibly weakened',
+      'My spell unleashes a storm of necrotic energy that surrounds them, the decay overwhelming',
+      'Necrotic force strikes with surgical precision, leaving perfect patterns of decay'
+    ],
+    'Radiant': [
+      'Holy light erupts from my spell, the radiant energy burning away darkness and corruption',
+      'My radiant magic strikes true, the divine light leaving them temporarily blinded',
+      'A wave of pure light crashes into them, the holy energy overwhelming their defenses',
+      'My magical radiance strikes with devastating force, leaving them bathed in golden light',
+      'My spell unleashes a beam of divine energy that pierces through darkness and shadow',
+      'Radiant energy erupts from the point of impact, the light so intense it illuminates everything',
+      'My holy spell strikes with brutal intensity, leaving them dazzled and disoriented',
+      'My radiant magic hits with such power that it leaves glowing marks on their skin',
+      'A perfectly aimed divine spell strikes true, the holy light spreading outward',
+      'My spell unleashes a torrent of radiant energy that overwhelms their defenses',
+      'My radiant magic strikes with deadly precision, the light leaving perfect burn patterns',
+      'Holy energy bursts forth with explosive force, the radiance blinding all nearby',
+      'My magical light burns with an otherworldly brilliance, leaving them temporarily sightless',
+      'My spell sends waves of radiant energy that tear through darkness and shadow',
+      'A masterful radiant spell strikes true, the divine light so powerful it banishes evil',
+      'The holy energy erupts with brutal efficiency, leaving them bathed in golden radiance',
+      'My spell unleashes a storm of divine light that surrounds them, the radiance overwhelming',
+      'Radiant force strikes with surgical precision, leaving perfect patterns of holy fire'
+    ],
+    'Acid': [
+      'Corrosive acid erupts from my spell, the chemical reaction eating away at everything it touches',
+      'My acid magic strikes true, the burning liquid dissolving armor and flesh alike',
+      'A spray of acidic energy splashes across them, leaving bubbling wounds in its wake',
+      'My magical acid strikes with devastating force, the corrosion spreading rapidly',
+      'My spell unleashes a stream of caustic liquid that eats through metal and bone',
+      'Acid erupts from the point of impact, and I hear the chemical reaction hissing and smoking',
+      'My corrosive spell strikes with brutal intensity, leaving them covered in burns',
+      'My acid magic hits with such force that it leaves visible trails of destruction',
+      'A perfectly aimed acid spell strikes true, the liquid eating away at their defenses',
+      'My spell unleashes a torrent of acidic energy that overwhelms their natural resistance',
+      'My acid magic strikes with deadly precision, leaving perfect patterns of corrosion',
+      'Caustic energy bursts forth with explosive force, the acid spreading rapidly',
+      'My magical acid burns with an otherworldly intensity, leaving them in agony',
+      'My spell sends waves of corrosive liquid that tear through everything they touch',
+      'A masterful acid spell strikes true, the chemical reaction so powerful it melts stone',
+      'The corrosive magic erupts with brutal efficiency, leaving them covered in burns',
+      'My spell unleashes a storm of acidic energy that surrounds them, the corrosion overwhelming',
+      'Acid strikes with surgical precision, leaving perfect patterns of chemical destruction'
+    ]
+  };
+
   const $ = (sel, root = document) => root.querySelector(sel);
   const content = $('#content');
   
@@ -1877,6 +2221,7 @@
       defaultBardic: bardic,
       defaultMockery: mockery,
       defaultActions: characterActions,
+      defaultCriticalHits: criticalHits,
       defaultGenerators: {
         battleCries: battleCries,
         insults: insults,
@@ -1902,7 +2247,7 @@
       // Metadata
       version: '1.3',
       timestamp: new Date().toISOString(),
-      exportNote: 'Complete export including all default items (spells, bardic, mockery, actions, generators) plus all user customizations (favorites, custom items, edits, deletions, history).'
+      exportNote: 'Complete export including all default items (spells, bardic, mockery, actions, criticalHits, generators) plus all user customizations (favorites, custom items, edits, deletions, history).'
     };
   }
   
@@ -2012,9 +2357,9 @@
   function loadUserItems() {
     try {
       const raw = localStorage.getItem(userItemsKey);
-      return raw ? JSON.parse(raw) : { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {} };
+      return raw ? JSON.parse(raw) : { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {} };
     } catch(e) {
-      return { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {} };
+      return { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {} };
     }
   }
   
@@ -2023,7 +2368,7 @@
     try {
       const raw = localStorage.getItem(deletedDefaultsKey);
       if (!raw) {
-        return { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {} };
+        return { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {} };
       }
       const parsed = JSON.parse(raw);
       // Ensure structure is correct
@@ -2032,11 +2377,12 @@
         adultSpells: parsed.adultSpells || {},
         bardic: parsed.bardic || {},
         mockery: parsed.mockery || {},
-        actions: parsed.actions || {}
+        actions: parsed.actions || {},
+        criticalHits: parsed.criticalHits || {}
       };
     } catch(e) {
       console.error('Error loading deleted defaults:', e);
-      return { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {} };
+      return { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {} };
     }
   }
   
@@ -2222,13 +2568,13 @@
   
   if (needsReset) {
     console.warn('Resetting corrupted deletedDefaults');
-    deletedDefaults = { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {} };
+    deletedDefaults = { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {} };
     saveDeletedDefaults(deletedDefaults);
   }
   
   // Expose reset function to console for manual fixes
   window.resetDeletedDefaults = function() {
-    deletedDefaults = { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {} };
+    deletedDefaults = { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {} };
     saveDeletedDefaults(deletedDefaults);
     debugLog('Deleted defaults reset. Reloading page...');
     location.reload();
@@ -2241,6 +2587,7 @@
     const defaults = section === 'spells' ? spells
       : section === 'bardic' ? bardic
       : section === 'actions' ? characterActions
+      : section === 'criticalHits' ? criticalHits
       : mockery;
     
     const defaultList = (defaults[category] || []);
@@ -2370,6 +2717,8 @@
         cats = typeof bardic !== 'undefined' && bardic ? Object.keys(bardic) : [];
       } else if (section === 'actions') {
         cats = typeof characterActions !== 'undefined' && characterActions ? Object.keys(characterActions) : [];
+      } else if (section === 'criticalHits') {
+        cats = typeof criticalHits !== 'undefined' && criticalHits ? Object.keys(criticalHits) : [];
       } else {
         cats = typeof mockery !== 'undefined' && mockery ? Object.keys(mockery) : [];
       }
@@ -2413,6 +2762,10 @@
     } else if (section === 'actions') {
       const result = getMergedData('actions', cat);
       debugLog(`getActiveList actions: result=${result.length}`);
+      return result;
+    } else if (section === 'criticalHits') {
+      const result = getMergedData('criticalHits', cat);
+      debugLog(`getActiveList criticalHits: result=${result.length}`);
       return result;
     } else {
       const result = getMergedData('mockery', cat);
@@ -2498,12 +2851,25 @@
       }
     }
     
+    // Search critical hits (all categories)
+    const criticalHitCategories = Object.keys(criticalHits || {});
+    for (const cat of criticalHitCategories) {
+      const criticalHitList = getMergedData('criticalHits', cat);
+      const filtered = criticalHitList.filter(item => {
+        const hitText = typeof item === 'string' ? item : item;
+        return hitText.toLowerCase().includes(q);
+      });
+      for (const item of filtered) {
+        allResults.push({ section: 'criticalHits', category: cat, item, isAdult: false });
+      }
+    }
+    
     // Apply favorites filter if enabled
     let filteredResults = allResults;
     if (favoritesOnly && favoritesOnly.checked) {
       filteredResults = allResults.filter(result => {
-        if (result.section === 'actions') {
-          const itemId = getItemId('actions', result.item);
+        if (result.section === 'actions' || result.section === 'criticalHits') {
+          const itemId = getItemId(result.section, result.item);
           return favorites.has(itemId);
         }
         return isFav(result.item);
@@ -2526,12 +2892,13 @@
     }
     
     // Render grouped results
-    const sectionOrder = ['spells', 'bardic', 'mockery', 'actions'];
+    const sectionOrder = ['spells', 'bardic', 'mockery', 'actions', 'criticalHits'];
     const sectionLabels = {
       spells: '🔮 Spell Parodies',
       bardic: '✨ Bardic Inspiration',
       mockery: '🗡️ Vicious Mockery',
-      actions: '🎭 Character Actions'
+      actions: '🎭 Character Actions',
+      criticalHits: '⚔️ Critical Hit Descriptions'
     };
     
     for (const section of sectionOrder) {
@@ -2568,6 +2935,8 @@
         // Render cards for this category
         for (const result of categoryResults) {
           if (result.section === 'actions') {
+            renderActionCard(result.item, result.category);
+          } else if (result.section === 'criticalHits') {
             renderActionCard(result.item, result.category);
           } else {
             renderSpellCard(result.item, result.section, result.category, result.isAdult);
@@ -2752,6 +3121,12 @@
     // Special rendering for character actions
     if (section === 'actions') {
       renderActions();
+      return;
+    }
+    
+    // Special rendering for critical hits
+    if (section === 'criticalHits') {
+      renderCriticalHits();
       return;
     }
     const cat = categorySelect.value;
@@ -3286,6 +3661,200 @@
     }
   }
 
+  function renderCriticalHits() {
+    const cat = categorySelect.value;
+    const q = (searchInput.value || '').trim().toLowerCase();
+    
+    if (!cat) {
+      console.warn('renderCriticalHits: No category selected');
+      content.innerHTML = '<div class="card">Please select a category</div>';
+      if (categorySelect.options.length === 0) {
+        buildCategories();
+        if (categorySelect.options.length > 0) {
+          categorySelect.selectedIndex = 0;
+          setTimeout(() => renderCriticalHits(), RENDER_DELAY_MS);
+        }
+      }
+      return;
+    }
+    
+    // Get merged critical hits (defaults + user items, excluding deleted)
+    const fullHits = getMergedData('criticalHits', cat);
+    const defaults = criticalHits[cat] || [];
+    let filteredHits = fullHits;
+    
+    debugLog(`renderCriticalHits: category=${cat}, fullHits=${fullHits.length}, defaults=${defaults.length}`);
+    
+    if (q) {
+      filteredHits = fullHits.filter(h => h.toLowerCase().includes(q));
+      debugLog(`renderCriticalHits: after search filter, filteredHits=${filteredHits.length}`);
+    }
+    
+    // Apply favorites filter if enabled
+    if (favoritesOnly && favoritesOnly.checked) {
+      filteredHits = filteredHits.filter(hit => {
+        const itemId = getItemId('criticalHits', hit);
+        return favorites.has(itemId);
+      });
+      debugLog(`renderCriticalHits: after favorites filter, filteredHits=${filteredHits.length}`);
+    }
+    
+    debugLog(`renderCriticalHits: final filteredHits=${filteredHits.length}, will render ${filteredHits.length} cards`);
+    
+    content.innerHTML = '';
+    
+    // Add random button at the top (uses full list, not filtered)
+    if (fullHits.length > 0) {
+      const randomCard = document.createElement('article');
+      randomCard.className = 'card';
+      randomCard.style.background = 'linear-gradient(135deg, #f7e7c4 0%, #fff9eb 100%)';
+      randomCard.style.border = '2px solid var(--accent)';
+      
+      const randomBtn = document.createElement('button');
+      randomBtn.className = 'btn';
+      randomBtn.style.width = '100%';
+      randomBtn.style.padding = '16px';
+      randomBtn.style.fontSize = '18px';
+      randomBtn.style.fontWeight = 'bold';
+      randomBtn.textContent = '🎲 Feeling Chaotic? 🎲';
+      randomBtn.addEventListener('click', () => {
+        const randomHit = fullHits[Math.floor(Math.random() * fullHits.length)];
+        
+        // Check if the selected hit is in the filtered results
+        const isInFiltered = filteredHits.includes(randomHit);
+        
+        // Find and highlight the selected hit card if it's visible
+        const allCards = content.querySelectorAll('.critical-hit-card');
+        let selectedCard = null;
+        for (const card of allCards) {
+          const hitDiv = card.querySelector('[data-hit-text]');
+          if (hitDiv && hitDiv.dataset.hitText === randomHit) {
+            selectedCard = card;
+            break;
+          }
+        }
+        
+        if (selectedCard) {
+          // Remove previous highlights
+          allCards.forEach(c => c.classList.remove('highlighted'));
+          
+          // Highlight the selected card
+          selectedCard.classList.add('highlighted');
+          
+          // Scroll to the card
+          selectedCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          
+          // Remove highlight after 5 seconds
+          setTimeout(() => {
+            selectedCard.classList.remove('highlighted');
+          }, TOAST_DURATION_MS);
+          
+          showToast(`Random: ${randomHit}`);
+        } else if (!isInFiltered) {
+          showToast(`Random: ${randomHit} (not in current filter)`);
+        } else {
+          showToast(`Random: ${randomHit}`);
+        }
+        copyToClipboard(randomHit, 'criticalHits', cat);
+      });
+      
+      const randomHint = document.createElement('div');
+      randomHint.style.marginTop = '8px';
+      randomHint.style.fontSize = '14px';
+      randomHint.style.opacity = '0.7';
+      randomHint.style.textAlign = 'center';
+      randomHint.textContent = 'Click to get a random critical hit description and copy it!';
+      
+      randomCard.appendChild(randomBtn);
+      randomCard.appendChild(randomHint);
+      content.appendChild(randomCard);
+    }
+    
+    // Render filtered critical hits
+    const filteredDefaultCount = fullHits.length - ((userItems.criticalHits && userItems.criticalHits[cat]) ? userItems.criticalHits[cat].length : 0);
+    
+    debugLog(`renderCriticalHits: Starting loop, filteredHits.length=${filteredHits.length}`);
+    
+    for (let i = 0; i < filteredHits.length; i++) {
+      const hit = filteredHits[i];
+      // Find the index in the full list (not filtered)
+      const fullIndex = fullHits.indexOf(hit);
+      
+      // Check if this is a default item
+      const itemId = getItemId('criticalHits', hit);
+      const isDefaultItem = defaults.includes(hit);
+      const deletedIds = deletedDefaults.criticalHits?.[cat] || [];
+      const isDeletedDefault = deletedIds.includes(itemId);
+      
+      const isUserAdded = fullIndex >= filteredDefaultCount;
+      const userIndex = isUserAdded ? fullIndex - filteredDefaultCount : null;
+      
+      const card = document.createElement('article');
+      card.className = 'card critical-hit-card';
+      card.style.cursor = 'pointer';
+      
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'card__copy';
+      copyBtn.textContent = 'Copy';
+      copyBtn.addEventListener('click', (e) => { 
+        e.stopPropagation(); 
+        content.querySelectorAll('.critical-hit-card').forEach(c => c.classList.remove('highlighted'));
+        copyToClipboard(hit, 'criticalHits', cat);
+      });
+      
+      // Add edit button for ALL items
+      const editBtn = document.createElement('button');
+      editBtn.className = 'card__edit';
+      editBtn.textContent = '✎';
+      editBtn.title = 'Edit or delete this item';
+      
+      // Visual indicator
+      const isDark = document.body.classList.contains('dark-mode');
+      if (isUserAdded) {
+        card.style.borderLeft = '4px solid #2b6f3a';
+        card.style.background = isDark ? '#2d3d2d' : '#f0f8f0';
+      } else if (isDefaultItem && !isDeletedDefault) {
+        card.style.borderLeft = '4px solid #4a90e2';
+        card.style.background = isDark ? '#2d3d4d' : '#f0f4f8';
+      }
+      
+      editBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const hitObj = typeof hit === 'string' ? hit : hit;
+        const editIndex = isUserAdded ? userIndex : (isDefaultItem ? -1 : null);
+        openEditModal('criticalHits', cat, hitObj, editIndex);
+      });
+      card.appendChild(editBtn);
+      
+      card.addEventListener('click', () => {
+        content.querySelectorAll('.critical-hit-card').forEach(c => c.classList.remove('highlighted'));
+        copyToClipboard(hit, 'criticalHits', cat);
+      });
+
+      const p = document.createElement('div');
+      p.textContent = hit;
+      p.style.fontSize = '16px';
+      p.style.lineHeight = '1.6';
+      p.dataset.hitText = hit; // Add data attribute for easier lookup
+      
+      const meta = document.createElement('div');
+      meta.className = 'card__meta';
+      meta.textContent = `Critical Hit — ${cat}`;
+
+      card.appendChild(copyBtn);
+      card.appendChild(p);
+      card.appendChild(meta);
+      content.appendChild(card);
+    }
+    
+    if (!filteredHits.length) {
+      const empty = document.createElement('div');
+      empty.className = 'card';
+      empty.textContent = 'No results. Try another category or search term.';
+      content.appendChild(empty);
+    }
+  }
+
   // History tracking functions
   function loadHistory() {
     try {
@@ -3636,7 +4205,7 @@
     try {
       const section = sectionSelect.value;
       const category = categorySelect.value;
-      const text = section === 'actions' ? item : `${item.t} (Song: ${item.s} — ${item.a})`;
+      const text = (section === 'actions' || section === 'criticalHits') ? item : `${item.t} (Song: ${item.s} — ${item.a})`;
       await navigator.clipboard.writeText(text);
       addToHistory(text, section, category);
       showToast('Copied to clipboard');
@@ -3659,29 +4228,29 @@
     currentEditingCategory = category;
     currentEditingIndex = userIndex;
     
-    // Store item metadata separately for actions (since they're strings)
-    if (section === 'actions' && typeof item === 'string') {
+    // Store item metadata separately for actions/criticalHits (since they're strings)
+    if ((section === 'actions' || section === 'criticalHits') && typeof item === 'string') {
       // Check if it's a default item
-      const defaults = characterActions[category] || [];
+      const defaults = section === 'actions' ? (characterActions[category] || []) : (criticalHits[category] || []);
       const itemId = getItemId(section, item);
-      const deletedIds = deletedDefaults.actions?.[category] || [];
+      const deletedIds = deletedDefaults[section]?.[category] || [];
       const isDefaultItem = defaults.includes(item);
       const isDeletedDefault = deletedIds.includes(itemId);
-      const fullActions = getMergedData('actions', category);
-      const filteredDefaultCount = fullActions.length - ((userItems.actions && userItems.actions[category]) ? userItems.actions[category].length : 0);
-      const fullIndex = fullActions.indexOf(item);
+      const fullItems = getMergedData(section, category);
+      const filteredDefaultCount = fullItems.length - ((userItems[section] && userItems[section][category]) ? userItems[section][category].length : 0);
+      const fullIndex = fullItems.indexOf(item);
       const isUserAdded = fullIndex >= filteredDefaultCount;
       
       currentEditingItem = {
         _isDefaultItem: isDefaultItem && !isDeletedDefault,
         _isUserAdded: isUserAdded,
-        _actionText: item
+        _text: item
       };
     } else {
       currentEditingItem = item;
     }
     
-    const isActions = section === 'actions';
+    const isActions = section === 'actions' || section === 'criticalHits';
     const isEditing = (userIndex !== null && userIndex !== undefined && userIndex >= 0) || (userIndex === -1);
     
     modalTitle.textContent = isEditing ? 'Edit Item' : 'Add New Item';
@@ -3689,7 +4258,7 @@
     
     // Show/hide fields based on section type
     if (isActions) {
-      const text = typeof item === 'string' ? item : (item?._actionText || item?.t || '');
+      const text = typeof item === 'string' ? item : (item?._text || item?._actionText || item?.t || '');
       editText.value = text;
       songLabel.style.display = 'none';
       artistLabel.style.display = 'none';
@@ -3731,50 +4300,48 @@
       return;
     }
     
-    const isActions = section === 'actions';
+    const isActions = section === 'actions' || section === 'criticalHits';
     const isDefaultItem = currentEditingItem?._isDefaultItem;
     const isUserAdded = currentEditingItem?._isUserAdded;
     
     if (isActions) {
       const text = editText.value.trim();
       if (!text) {
-        showToast('Please enter action text');
+        showToast(`Please enter ${section === 'actions' ? 'action' : 'critical hit'} text`);
         return;
       }
       
-      if (!userItems.actions) {
-        userItems.actions = {};
+      if (!userItems[section]) {
+        userItems[section] = {};
       }
-      if (!userItems.actions[category]) {
-        userItems.actions[category] = [];
+      if (!userItems[section][category]) {
+        userItems[section][category] = [];
       }
       
       if (currentEditingIndex !== null && currentEditingIndex !== undefined && currentEditingIndex >= 0) {
         // Editing existing user item
-        userItems.actions[category][currentEditingIndex] = text;
-        showToast('Action updated');
+        userItems[section][category][currentEditingIndex] = text;
+        showToast(`${section === 'actions' ? 'Action' : 'Critical hit'} updated`);
       } else if (currentEditingIndex === -1 && isDefaultItem) {
         // Editing a default item - hide original and add edited version
-        const originalItem = section === 'actions' 
-          ? (currentEditingItem._actionText || currentEditingItem)
-          : currentEditingItem;
+        const originalItem = (currentEditingItem._text || currentEditingItem._actionText || currentEditingItem);
         const originalId = getItemId(section, originalItem);
-        if (!deletedDefaults.actions) {
-          deletedDefaults.actions = {};
+        if (!deletedDefaults[section]) {
+          deletedDefaults[section] = {};
         }
-        if (!deletedDefaults.actions[category]) {
-          deletedDefaults.actions[category] = [];
+        if (!deletedDefaults[section][category]) {
+          deletedDefaults[section][category] = [];
         }
-        if (!deletedDefaults.actions[category].includes(originalId)) {
-          deletedDefaults.actions[category].push(originalId);
+        if (!deletedDefaults[section][category].includes(originalId)) {
+          deletedDefaults[section][category].push(originalId);
         }
-        userItems.actions[category].push(text);
+        userItems[section][category].push(text);
         saveDeletedDefaults(deletedDefaults);
-        showToast('Default action edited (original hidden)');
+        showToast(`Default ${section === 'actions' ? 'action' : 'critical hit'} edited (original hidden)`);
       } else {
         // Adding new
-        userItems.actions[category].push(text);
-        showToast('Action added');
+        userItems[section][category].push(text);
+        showToast(`${section === 'actions' ? 'Action' : 'Critical hit'} added`);
       }
     } else {
       const text = editText.value.trim();
@@ -3917,9 +4484,7 @@
     
     if (currentEditingIndex === -1 && isDefaultItem) {
       // Deleting a default item - add to deletedDefaults
-      const itemId = section === 'actions' 
-        ? getItemId(section, currentEditingItem._actionText || currentEditingItem)
-        : getItemId(section, currentEditingItem);
+      const itemId = getItemId(section, currentEditingItem._text || currentEditingItem._actionText || currentEditingItem);
       const deleteSection = (section === 'spells' && currentEditingItem?.adult) ? 'adultSpells' : section;
       
       if (!deletedDefaults[deleteSection][category]) {
@@ -3939,13 +4504,13 @@
       return;
     }
     
-    const isActions = section === 'actions';
+    const isActions = section === 'actions' || section === 'criticalHits';
     
     if (isActions) {
-      if (userItems.actions && userItems.actions[category]) {
-        userItems.actions[category].splice(currentEditingIndex, 1);
-        if (userItems.actions[category].length === 0) {
-          delete userItems.actions[category];
+      if (userItems[section] && userItems[section][category]) {
+        userItems[section][category].splice(currentEditingIndex, 1);
+        if (userItems[section][category].length === 0) {
+          delete userItems[section][category];
         }
       }
     } else {
@@ -4022,6 +4587,8 @@
     const section = sectionSelect.value;
     if (section === 'actions') {
       renderActions();
+    } else if (section === 'criticalHits') {
+      renderCriticalHits();
     } else {
       render();
     }
@@ -4190,7 +4757,7 @@
         // Metadata
         version: '1.2',
         timestamp: new Date().toISOString(),
-        exportNote: 'Complete export including all default items (spells, bardic, mockery, actions, generators) plus all user customizations (favorites, custom items, edits, deletions, history).'
+        exportNote: 'Complete export including all default items (spells, bardic, mockery, actions, criticalHits, generators) plus all user customizations (favorites, custom items, edits, deletions, history).'
       };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
