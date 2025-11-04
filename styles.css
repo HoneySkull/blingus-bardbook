@@ -258,8 +258,21 @@ body.dark-mode .card__chip {
 }
 .card__copy { position: absolute; right: 10px; top: 10px; font-size: 12px; border: 1px solid var(--accent-2); color: #fff; background: var(--accent-2); padding: 4px 8px; border-radius: 6px; cursor: pointer; }
 .card__copy:hover { filter: brightness(1.1); }
+.card__youtube { position: absolute; right: 10px; top: 38px; font-size: 16px; border: 1px solid #ff0000; color: #fff; background: #ff0000; padding: 4px 8px; border-radius: 6px; cursor: pointer; min-width: 36px; text-align: center; }
+.card__youtube:hover { filter: brightness(1.1); background: #ff3333; }
+body.dark-mode .card__youtube { border-color: #ff4444; background: #cc0000; }
+body.dark-mode .card__youtube:hover { background: #ff2222; }
 
-.card__edit { position: absolute; right: 10px; top: 36px; font-size: 18px; border: 2px solid var(--accent); color: var(--accent); background: #fff2ea; padding: 6px 10px; border-radius: 6px; cursor: pointer; z-index: 10; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap; min-width: 36px; text-align: center; transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+/* YouTube suggestion box dark mode */
+body.dark-mode #youtubeSuggestion {
+  background: #2d3d4d;
+  border-color: var(--accent);
+}
+body.dark-mode #youtubeSuggestionText {
+  color: var(--ink);
+}
+
+.card__edit { position: absolute; right: 10px; top: 66px; font-size: 18px; border: 2px solid var(--accent); color: var(--accent); background: #fff2ea; padding: 6px 10px; border-radius: 6px; cursor: pointer; z-index: 10; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap; min-width: 36px; text-align: center; transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
 .card__edit:hover { filter: brightness(1.1); background: #ffe8d4; transform: scale(1.05); }
 
 body.dark-mode .card__edit {

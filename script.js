@@ -2231,6 +2231,10 @@
   const editSong = $('#editSong');
   const editArtist = $('#editArtist');
   const editAdult = $('#editAdult');
+  const editYoutube = $('#editYoutube');
+  const editStartTime = $('#editStartTime');
+  const youtubeFields = $('#youtubeFields');
+  const testYoutubeBtn = $('#testYoutubeBtn');
   const saveEditBtn = $('#saveEditBtn');
   const cancelEditBtn = $('#cancelEditBtn');
   const deleteEditBtn = $('#deleteEditBtn');
@@ -2239,6 +2243,16 @@
   const artistLabel = $('#artistLabel');
   const adultLabel = $('#adultLabel');
   const modalClose = $('.modal__close', editModal);
+  const youtubePlayerModal = $('#youtubePlayerModal');
+  const youtubePlayerFrame = $('#youtubePlayerFrame');
+  const youtubePlayerTitle = $('#youtubePlayerTitle');
+  const youtubePlayerClose = $('#youtubePlayerClose');
+  const youtubePlayerCloseBtn = $('#youtubePlayerCloseBtn');
+  const youtubeFallback = $('#youtubeFallback');
+  const youtubeOpenTabBtn = $('#youtubeOpenTabBtn');
+  const youtubeSuggestion = $('#youtubeSuggestion');
+  const youtubeSuggestionText = $('#youtubeSuggestionText');
+  const youtubeSearchBtn = $('#youtubeSearchBtn');
   const generatorModal = $('#generatorModal');
   const generatorTitle = $('#generatorTitle');
   const generatorText = $('#generatorText');
@@ -3695,6 +3709,101 @@
       copyBtn.textContent = 'Copy';
       copyBtn.addEventListener('click', (e) => { e.stopPropagation(); copyLine(item); });
       
+      // Add YouTube button if YouTube link exists
+      let youtubeBtn = null;
+      if (item.youtube) {
+        youtubeBtn = document.createElement('button');
+        youtubeBtn.className = 'card__youtube';
+        youtubeBtn.textContent = '▶️';
+        youtubeBtn.title = 'Play karaoke track';
+        youtubeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const startTime = item.startTime || 0;
+          const title = `${item.s} — ${item.a}`;
+          showYouTubePlayer(item.youtube, startTime, title);
+        });
+      }
+      
+      // Add start time badge if startTime exists
+      let startTimeBadge = null;
+      let startTimeInput = null;
+      let isEditingStartTime = false;
+      if (item.startTime !== undefined && item.startTime !== null) {
+        startTimeBadge = document.createElement('span');
+        startTimeBadge.className = 'card__start-time';
+        startTimeBadge.textContent = `Start: ${formatTime(item.startTime)}`;
+        startTimeBadge.title = 'Click to edit start time';
+        startTimeBadge.style.cursor = 'pointer';
+        startTimeBadge.style.marginLeft = '8px';
+        startTimeBadge.style.padding = '2px 6px';
+        startTimeBadge.style.borderRadius = '4px';
+        startTimeBadge.style.background = 'var(--accent)';
+        startTimeBadge.style.color = 'white';
+        startTimeBadge.style.fontSize = '12px';
+        
+        startTimeBadge.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (isEditingStartTime) return;
+          
+          isEditingStartTime = true;
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.value = formatTime(item.startTime);
+          input.style.width = '60px';
+          input.style.padding = '2px 4px';
+          input.style.border = '1px solid var(--burnt)';
+          input.style.borderRadius = '4px';
+          input.style.fontSize = '12px';
+          
+          const saveTime = () => {
+            const newTime = parseTime(input.value);
+            if (newTime !== null && newTime >= 0) {
+              // Update the item
+              if (isUserAdded) {
+                if (section === 'spells' && isAdultSpell) {
+                  if (userItems.adultSpells[cat]) {
+                    userItems.adultSpells[cat][userIndex].startTime = newTime;
+                  }
+                } else {
+                  if (userItems[section] && userItems[section][cat]) {
+                    userItems[section][cat][userIndex].startTime = newTime;
+                  }
+                }
+                saveUserItems(userItems);
+                scheduleFileSave();
+                render(); // Re-render to show updated time
+              } else {
+                // For default items, we need to edit them (which creates a user copy)
+                openEditModal(section, cat, item, -1);
+                setTimeout(() => {
+                  editStartTime.value = formatTime(newTime);
+                }, 100);
+              }
+            } else {
+              showToast('Invalid time format');
+            }
+            isEditingStartTime = false;
+          };
+          
+          input.addEventListener('blur', saveTime);
+          input.addEventListener('keydown', (evt) => {
+            if (evt.key === 'Enter') {
+              evt.preventDefault();
+              saveTime();
+            } else if (evt.key === 'Escape') {
+              isEditingStartTime = false;
+              startTimeBadge.style.display = '';
+              input.remove();
+            }
+          });
+          
+          startTimeBadge.style.display = 'none';
+          startTimeBadge.parentNode.insertBefore(input, startTimeBadge);
+          input.focus();
+          input.select();
+        });
+      }
+      
       // Add edit button for ALL items (both default and user-added)
       // Use baseList we already have to determine if item is user-added
       const fullIndex = baseList.findIndex(x => {
@@ -3813,6 +3922,12 @@
 
       card.appendChild(favBtn);
       card.appendChild(copyBtn);
+      if (youtubeBtn) {
+        card.appendChild(youtubeBtn);
+      }
+      if (startTimeBadge) {
+        card.appendChild(startTimeBadge);
+      }
       card.appendChild(chip);
       card.appendChild(p);
       card.appendChild(meta);
@@ -3926,7 +4041,7 @@
         } else {
           showToast(`Random: ${randomAction}`);
         }
-        copyToClipboard(randomAction);
+        copyToClipboard(randomAction, 'actions', cat);
       });
       
       const randomHint = document.createElement('div');
@@ -3974,7 +4089,7 @@
         e.stopPropagation(); 
         // Remove highlights when clicking manually
         content.querySelectorAll('.action-card').forEach(c => c.classList.remove('highlighted'));
-        copyToClipboard(action);
+        copyToClipboard(action, 'actions', cat);
       });
       
       // Add edit button for ALL items
@@ -4006,7 +4121,7 @@
       card.addEventListener('click', () => {
         // Remove highlights when clicking manually
         content.querySelectorAll('.action-card').forEach(c => c.classList.remove('highlighted'));
-        copyToClipboard(action);
+        copyToClipboard(action, 'actions', cat);
       });
 
       const p = document.createElement('div');
@@ -4759,6 +4874,152 @@
     }
   }
 
+  // YouTube URL parsing function
+  function parseYouTubeUrl(url) {
+    if (!url) return null;
+    
+    // Trim whitespace
+    url = url.trim();
+    
+    // Remove any URL fragments
+    url = url.split('#')[0];
+    
+    // If it's already just a video ID (11 characters, alphanumeric + hyphen + underscore)
+    if (/^[a-zA-Z0-9_-]{11}$/.test(url)) {
+      return url;
+    }
+    
+    // Try to extract video ID from various YouTube URL formats
+    // Handle youtu.be URLs with query parameters (extract ID before ?)
+    const youtuBeMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})(?:\?|$)/);
+    if (youtuBeMatch && youtuBeMatch[1]) {
+      return youtuBeMatch[1];
+    }
+    
+    // Handle youtube.com/watch URLs
+    const watchMatch = url.match(/youtube\.com\/watch\?.*[&?]v=([a-zA-Z0-9_-]{11})/);
+    if (watchMatch && watchMatch[1]) {
+      return watchMatch[1];
+    }
+    
+    // Handle youtube.com/embed URLs
+    const embedMatch = url.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/);
+    if (embedMatch && embedMatch[1]) {
+      return embedMatch[1];
+    }
+    
+    // Generic pattern as fallback
+    const genericMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+    if (genericMatch && genericMatch[1]) {
+      return genericMatch[1];
+    }
+    
+    return null;
+  }
+  
+  // Format time in seconds to mm:ss format
+  function formatTime(seconds) {
+    if (typeof seconds !== 'number' || isNaN(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }
+  
+  // Parse time input (accepts "30" or "0:30" format)
+  function parseTime(input) {
+    if (!input) return null;
+    const trimmed = input.trim();
+    
+    // If it's just a number, treat as seconds
+    if (/^\d+$/.test(trimmed)) {
+      return parseInt(trimmed, 10);
+    }
+    
+    // Try to parse mm:ss format
+    const parts = trimmed.split(':');
+    if (parts.length === 2) {
+      const mins = parseInt(parts[0], 10);
+      const secs = parseInt(parts[1], 10);
+      if (!isNaN(mins) && !isNaN(secs)) {
+        return mins * 60 + secs;
+      }
+    }
+    
+    return null;
+  }
+  
+  // Auto-match songs to YouTube karaoke videos
+  function generateKaraokeSearchUrl(song, artist) {
+    // Clean song and artist names
+    const cleanSong = song.replace(/[()'"]/g, '').trim();
+    const cleanArtist = artist.replace(/[()'"]/g, '').trim();
+    
+    // Build search query: "Song Name Artist karaoke"
+    const searchQuery = encodeURIComponent(`${cleanSong} ${cleanArtist} karaoke`);
+    return `https://www.youtube.com/results?search_query=${searchQuery}`;
+  }
+  
+  // Attempt to find likely karaoke video (heuristic-based)
+  function findKaraokeVideo(song, artist) {
+    // Skip "Forgotten Realms Lore" entries
+    if (artist === 'Mockery' || song === 'Forgotten Realms Lore') {
+      return null;
+    }
+    
+    // Handle artist with "&" (e.g., "Queen & David Bowie")
+    let searchArtist = artist;
+    if (artist.includes('&')) {
+      searchArtist = artist.split('&')[0].trim();
+    }
+    
+    return generateKaraokeSearchUrl(song, searchArtist);
+  }
+  
+  // Show YouTube player - opens YouTube in new tab
+  function showYouTubePlayer(videoId, startTime = 0, title = 'Karaoke Track') {
+    if (!videoId) {
+      showToast('Invalid YouTube video ID');
+      return;
+    }
+    
+    // Clean video ID (remove any remaining query parameters or fragments)
+    const cleanVideoId = videoId.split('?')[0].split('&')[0].trim();
+    
+    if (!/^[a-zA-Z0-9_-]{11}$/.test(cleanVideoId)) {
+      showToast('Invalid YouTube video ID format');
+      return;
+    }
+    
+    // Build watch URL with start time parameter
+    const startSeconds = Math.floor(startTime || 0);
+    const watchParams = new URLSearchParams();
+    watchParams.set('v', cleanVideoId);
+    if (startSeconds > 0) {
+      watchParams.set('t', startSeconds.toString());
+    }
+    watchParams.set('autoplay', '1');
+    
+    const watchUrl = `https://www.youtube.com/watch?${watchParams.toString()}`;
+    
+    // Open YouTube in new tab
+    window.open(watchUrl, '_blank');
+    showToast(`Opening ${title} on YouTube...`);
+  }
+  
+  // Close YouTube player modal
+  function closeYouTubePlayer() {
+    youtubePlayerModal.classList.remove('show');
+    youtubePlayerModal.setAttribute('aria-hidden', 'true');
+    // Stop video by clearing src
+    if (youtubePlayerFrame) {
+      youtubePlayerFrame.src = '';
+    }
+    // Hide fallback
+    if (youtubeFallback) {
+      youtubeFallback.style.display = 'none';
+    }
+  }
+
   function copyToClipboard(text, section = null, category = null) {
     navigator.clipboard.writeText(text).then(() => {
       if (section && category) {
@@ -4834,14 +5095,40 @@
       songLabel.style.display = 'none';
       artistLabel.style.display = 'none';
       adultLabel.style.display = 'none';
+      youtubeFields.style.display = 'none';
     } else {
+      // Song-based sections: spells, bardic, mockery
       editText.value = item?.t || '';
       editSong.value = item?.s || '';
       editArtist.value = item?.a || '';
       editAdult.checked = item?.adult || false;
+      
+      // Show YouTube fields for song-based sections
+      const youtubeUrl = item?.youtube || '';
+      const startTime = item?.startTime;
+      editYoutube.value = youtubeUrl;
+      editStartTime.value = startTime ? (typeof startTime === 'number' ? formatTime(startTime) : startTime.toString()) : '';
+      
+      // Generate karaoke suggestion if no YouTube URL exists
+      if (youtubeSuggestion && youtubeSuggestionText) {
+        if (!youtubeUrl && item.s && item.a) {
+          const searchUrl = findKaraokeVideo(item.s, item.a);
+          if (searchUrl) {
+            youtubeSuggestionText.textContent = `Find karaoke for "${item.s}" by ${item.a}`;
+            youtubeSuggestion.dataset.searchUrl = searchUrl;
+            youtubeSuggestion.style.display = 'block';
+          } else {
+            youtubeSuggestion.style.display = 'none';
+          }
+        } else {
+          youtubeSuggestion.style.display = 'none';
+        }
+      }
+      
       songLabel.style.display = 'block';
       artistLabel.style.display = 'block';
       adultLabel.style.display = section === 'spells' ? 'block' : 'none';
+      youtubeFields.style.display = 'block';
     }
     
     editModal.classList.add('show');
@@ -4860,6 +5147,13 @@
     editSong.value = '';
     editArtist.value = '';
     editAdult.checked = false;
+    editYoutube.value = '';
+    editStartTime.value = '';
+    
+    // Hide YouTube suggestion
+    if (youtubeSuggestion) {
+      youtubeSuggestion.style.display = 'none';
+    }
   }
   
   function saveEditItem() {
@@ -4928,11 +5222,46 @@
         return;
       }
       
+      // Parse YouTube URL and start time
+      const youtubeInput = editYoutube.value.trim();
+      const startTimeInput = editStartTime.value.trim();
+      
+      let youtube = null;
+      let startTime = null;
+      
+      if (youtubeInput) {
+        const videoId = parseYouTubeUrl(youtubeInput);
+        if (videoId) {
+          youtube = videoId;
+        } else {
+          showToast('Invalid YouTube URL format');
+          return;
+        }
+      }
+      
+      if (startTimeInput) {
+        const parsedTime = parseTime(startTimeInput);
+        if (parsedTime !== null) {
+          startTime = parsedTime;
+        } else {
+          showToast('Invalid start time format (use seconds like "30" or time like "0:30")');
+          return;
+        }
+      }
+      
       const newItem = {
         t: text,
         s: song,
         a: artist
       };
+      
+      // Add YouTube properties if provided
+      if (youtube) {
+        newItem.youtube = youtube;
+      }
+      if (startTime !== null) {
+        newItem.startTime = startTime;
+      }
       
       const wasAdultSpell = section === 'spells' && currentEditingItem?.adult;
       const isAdultSpell = section === 'spells' && editAdult.checked;
@@ -5204,6 +5533,66 @@
   });
   
   saveEditBtn.addEventListener('click', saveEditItem);
+  
+  // YouTube player modal event listeners
+  if (youtubePlayerClose) {
+    youtubePlayerClose.addEventListener('click', closeYouTubePlayer);
+  }
+  if (youtubePlayerCloseBtn) {
+    youtubePlayerCloseBtn.addEventListener('click', closeYouTubePlayer);
+  }
+  if (youtubePlayerModal) {
+    youtubePlayerModal.addEventListener('click', (e) => {
+      if (e.target === youtubePlayerModal) {
+        closeYouTubePlayer();
+      }
+    });
+  }
+  if (youtubeOpenTabBtn) {
+    youtubeOpenTabBtn.addEventListener('click', () => {
+      const watchUrl = youtubePlayerFrame?.dataset?.watchUrl;
+      if (watchUrl) {
+        window.open(watchUrl, '_blank');
+        closeYouTubePlayer();
+      }
+    });
+  }
+  
+  // Test YouTube playback button
+  if (testYoutubeBtn) {
+    testYoutubeBtn.addEventListener('click', () => {
+      const youtubeInput = editYoutube.value.trim();
+      const startTimeInput = editStartTime.value.trim();
+      
+      if (!youtubeInput) {
+        showToast('Please enter a YouTube URL or video ID');
+        return;
+      }
+      
+      const videoId = parseYouTubeUrl(youtubeInput);
+      if (!videoId) {
+        showToast('Invalid YouTube URL format');
+        return;
+      }
+      
+      const startTime = startTimeInput ? parseTime(startTimeInput) : 0;
+      const title = editSong.value.trim() || 'Karaoke Track';
+      showYouTubePlayer(videoId, startTime || 0, title);
+    });
+  }
+  
+  // YouTube karaoke search button
+  if (youtubeSearchBtn) {
+    youtubeSearchBtn.addEventListener('click', () => {
+      const suggestion = youtubeSuggestion;
+      const searchUrl = suggestion?.dataset?.searchUrl;
+      if (searchUrl) {
+        window.open(searchUrl, '_blank');
+        showToast('Opening YouTube search...');
+      }
+    });
+  }
+  
   cancelEditBtn.addEventListener('click', closeEditModal);
   deleteEditBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to delete this item?')) {
@@ -5221,14 +5610,15 @@
   const generatorRow = document.querySelector('.toolbar__row--generators');
 
   // Generator modal functions
-  function showGeneratorModal(title, text) {
+  function showGeneratorModal(title, text, generatorType = null) {
     generatorTitle.textContent = title;
     generatorText.textContent = text;
     generatorModal.classList.add('show');
     generatorModal.setAttribute('aria-hidden', 'false');
     
-    // Store text for copy button
+    // Store text and generator type for copy button
     generatorCopyBtn.dataset.textToCopy = text;
+    generatorCopyBtn.dataset.generatorType = generatorType || '';
   }
 
   function closeGeneratorModal() {
@@ -5247,7 +5637,7 @@
       return;
     }
     const cry = mergedCries[Math.floor(Math.random() * mergedCries.length)];
-    showGeneratorModal('⚔️ Battle Cry', cry);
+    showGeneratorModal('⚔️ Battle Cry', cry, 'battleCries');
   });
 
   const insultBtn = document.createElement('button');
@@ -5261,7 +5651,7 @@
       return;
     }
     const insult = mergedInsults[Math.floor(Math.random() * mergedInsults.length)];
-    showGeneratorModal('🗡️ Insult', insult);
+    showGeneratorModal('🗡️ Insult', insult, 'insults');
   });
 
   const complimentBtn = document.createElement('button');
@@ -5275,14 +5665,20 @@
       return;
     }
     const compliment = mergedCompliments[Math.floor(Math.random() * mergedCompliments.length)];
-    showGeneratorModal('💬 Compliment', compliment);
+    showGeneratorModal('💬 Compliment', compliment, 'compliments');
   });
 
   // Generator modal event listeners
   generatorCopyBtn.addEventListener('click', () => {
     const text = generatorCopyBtn.dataset.textToCopy;
+    const generatorType = generatorCopyBtn.dataset.generatorType;
     if (text) {
-      copyToClipboard(text);
+      // Track generators in history with section='generators' and category=generatorType
+      if (generatorType) {
+        copyToClipboard(text, 'generators', generatorType);
+      } else {
+        copyToClipboard(text);
+      }
       showToast('Copied to clipboard!');
     }
   });
