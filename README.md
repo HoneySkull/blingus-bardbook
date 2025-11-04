@@ -65,6 +65,11 @@ Each suggestion includes the appropriate D&D 5e skill or tool proficiency.
 ### Customization
 - **✏️ Add/Edit/Delete Items** - Customize spells, bardic inspiration, mockery, and actions
 - **✏️ Edit/Delete Defaults** - Modify or hide default items without deleting them permanently
+- **🎵 YouTube Karaoke Links** - Add YouTube karaoke track links with start times to song-based items
+  - YouTube button (▶️) on cards opens YouTube with start time in new tab
+  - Start time badge with quick inline editing
+  - Auto-match suggestions: Shows YouTube search link when editing items without YouTube URL
+  - Perfect for singing along during gameplay!
 - All customizations persist across sessions
 
 ### Data Management
@@ -118,6 +123,14 @@ For server-side storage with automatic sync:
 4. Edited defaults are hidden and replaced with your version
 5. Changes persist across sessions
 
+### Adding YouTube Karaoke Links
+1. Edit any song-based item (spells, bardic inspiration, mockery)
+2. Enter YouTube URL or video ID in the "YouTube URL" field
+3. Optionally set a start time (e.g., "30" for 30 seconds or "1:30" for 1 minute 30 seconds)
+4. If no YouTube URL exists, a karaoke suggestion will appear with a search button
+5. Click the YouTube button (▶️) on cards to open the track with start time
+6. Click the start time badge on cards to quickly edit the start time
+
 ### Export/Import
 - **Export**: Saves complete dataset including ALL default content (spells, actions, bardic, mockery, generators) PLUS all customizations (favorites, custom items, edits, deletions, history)
 - **Import**: Restores everything from a previous export (with confirmation prompt)
@@ -156,6 +169,10 @@ All generators and content reflect Blingus' personality, backstory, and the Forg
 ## 📋 Change Log
 
 ### Latest Features
+- **🎵 YouTube Karaoke Links**: Add YouTube karaoke track links with start times to song-based items
+  - YouTube button on cards opens tracks directly with start time
+  - Start time badge with quick inline editing
+  - Auto-match suggestions help find karaoke versions
 - **Auto-Versioning Cache-Busting**: `index.php` automatically generates version numbers based on file modification times (no manual version bumping needed)
 - **🔄 Clear Cache Button**: Force reload button for web server deployments (only visible on server)
 - **Toolbar Reorganization**: Improved layout with Clear button next to search, separate checkbox row
