@@ -1828,6 +1828,350 @@
     ]
   };
 
+  // Critical Failure Descriptions
+  const criticalFailures = {
+    'Arrows': [
+      'My arrow slips from my fingers, tumbling end over end before harmlessly bouncing off their armor',
+      'My bowstring snaps with a loud crack, sending my arrow flying in a completely wrong direction',
+      'I fumble the draw, and my arrow wobbles pathetically through the air before clattering to the ground',
+      'My arrow catches on something and twists, spinning wildly before missing by a wide margin',
+      'I lose my grip mid-draw, and my arrow tumbles from my bow before I even finish aiming',
+      'My arrow ricochets off a nearby surface, nearly hitting one of my allies instead',
+      'The fletching catches on my quiver, and my arrow spins awkwardly before falling short',
+      'I overthink the shot and release too late, my arrow sailing harmlessly over their head',
+      'My arrow gets caught in a sudden gust of wind, veering wildly off course',
+      'I draw too quickly and my arrow slips sideways, bouncing off the ground in front of them',
+      'My fingers slip on the string, and my arrow launches at a weird angle into the distance',
+      'I misjudge the distance completely, my arrow landing several feet short of my target',
+      'My arrow nock breaks mid-draw, sending the arrow spinning uselessly to the side',
+      'I release too early, and my arrow bounces harmlessly off their shield',
+      'The arrowhead comes loose mid-flight, the shaft continuing forward but doing no damage',
+      'I trip over my own feet while drawing, sending my arrow straight into the ground',
+      'My arrow somehow gets tangled with another arrow in my quiver, both falling out uselessly',
+      'I lose my balance and my arrow goes wide, nearly hitting a tree instead'
+    ],
+    'Crossbolts': [
+      'My crossbolt jams in the mechanism, refusing to fire no matter how hard I pull the trigger',
+      'I forget to properly load the bolt, and when I pull the trigger, nothing happens',
+      'My crossbolt falls out of the groove mid-aim, clattering to the ground at my feet',
+      'The string catches on my clothing, causing my bolt to fire straight down into the dirt',
+      'I over-crank the windlass, and my crossbolt fires with such force it overshoots everything',
+      'My bolt gets stuck in the track, and I waste precious seconds trying to free it',
+      'I accidentally fire while still loading, the bolt getting tangled in the mechanism',
+      'My crossbolt ricochets off a nearby rock, spinning back dangerously close to me',
+      'The trigger mechanism sticks, and I spend too long trying to get it to fire',
+      'I misload the bolt, and it falls out just as I\'m about to shoot',
+      'My crossbolt gets caught in some nearby foliage, sticking harmlessly in a bush',
+      'I pull the trigger too hard and the mechanism breaks, bolt falling out uselessly',
+      'The wind catches my bolt, sending it spinning in a completely wrong direction',
+      'I trip while aiming, and my bolt fires straight up into the air',
+      'My crossbolt somehow gets tangled with my pack strap, refusing to fire properly',
+      'I forget to reset the mechanism, and my bolt fires backward into the ground',
+      'The bolt head comes loose, the shaft firing but doing absolutely nothing',
+      'I fumble the loading process completely, dropping the bolt and wasting my turn'
+    ],
+    'Swords': [
+      'My blade catches on my scabbard as I draw, nearly cutting myself instead',
+      'I swing too hard and lose my grip, my sword flying from my hands to clatter on the ground',
+      'My sword gets tangled in my cloak, causing me to stumble and miss completely',
+      'I overextend my swing and lose my balance, falling forward onto my face',
+      'My blade glances off their armor at the worst possible angle, sending sparks but no damage',
+      'I trip over my own feet mid-swing, my sword harmlessly swishing through empty air',
+      'My sword gets caught on a nearby obstacle, pulling me off balance',
+      'I swing wildly and my blade bounces off their shield with a jarring impact',
+      'My grip slips on the hilt, and my sword spins awkwardly in my hand',
+      'I misjudge the distance completely, my blade cutting through air where they used to be',
+      'My sword catches on a loose strap or piece of equipment, throwing off my entire attack',
+      'I swing too early and they easily sidestep, my blade carving through nothing',
+      'My blade somehow gets tangled with my belt, causing me to twist awkwardly',
+      'I overthink the attack and telegraph it badly, giving them plenty of time to dodge',
+      'My sword slips from my sweaty grip, spinning end over end before landing point-down',
+      'I swing and my blade bounces harmlessly off their armor, the impact numbing my arm',
+      'I get my sword caught between their armor plates, struggling to pull it free',
+      'My attack is so badly executed that I nearly hit myself with the backswing'
+    ],
+    'Polearms': [
+      'My polearm catches on overhead branches, getting stuck and leaving me exposed',
+      'I misjudge the reach and overextend, losing my balance and stumbling forward',
+      'My weapon gets tangled with nearby allies, causing me to pull back awkwardly',
+      'I swing too wide and my polearm gets caught on something behind me',
+      'The shaft slips through my hands, sliding forward and leaving me grasping at air',
+      'I trip over the long weapon, sending myself sprawling to the ground',
+      'My polearm gets caught between two nearby objects, trapping me in place',
+      'I swing and the weapon\'s weight throws me off balance, spinning me around',
+      'The shaft bends unexpectedly, sending my blade in a completely wrong direction',
+      'I misjudge the angle and my weapon glances harmlessly off their side',
+      'My polearm gets caught in some nearby ropes or vines, refusing to move',
+      'I overextend and the weapon\'s length works against me, leaving me off balance',
+      'The blade gets stuck in the ground mid-swing, requiring effort to pull free',
+      'I lose my grip on the shaft, the weapon sliding through my hands uselessly',
+      'My polearm catches on their armor in the worst way, doing no damage but getting stuck',
+      'I swing too hard and the momentum carries me forward, nearly impaling myself',
+      'The weapon gets tangled with my other equipment, causing a complete mess',
+      'I fumble the grip completely, dropping the polearm and leaving myself defenseless'
+    ],
+    'Knives': [
+      'My dagger slips from my fingers mid-throw, spinning wildly before clattering harmlessly to the ground',
+      'I fumble the grip and my knife nearly cuts my own hand instead',
+      'My dagger gets caught in my sleeve as I draw, causing me to stumble',
+      'I throw too hard and my knife spins end over end before landing handle-first',
+      'My blade slips from my sweaty palm, falling straight down at my feet',
+      'I misjudge the throw completely, my dagger sailing way over their head',
+      'My knife gets tangled in my belt as I reach for it, wasting precious seconds',
+      'I drop my dagger while trying to throw it, the blade spinning uselessly away',
+      'My blade catches on my clothing, refusing to come free when I need it',
+      'I throw and my dagger ricochets off something nearby, nearly hitting me instead',
+      'My grip fails mid-throw, sending my knife spinning in a completely wrong direction',
+      'I forget I already threw my dagger and reach for another that isn\'t there',
+      'My knife gets stuck in my scabbard, refusing to draw no matter how hard I pull',
+      'I throw too early and my dagger bounces harmlessly off their shield',
+      'My blade slips through my fingers, nearly cutting myself in the process',
+      'I overthink the throw and my dagger goes wide, embedding in a nearby tree',
+      'My knife gets caught on something as I draw, pulling me off balance',
+      'I fumble the throw completely, my dagger clattering to the ground between us'
+    ],
+    'Blunt Weapons': [
+      'My mace slips from my grip mid-swing, flying through the air before landing harmlessly',
+      'I swing too hard and lose my balance, stumbling forward onto my knees',
+      'My weapon gets caught on my own equipment, causing me to twist awkwardly',
+      'I overextend the swing and my mace bounces harmlessly off their armor',
+      'My grip fails and the weapon spins in my hand, nearly hitting myself',
+      'I trip over my own feet while swinging, my mace carving through empty air',
+      'My weapon gets tangled with nearby obstacles, refusing to move properly',
+      'I swing and my mace catches on something behind me, pulling me backward',
+      'The weight of my weapon throws me off balance, sending me spinning',
+      'I misjudge the distance completely, my mace swinging through empty space',
+      'My weapon slips through my sweaty hands, falling to the ground at my feet',
+      'I swing too early and they easily dodge, my mace hitting nothing but air',
+      'My mace gets caught between their armor plates, getting stuck there',
+      'I overthink the attack and telegraph it badly, giving them time to prepare',
+      'My weapon bounces off their shield with a jarring impact, numbing my arm',
+      'I lose my grip completely, my mace flying from my hands to clatter away',
+      'The weapon\'s weight works against me, pulling me off balance mid-swing',
+      'I fumble the attack completely, my mace doing absolutely nothing useful'
+    ],
+    'Axes and Hammers': [
+      'My axe gets stuck in the ground mid-swing, requiring all my strength to pull free',
+      'I swing too hard and lose my grip, my axe spinning through the air dangerously',
+      'My weapon catches on overhead obstacles, getting stuck and leaving me exposed',
+      'I overextend and my axe bounces harmlessly off their armor with a dull thud',
+      'My grip slips on the handle, and my axe nearly flies from my hands',
+      'I trip while swinging, my axe carving a useless groove in the ground',
+      'My axe gets tangled with my other equipment, causing a complete mess',
+      'I swing and the weapon\'s weight pulls me forward, nearly cutting myself',
+      'My axe head comes loose mid-swing, the handle continuing forward uselessly',
+      'I misjudge the distance badly, my axe swinging through empty air',
+      'My weapon gets caught on something nearby, refusing to move properly',
+      'I swing too early and they easily sidestep, my axe hitting nothing',
+      'My axe bounces off their shield with a jarring impact, nearly disarming me',
+      'I lose my balance mid-swing, stumbling forward and nearly falling',
+      'My grip fails completely, my axe clattering to the ground between us',
+      'I overthink the attack and telegraph it terribly, giving them time to dodge',
+      'My axe gets stuck between their armor pieces, requiring effort to free',
+      'I fumble the swing completely, my axe doing absolutely no damage'
+    ],
+    'Other Weapons': [
+      'My weapon slips from my grip, tumbling awkwardly before landing harmlessly',
+      'I fumble the attack completely, my weapon doing nothing useful',
+      'My grip fails mid-swing, sending my weapon spinning in a wrong direction',
+      'I trip over my own feet, my weapon carving through empty air',
+      'My weapon gets caught on something nearby, refusing to move properly',
+      'I misjudge the distance completely, my attack hitting nothing',
+      'My weapon bounces harmlessly off their armor, doing no damage',
+      'I lose my balance mid-attack, stumbling forward uselessly',
+      'My grip slips and my weapon nearly flies from my hands',
+      'I overextend and my weapon gets stuck, requiring effort to free',
+      'My attack is so badly executed that I nearly hit myself',
+      'I swing too early and they easily dodge, my weapon hitting air',
+      'My weapon gets tangled with my equipment, causing a mess',
+      'I fumble completely, dropping my weapon and leaving myself exposed',
+      'My attack telegraphs so badly they have plenty of time to prepare',
+      'I trip while attacking, my weapon clattering harmlessly to the ground',
+      'My weapon catches on something behind me, pulling me off balance',
+      'I overthink the attack and completely miss, wasting my turn'
+    ],
+    'Fire': [
+      'My fire spell fizzles out pathetically, leaving only a small puff of smoke',
+      'I mispronounce the incantation and my flames sputter before dying completely',
+      'My spell backfires slightly, singeing my own fingers instead of my target',
+      'The magical fire refuses to ignite properly, leaving only warm air',
+      'My flames erupt in the wrong direction, nearly hitting an ally instead',
+      'I lose concentration mid-cast and my fire spell dies before reaching them',
+      'My spell creates more smoke than fire, obscuring my vision uselessly',
+      'The flames sputter and die immediately, leaving no trace of magic',
+      'My fire magic fizzles at the last moment, doing absolutely nothing',
+      'I cast too quickly and my spell fails to form properly',
+      'My flames catch on something nearby instead, setting the wrong thing on fire',
+      'The spell backfires completely, my own clothes smoking slightly',
+      'I misjudge the spell\'s range and my fire dies out before reaching them',
+      'My magical fire refuses to ignite, leaving only disappointment',
+      'The flames sputter pathetically before dying, a complete failure',
+      'I lose my focus and my fire spell fizzles out harmlessly',
+      'My spell creates sparks but no actual fire, doing nothing useful',
+      'The fire magic fails spectacularly, leaving only embarrassment'
+    ],
+    'Cold': [
+      'My cold spell produces only a light breeze instead of freezing magic',
+      'I mispronounce the incantation and my ice magic fails completely',
+      'My freezing spell backfires, leaving my own fingers slightly numb',
+      'The cold magic refuses to form properly, leaving only cool air',
+      'I lose concentration and my ice spell melts before reaching them',
+      'My spell creates more fog than ice, obscuring everything uselessly',
+      'The freezing magic fizzles out pathetically, doing nothing',
+      'I cast too quickly and my cold spell fails to take effect',
+      'My ice magic hits the wrong target, freezing something nearby instead',
+      'The spell backfires slightly, leaving me shivering instead of them',
+      'My cold spell produces only condensation, no actual ice',
+      'I misjudge the spell\'s power and my freezing magic fails',
+      'My ice refuses to form properly, leaving only disappointment',
+      'The cold magic sputters and dies immediately, a complete failure',
+      'I lose my focus and my freezing spell fizzles out harmlessly',
+      'My spell creates mist but no actual cold, doing nothing useful',
+      'The freezing magic fails spectacularly, leaving only embarrassment',
+      'My cold spell backfires completely, nearly freezing my own hands'
+    ],
+    'Lightning': [
+      'My lightning spell produces only static electricity, crackling harmlessly',
+      'I mispronounce the incantation and my bolt fizzles before forming',
+      'My electrical magic backfires slightly, shocking my own fingers',
+      'The lightning refuses to arc properly, leaving only sparks',
+      'I lose concentration mid-cast and my bolt dies before reaching them',
+      'My spell creates more light than actual lightning, doing no damage',
+      'The electrical magic sputters pathetically before dying completely',
+      'I cast too quickly and my lightning fails to form properly',
+      'My bolt arcs in the wrong direction, nearly hitting an ally',
+      'The spell backfires completely, leaving me with tingling fingers',
+      'My lightning magic produces only static, no actual electrical damage',
+      'I misjudge the spell\'s power and my bolt fizzles out harmlessly',
+      'My electrical magic refuses to arc, leaving only disappointment',
+      'The lightning sputters and dies immediately, a complete failure',
+      'I lose my focus and my bolt fizzles out before reaching them',
+      'My spell creates sparks but no actual lightning, doing nothing useful',
+      'The electrical magic fails spectacularly, leaving only embarrassment',
+      'My lightning spell backfires completely, nearly shocking myself'
+    ],
+    'Thunder': [
+      'My thunder spell produces only a whisper instead of a roar',
+      'I mispronounce the incantation and my sonic magic fails completely',
+      'My sound spell backfires slightly, leaving my own ears ringing',
+      'The thunder refuses to form properly, leaving only silence',
+      'I lose concentration and my sonic blast dies before reaching them',
+      'My spell creates more wind than sound, doing no actual damage',
+      'The thunder magic fizzles out pathetically, producing only a pop',
+      'I cast too quickly and my sound spell fails to resonate',
+      'My thunder magic hits the wrong target, deafening something nearby instead',
+      'The spell backfires completely, leaving me temporarily deafened',
+      'My sonic spell produces only vibrations, no actual thunder',
+      'I misjudge the spell\'s power and my thunder fails completely',
+      'My sound magic refuses to amplify, leaving only disappointment',
+      'The thunder sputters and dies immediately, a complete failure',
+      'I lose my focus and my sonic spell fizzles out harmlessly',
+      'My spell creates air movement but no actual sound, doing nothing useful',
+      'The thunder magic fails spectacularly, leaving only embarrassment',
+      'My sound spell backfires completely, nearly deafening myself'
+    ],
+    'Psychic': [
+      'My psychic spell fizzles out pathetically, leaving only a mild headache',
+      'I mispronounce the incantation and my mental magic fails completely',
+      'My mind attack backfires slightly, leaving my own thoughts jumbled',
+      'The psychic energy refuses to form properly, leaving only confusion',
+      'I lose concentration and my mental assault dies before reaching them',
+      'My spell creates more doubt than actual psychic damage, doing nothing',
+      'The psychic magic sputters pathetically before failing completely',
+      'I cast too quickly and my mind spell fails to penetrate',
+      'My psychic attack hits the wrong target, affecting something nearby instead',
+      'The spell backfires completely, leaving me temporarily disoriented',
+      'My mental magic produces only mild confusion, no actual damage',
+      'I misjudge the spell\'s power and my psychic attack fails',
+      'My mind magic refuses to connect, leaving only disappointment',
+      'The psychic energy sputters and dies immediately, a complete failure',
+      'I lose my focus and my mental spell fizzles out harmlessly',
+      'My spell creates thoughts but no actual psychic damage, doing nothing useful',
+      'The psychic magic fails spectacularly, leaving only embarrassment',
+      'My mind attack backfires completely, nearly overwhelming my own thoughts'
+    ],
+    'Force': [
+      'My force spell produces only a light push instead of a powerful blast',
+      'I mispronounce the incantation and my magic fails completely',
+      'My force attack backfires slightly, pushing me backward instead',
+      'The magical energy refuses to form properly, leaving only weak pressure',
+      'I lose concentration and my force blast dies before reaching them',
+      'My spell creates more wind than actual force, doing no damage',
+      'The magic sputters pathetically before failing completely',
+      'I cast too quickly and my force spell fails to materialize',
+      'My magical force hits the wrong target, pushing something nearby instead',
+      'The spell backfires completely, leaving me stumbling backward',
+      'My force magic produces only air movement, no actual impact',
+      'I misjudge the spell\'s power and my force attack fails',
+      'My magic refuses to form properly, leaving only disappointment',
+      'The force sputters and dies immediately, a complete failure',
+      'I lose my focus and my spell fizzles out harmlessly',
+      'My force creates movement but no actual damage, doing nothing useful',
+      'The magic fails spectacularly, leaving only embarrassment',
+      'My force spell backfires completely, nearly knocking myself over'
+    ],
+    'Necrotic': [
+      'My necrotic spell fizzles out pathetically, leaving only mild discomfort',
+      'I mispronounce the incantation and my death magic fails completely',
+      'My decay spell backfires slightly, aging my own hands slightly',
+      'The dark energy refuses to form properly, leaving only disappointment',
+      'I lose concentration and my necrotic magic dies before reaching them',
+      'My spell creates more sadness than actual decay, doing no damage',
+      'The death magic sputters pathetically before failing completely',
+      'I cast too quickly and my necrotic spell fails to take hold',
+      'My decay magic hits the wrong target, affecting something nearby instead',
+      'The spell backfires completely, leaving me feeling slightly weak',
+      'My necrotic magic produces only mild unease, no actual damage',
+      'I misjudge the spell\'s power and my decay attack fails',
+      'My dark magic refuses to manifest, leaving only disappointment',
+      'The necrotic energy sputters and dies immediately, a complete failure',
+      'I lose my focus and my death spell fizzles out harmlessly',
+      'My spell creates dread but no actual decay, doing nothing useful',
+      'The necrotic magic fails spectacularly, leaving only embarrassment',
+      'My decay spell backfires completely, nearly affecting my own vitality'
+    ],
+    'Radiant': [
+      'My radiant spell produces only a dim glow instead of brilliant light',
+      'I mispronounce the incantation and my holy magic fails completely',
+      'My divine spell backfires slightly, leaving my own eyes dazzled',
+      'The holy energy refuses to form properly, leaving only weak light',
+      'I lose concentration and my radiant magic dies before reaching them',
+      'My spell creates more warmth than actual divine damage, doing nothing',
+      'The holy magic sputters pathetically before failing completely',
+      'I cast too quickly and my radiant spell fails to manifest',
+      'My divine light hits the wrong target, illuminating something nearby instead',
+      'The spell backfires completely, leaving me temporarily blinded',
+      'My radiant magic produces only mild brightness, no actual damage',
+      'I misjudge the spell\'s power and my holy attack fails',
+      'My divine magic refuses to shine properly, leaving only disappointment',
+      'The radiant energy sputters and dies immediately, a complete failure',
+      'I lose my focus and my holy spell fizzles out harmlessly',
+      'My spell creates light but no actual divine damage, doing nothing useful',
+      'The radiant magic fails spectacularly, leaving only embarrassment',
+      'My holy spell backfires completely, nearly blinding myself'
+    ],
+    'Acid': [
+      'My acid spell produces only a light mist instead of corrosive liquid',
+      'I mispronounce the incantation and my caustic magic fails completely',
+      'My acid attack backfires slightly, leaving my own fingers slightly irritated',
+      'The corrosive energy refuses to form properly, leaving only harmless vapor',
+      'I lose concentration and my acid spell dissipates before reaching them',
+      'My spell creates more steam than actual acid, doing no damage',
+      'The caustic magic sputters pathetically before failing completely',
+      'I cast too quickly and my acid spell fails to materialize',
+      'My corrosive magic hits the wrong target, affecting something nearby instead',
+      'The spell backfires completely, leaving me with mild skin irritation',
+      'My acid magic produces only harmless moisture, no actual corrosion',
+      'I misjudge the spell\'s power and my acid attack fails',
+      'My caustic magic refuses to form properly, leaving only disappointment',
+      'The acid sputters and dies immediately, a complete failure',
+      'I lose my focus and my corrosive spell fizzles out harmlessly',
+      'My spell creates vapor but no actual acid, doing nothing useful',
+      'The acid magic fails spectacularly, leaving only embarrassment',
+      'My caustic spell backfires completely, nearly affecting my own equipment'
+    ]
+  };
+
   const $ = (sel, root = document) => root.querySelector(sel);
   const content = $('#content');
   
@@ -2222,6 +2566,7 @@
       defaultMockery: mockery,
       defaultActions: characterActions,
       defaultCriticalHits: criticalHits,
+      defaultCriticalFailures: criticalFailures,
       defaultGenerators: {
         battleCries: battleCries,
         insults: insults,
@@ -2247,7 +2592,7 @@
       // Metadata
       version: '1.3',
       timestamp: new Date().toISOString(),
-      exportNote: 'Complete export including all default items (spells, bardic, mockery, actions, criticalHits, generators) plus all user customizations (favorites, custom items, edits, deletions, history).'
+      exportNote: 'Complete export including all default items (spells, bardic, mockery, actions, criticalHits, criticalFailures, generators) plus all user customizations (favorites, custom items, edits, deletions, history).'
     };
   }
   
@@ -2357,9 +2702,9 @@
   function loadUserItems() {
     try {
       const raw = localStorage.getItem(userItemsKey);
-      return raw ? JSON.parse(raw) : { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {} };
+      return raw ? JSON.parse(raw) : { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {}, criticalFailures: {} };
     } catch(e) {
-      return { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {} };
+      return { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {}, criticalFailures: {} };
     }
   }
   
@@ -2368,7 +2713,7 @@
     try {
       const raw = localStorage.getItem(deletedDefaultsKey);
       if (!raw) {
-        return { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {} };
+        return { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {}, criticalFailures: {} };
       }
       const parsed = JSON.parse(raw);
       // Ensure structure is correct
@@ -2378,11 +2723,12 @@
         bardic: parsed.bardic || {},
         mockery: parsed.mockery || {},
         actions: parsed.actions || {},
-        criticalHits: parsed.criticalHits || {}
+        criticalHits: parsed.criticalHits || {},
+        criticalFailures: parsed.criticalFailures || {}
       };
     } catch(e) {
       console.error('Error loading deleted defaults:', e);
-      return { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {} };
+      return { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {}, criticalFailures: {} };
     }
   }
   
@@ -2524,7 +2870,7 @@
   
   // Generate unique ID for an item
   function getItemId(section, item) {
-    if (section === 'actions') {
+    if (section === 'actions' || section === 'criticalHits' || section === 'criticalFailures') {
       return typeof item === 'string' ? item : '';
     }
     return `${item.t}|${item.s}|${item.a}|${item.adult ? '1' : '0'}`;
@@ -2568,13 +2914,13 @@
   
   if (needsReset) {
     console.warn('Resetting corrupted deletedDefaults');
-    deletedDefaults = { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {} };
+    deletedDefaults = { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {}, criticalFailures: {} };
     saveDeletedDefaults(deletedDefaults);
   }
   
   // Expose reset function to console for manual fixes
   window.resetDeletedDefaults = function() {
-    deletedDefaults = { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {} };
+    deletedDefaults = { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {}, criticalFailures: {} };
     saveDeletedDefaults(deletedDefaults);
     debugLog('Deleted defaults reset. Reloading page...');
     location.reload();
@@ -2588,6 +2934,7 @@
       : section === 'bardic' ? bardic
       : section === 'actions' ? characterActions
       : section === 'criticalHits' ? criticalHits
+      : section === 'criticalFailures' ? criticalFailures
       : mockery;
     
     const defaultList = (defaults[category] || []);
@@ -2719,6 +3066,8 @@
         cats = typeof characterActions !== 'undefined' && characterActions ? Object.keys(characterActions) : [];
       } else if (section === 'criticalHits') {
         cats = typeof criticalHits !== 'undefined' && criticalHits ? Object.keys(criticalHits) : [];
+      } else if (section === 'criticalFailures') {
+        cats = typeof criticalFailures !== 'undefined' && criticalFailures ? Object.keys(criticalFailures) : [];
       } else {
         cats = typeof mockery !== 'undefined' && mockery ? Object.keys(mockery) : [];
       }
@@ -2766,6 +3115,10 @@
     } else if (section === 'criticalHits') {
       const result = getMergedData('criticalHits', cat);
       debugLog(`getActiveList criticalHits: result=${result.length}`);
+      return result;
+    } else if (section === 'criticalFailures') {
+      const result = getMergedData('criticalFailures', cat);
+      debugLog(`getActiveList criticalFailures: result=${result.length}`);
       return result;
     } else {
       const result = getMergedData('mockery', cat);
@@ -2864,11 +3217,24 @@
       }
     }
     
+    // Search critical failures (all categories)
+    const criticalFailureCategories = Object.keys(criticalFailures || {});
+    for (const cat of criticalFailureCategories) {
+      const criticalFailureList = getMergedData('criticalFailures', cat);
+      const filtered = criticalFailureList.filter(item => {
+        const failureText = typeof item === 'string' ? item : item;
+        return failureText.toLowerCase().includes(q);
+      });
+      for (const item of filtered) {
+        allResults.push({ section: 'criticalFailures', category: cat, item, isAdult: false });
+      }
+    }
+    
     // Apply favorites filter if enabled
     let filteredResults = allResults;
     if (favoritesOnly && favoritesOnly.checked) {
       filteredResults = allResults.filter(result => {
-        if (result.section === 'actions' || result.section === 'criticalHits') {
+        if (result.section === 'actions' || result.section === 'criticalHits' || result.section === 'criticalFailures') {
           const itemId = getItemId(result.section, result.item);
           return favorites.has(itemId);
         }
@@ -2892,13 +3258,14 @@
     }
     
     // Render grouped results
-    const sectionOrder = ['spells', 'bardic', 'mockery', 'actions', 'criticalHits'];
+    const sectionOrder = ['spells', 'bardic', 'mockery', 'actions', 'criticalHits', 'criticalFailures'];
     const sectionLabels = {
       spells: '🔮 Spell Parodies',
       bardic: '✨ Bardic Inspiration',
       mockery: '🗡️ Vicious Mockery',
       actions: '🎭 Character Actions',
-      criticalHits: '⚔️ Critical Hit Descriptions'
+      criticalHits: '⚔️ Critical Hit Descriptions',
+      criticalFailures: '💥 Critical Failure Descriptions'
     };
     
     for (const section of sectionOrder) {
@@ -2937,6 +3304,8 @@
           if (result.section === 'actions') {
             renderActionCard(result.item, result.category);
           } else if (result.section === 'criticalHits') {
+            renderActionCard(result.item, result.category);
+          } else if (result.section === 'criticalFailures') {
             renderActionCard(result.item, result.category);
           } else {
             renderSpellCard(result.item, result.section, result.category, result.isAdult);
@@ -3127,6 +3496,12 @@
     // Special rendering for critical hits
     if (section === 'criticalHits') {
       renderCriticalHits();
+      return;
+    }
+    
+    // Special rendering for critical failures
+    if (section === 'criticalFailures') {
+      renderCriticalFailures();
       return;
     }
     const cat = categorySelect.value;
@@ -3855,6 +4230,200 @@
     }
   }
 
+  function renderCriticalFailures() {
+    const cat = categorySelect.value;
+    const q = (searchInput.value || '').trim().toLowerCase();
+    
+    if (!cat) {
+      console.warn('renderCriticalFailures: No category selected');
+      content.innerHTML = '<div class="card">Please select a category</div>';
+      if (categorySelect.options.length === 0) {
+        buildCategories();
+        if (categorySelect.options.length > 0) {
+          categorySelect.selectedIndex = 0;
+          setTimeout(() => renderCriticalFailures(), RENDER_DELAY_MS);
+        }
+      }
+      return;
+    }
+    
+    // Get merged critical failures (defaults + user items, excluding deleted)
+    const fullFailures = getMergedData('criticalFailures', cat);
+    const defaults = criticalFailures[cat] || [];
+    let filteredFailures = fullFailures;
+    
+    debugLog(`renderCriticalFailures: category=${cat}, fullFailures=${fullFailures.length}, defaults=${defaults.length}`);
+    
+    if (q) {
+      filteredFailures = fullFailures.filter(f => f.toLowerCase().includes(q));
+      debugLog(`renderCriticalFailures: after search filter, filteredFailures=${filteredFailures.length}`);
+    }
+    
+    // Apply favorites filter if enabled
+    if (favoritesOnly && favoritesOnly.checked) {
+      filteredFailures = filteredFailures.filter(failure => {
+        const itemId = getItemId('criticalFailures', failure);
+        return favorites.has(itemId);
+      });
+      debugLog(`renderCriticalFailures: after favorites filter, filteredFailures=${filteredFailures.length}`);
+    }
+    
+    debugLog(`renderCriticalFailures: final filteredFailures=${filteredFailures.length}, will render ${filteredFailures.length} cards`);
+    
+    content.innerHTML = '';
+    
+    // Add random button at the top (uses full list, not filtered)
+    if (fullFailures.length > 0) {
+      const randomCard = document.createElement('article');
+      randomCard.className = 'card';
+      randomCard.style.background = 'linear-gradient(135deg, #f7e7c4 0%, #fff9eb 100%)';
+      randomCard.style.border = '2px solid var(--accent)';
+      
+      const randomBtn = document.createElement('button');
+      randomBtn.className = 'btn';
+      randomBtn.style.width = '100%';
+      randomBtn.style.padding = '16px';
+      randomBtn.style.fontSize = '18px';
+      randomBtn.style.fontWeight = 'bold';
+      randomBtn.textContent = '🎲 Feeling Chaotic? 🎲';
+      randomBtn.addEventListener('click', () => {
+        const randomFailure = fullFailures[Math.floor(Math.random() * fullFailures.length)];
+        
+        // Check if the selected failure is in the filtered results
+        const isInFiltered = filteredFailures.includes(randomFailure);
+        
+        // Find and highlight the selected failure card if it's visible
+        const allCards = content.querySelectorAll('.critical-failure-card');
+        let selectedCard = null;
+        for (const card of allCards) {
+          const failureDiv = card.querySelector('[data-failure-text]');
+          if (failureDiv && failureDiv.dataset.failureText === randomFailure) {
+            selectedCard = card;
+            break;
+          }
+        }
+        
+        if (selectedCard) {
+          // Remove previous highlights
+          allCards.forEach(c => c.classList.remove('highlighted'));
+          
+          // Highlight the selected card
+          selectedCard.classList.add('highlighted');
+          
+          // Scroll to the card
+          selectedCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          
+          // Remove highlight after 5 seconds
+          setTimeout(() => {
+            selectedCard.classList.remove('highlighted');
+          }, TOAST_DURATION_MS);
+          
+          showToast(`Random: ${randomFailure}`);
+        } else if (!isInFiltered) {
+          showToast(`Random: ${randomFailure} (not in current filter)`);
+        } else {
+          showToast(`Random: ${randomFailure}`);
+        }
+        copyToClipboard(randomFailure, 'criticalFailures', cat);
+      });
+      
+      const randomHint = document.createElement('div');
+      randomHint.style.marginTop = '8px';
+      randomHint.style.fontSize = '14px';
+      randomHint.style.opacity = '0.7';
+      randomHint.style.textAlign = 'center';
+      randomHint.textContent = 'Click to get a random critical failure description and copy it!';
+      
+      randomCard.appendChild(randomBtn);
+      randomCard.appendChild(randomHint);
+      content.appendChild(randomCard);
+    }
+    
+    // Render filtered critical failures
+    const filteredDefaultCount = fullFailures.length - ((userItems.criticalFailures && userItems.criticalFailures[cat]) ? userItems.criticalFailures[cat].length : 0);
+    
+    debugLog(`renderCriticalFailures: Starting loop, filteredFailures.length=${filteredFailures.length}`);
+    
+    for (let i = 0; i < filteredFailures.length; i++) {
+      const failure = filteredFailures[i];
+      // Find the index in the full list (not filtered)
+      const fullIndex = fullFailures.indexOf(failure);
+      
+      // Check if this is a default item
+      const itemId = getItemId('criticalFailures', failure);
+      const isDefaultItem = defaults.includes(failure);
+      const deletedIds = deletedDefaults.criticalFailures?.[cat] || [];
+      const isDeletedDefault = deletedIds.includes(itemId);
+      
+      const isUserAdded = fullIndex >= filteredDefaultCount;
+      const userIndex = isUserAdded ? fullIndex - filteredDefaultCount : null;
+      
+      const card = document.createElement('article');
+      card.className = 'card critical-failure-card';
+      card.style.cursor = 'pointer';
+      
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'card__copy';
+      copyBtn.textContent = 'Copy';
+      copyBtn.addEventListener('click', (e) => { 
+        e.stopPropagation(); 
+        content.querySelectorAll('.critical-failure-card').forEach(c => c.classList.remove('highlighted'));
+        copyToClipboard(failure, 'criticalFailures', cat);
+      });
+      
+      // Add edit button for ALL items
+      const editBtn = document.createElement('button');
+      editBtn.className = 'card__edit';
+      editBtn.textContent = '✎';
+      editBtn.title = 'Edit or delete this item';
+      
+      // Visual indicator
+      const isDark = document.body.classList.contains('dark-mode');
+      if (isUserAdded) {
+        card.style.borderLeft = '4px solid #2b6f3a';
+        card.style.background = isDark ? '#2d3d2d' : '#f0f8f0';
+      } else if (isDefaultItem && !isDeletedDefault) {
+        card.style.borderLeft = '4px solid #4a90e2';
+        card.style.background = isDark ? '#2d3d4d' : '#f0f4f8';
+      }
+      
+      editBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const failureObj = typeof failure === 'string' ? failure : failure;
+        const editIndex = isUserAdded ? userIndex : (isDefaultItem ? -1 : null);
+        openEditModal('criticalFailures', cat, failureObj, editIndex);
+      });
+      card.appendChild(editBtn);
+      
+      card.addEventListener('click', () => {
+        content.querySelectorAll('.critical-failure-card').forEach(c => c.classList.remove('highlighted'));
+        copyToClipboard(failure, 'criticalFailures', cat);
+      });
+
+      const p = document.createElement('div');
+      p.textContent = failure;
+      p.style.fontSize = '16px';
+      p.style.lineHeight = '1.6';
+      p.dataset.failureText = failure; // Add data attribute for easier lookup
+      
+      const meta = document.createElement('div');
+      meta.className = 'card__meta';
+      meta.textContent = `Critical Failure — ${cat}`;
+
+      card.appendChild(copyBtn);
+      card.appendChild(p);
+      card.appendChild(meta);
+      content.appendChild(card);
+    }
+    
+    if (!filteredFailures.length) {
+      const empty = document.createElement('div');
+      empty.className = 'card';
+      empty.textContent = 'No results. Try another category or search term.';
+      content.appendChild(empty);
+    }
+  }
+
   // History tracking functions
   function loadHistory() {
     try {
@@ -4205,7 +4774,7 @@
     try {
       const section = sectionSelect.value;
       const category = categorySelect.value;
-      const text = (section === 'actions' || section === 'criticalHits') ? item : `${item.t} (Song: ${item.s} — ${item.a})`;
+      const text = (section === 'actions' || section === 'criticalHits' || section === 'criticalFailures') ? item : `${item.t} (Song: ${item.s} — ${item.a})`;
       await navigator.clipboard.writeText(text);
       addToHistory(text, section, category);
       showToast('Copied to clipboard');
@@ -4228,10 +4797,12 @@
     currentEditingCategory = category;
     currentEditingIndex = userIndex;
     
-    // Store item metadata separately for actions/criticalHits (since they're strings)
-    if ((section === 'actions' || section === 'criticalHits') && typeof item === 'string') {
+    // Store item metadata separately for actions/criticalHits/criticalFailures (since they're strings)
+    if ((section === 'actions' || section === 'criticalHits' || section === 'criticalFailures') && typeof item === 'string') {
       // Check if it's a default item
-      const defaults = section === 'actions' ? (characterActions[category] || []) : (criticalHits[category] || []);
+      const defaults = section === 'actions' ? (characterActions[category] || []) 
+        : section === 'criticalHits' ? (criticalHits[category] || [])
+        : (criticalFailures[category] || []);
       const itemId = getItemId(section, item);
       const deletedIds = deletedDefaults[section]?.[category] || [];
       const isDefaultItem = defaults.includes(item);
@@ -4250,7 +4821,7 @@
       currentEditingItem = item;
     }
     
-    const isActions = section === 'actions' || section === 'criticalHits';
+    const isActions = section === 'actions' || section === 'criticalHits' || section === 'criticalFailures';
     const isEditing = (userIndex !== null && userIndex !== undefined && userIndex >= 0) || (userIndex === -1);
     
     modalTitle.textContent = isEditing ? 'Edit Item' : 'Add New Item';
@@ -4300,14 +4871,15 @@
       return;
     }
     
-    const isActions = section === 'actions' || section === 'criticalHits';
+    const isActions = section === 'actions' || section === 'criticalHits' || section === 'criticalFailures';
     const isDefaultItem = currentEditingItem?._isDefaultItem;
     const isUserAdded = currentEditingItem?._isUserAdded;
     
     if (isActions) {
       const text = editText.value.trim();
       if (!text) {
-        showToast(`Please enter ${section === 'actions' ? 'action' : 'critical hit'} text`);
+        const sectionName = section === 'actions' ? 'action' : (section === 'criticalHits' ? 'critical hit' : 'critical failure');
+        showToast(`Please enter ${sectionName} text`);
         return;
       }
       
@@ -4321,7 +4893,8 @@
       if (currentEditingIndex !== null && currentEditingIndex !== undefined && currentEditingIndex >= 0) {
         // Editing existing user item
         userItems[section][category][currentEditingIndex] = text;
-        showToast(`${section === 'actions' ? 'Action' : 'Critical hit'} updated`);
+        const sectionName = section === 'actions' ? 'Action' : (section === 'criticalHits' ? 'Critical hit' : 'Critical failure');
+        showToast(`${sectionName} updated`);
       } else if (currentEditingIndex === -1 && isDefaultItem) {
         // Editing a default item - hide original and add edited version
         const originalItem = (currentEditingItem._text || currentEditingItem._actionText || currentEditingItem);
@@ -4337,11 +4910,13 @@
         }
         userItems[section][category].push(text);
         saveDeletedDefaults(deletedDefaults);
-        showToast(`Default ${section === 'actions' ? 'action' : 'critical hit'} edited (original hidden)`);
+        const sectionName = section === 'actions' ? 'action' : (section === 'criticalHits' ? 'critical hit' : 'critical failure');
+        showToast(`Default ${sectionName} edited (original hidden)`);
       } else {
         // Adding new
         userItems[section][category].push(text);
-        showToast(`${section === 'actions' ? 'Action' : 'Critical hit'} added`);
+        const sectionName = section === 'actions' ? 'Action' : (section === 'criticalHits' ? 'Critical hit' : 'Critical failure');
+        showToast(`${sectionName} added`);
       }
     } else {
       const text = editText.value.trim();
@@ -4504,7 +5079,7 @@
       return;
     }
     
-    const isActions = section === 'actions' || section === 'criticalHits';
+    const isActions = section === 'actions' || section === 'criticalHits' || section === 'criticalFailures';
     
     if (isActions) {
       if (userItems[section] && userItems[section][category]) {
@@ -4589,6 +5164,8 @@
       renderActions();
     } else if (section === 'criticalHits') {
       renderCriticalHits();
+    } else if (section === 'criticalFailures') {
+      renderCriticalFailures();
     } else {
       render();
     }
@@ -4757,7 +5334,7 @@
         // Metadata
         version: '1.2',
         timestamp: new Date().toISOString(),
-        exportNote: 'Complete export including all default items (spells, bardic, mockery, actions, criticalHits, generators) plus all user customizations (favorites, custom items, edits, deletions, history).'
+        exportNote: 'Complete export including all default items (spells, bardic, mockery, actions, criticalHits, criticalFailures, generators) plus all user customizations (favorites, custom items, edits, deletions, history).'
       };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);

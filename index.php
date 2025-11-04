@@ -43,6 +43,7 @@ $stylesVersion = file_exists($stylesCss) ? filemtime($stylesCss) : time();
           <option value="mockery">Vicious Mockery</option>
           <option value="actions">What's Your Character Doing?</option>
           <option value="criticalHits">Critical Hit Description</option>
+          <option value="criticalFailures">Critical Failure Description</option>
         </select>
       </label>
 
