@@ -3710,17 +3710,30 @@
       copyBtn.addEventListener('click', (e) => { e.stopPropagation(); copyLine(item); });
       
       // Add YouTube button if YouTube link exists
+      // Use an anchor tag so RedirectTube extension can intercept it
       let youtubeBtn = null;
       if (item.youtube) {
-        youtubeBtn = document.createElement('button');
+        const startTime = item.startTime || 0;
+        const videoId = item.youtube;
+        const startSeconds = Math.floor(startTime || 0);
+        const watchParams = new URLSearchParams();
+        watchParams.set('v', videoId);
+        if (startSeconds > 0) {
+          watchParams.set('t', startSeconds.toString());
+        }
+        watchParams.set('autoplay', '1');
+        const watchUrl = `https://www.youtube.com/watch?${watchParams.toString()}`;
+        
+        youtubeBtn = document.createElement('a');
         youtubeBtn.className = 'card__youtube';
         youtubeBtn.textContent = '▶️';
         youtubeBtn.title = 'Play karaoke track';
+        youtubeBtn.href = watchUrl;
+        youtubeBtn.target = '_blank';
+        youtubeBtn.rel = 'noopener noreferrer';
         youtubeBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          const startTime = item.startTime || 0;
-          const title = `${item.s} — ${item.a}`;
-          showYouTubePlayer(item.youtube, startTime, title);
+          // Let RedirectTube extension intercept the link
         });
       }
       
@@ -4990,7 +5003,15 @@
     return generateKaraokeSearchUrl(song, searchArtist);
   }
   
-  // Show YouTube player - opens YouTube in new tab
+  // Helper function to open YouTube video
+  // RedirectTube extension will intercept YouTube links and redirect to FreeTube
+  function openYouTubeVideo(watchUrl, title = 'Karaoke Track') {
+    // Simply open the URL - RedirectTube should intercept window.open() calls
+    window.open(watchUrl, '_blank');
+    showToast(`Opening ${title}...`);
+  }
+  
+  // Show YouTube player - opens in FreeTube if available, otherwise YouTube
   function showYouTubePlayer(videoId, startTime = 0, title = 'Karaoke Track') {
     if (!videoId) {
       showToast('Invalid YouTube video ID');
@@ -5016,9 +5037,8 @@
     
     const watchUrl = `https://www.youtube.com/watch?${watchParams.toString()}`;
     
-    // Open YouTube in new tab
-    window.open(watchUrl, '_blank');
-    showToast(`Opening ${title} on YouTube...`);
+    // Open in FreeTube if available, otherwise YouTube
+    openYouTubeVideo(watchUrl, title);
   }
   
   // Close YouTube player modal
@@ -5125,11 +5145,14 @@
       editStartTime.value = startTime ? (typeof startTime === 'number' ? formatTime(startTime) : startTime.toString()) : '';
       
       // Generate karaoke suggestion if no YouTube URL exists
+      // Check for song and artist properties (item.s and item.a)
       if (youtubeSuggestion && youtubeSuggestionText) {
-        if (!youtubeUrl && item.s && item.a) {
-          const searchUrl = findKaraokeVideo(item.s, item.a);
+        const song = item?.s || item?.song || '';
+        const artist = item?.a || item?.artist || '';
+        if (!youtubeUrl && song && artist) {
+          const searchUrl = findKaraokeVideo(song, artist);
           if (searchUrl) {
-            youtubeSuggestionText.textContent = `Find karaoke for "${item.s}" by ${item.a}`;
+            youtubeSuggestionText.textContent = `Find karaoke for "${song}" by ${artist}`;
             youtubeSuggestion.dataset.searchUrl = searchUrl;
             youtubeSuggestion.style.display = 'block';
           } else {
@@ -5687,7 +5710,8 @@
     youtubeOpenTabBtn.addEventListener('click', () => {
       const watchUrl = youtubePlayerFrame?.dataset?.watchUrl;
       if (watchUrl) {
-        window.open(watchUrl, '_blank');
+        const title = youtubePlayerTitle?.textContent || 'Karaoke Track';
+        openYouTubeVideo(watchUrl, title);
         closeYouTubePlayer();
       }
     });

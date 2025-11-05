@@ -258,7 +258,7 @@ body.dark-mode .card__chip {
 }
 .card__copy { position: absolute; right: 10px; top: 10px; font-size: 12px; border: 1px solid var(--accent-2); color: #fff; background: var(--accent-2); padding: 4px 8px; border-radius: 6px; cursor: pointer; }
 .card__copy:hover { filter: brightness(1.1); }
-.card__youtube { position: absolute; right: 10px; top: 38px; font-size: 16px; border: 1px solid #ff0000; color: #fff; background: #ff0000; padding: 4px 8px; border-radius: 6px; cursor: pointer; min-width: 36px; text-align: center; }
+.card__youtube { position: absolute; right: 10px; top: 38px; font-size: 16px; border: 1px solid #ff0000; color: #fff; background: #ff0000; padding: 4px 8px; border-radius: 6px; cursor: pointer; min-width: 36px; text-align: center; text-decoration: none; display: inline-block; }
 .card__youtube:hover { filter: brightness(1.1); background: #ff3333; }
 body.dark-mode .card__youtube { border-color: #ff4444; background: #cc0000; }
 body.dark-mode .card__youtube:hover { background: #ff2222; }
