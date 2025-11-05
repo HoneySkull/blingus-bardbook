@@ -4897,9 +4897,15 @@
     }
     
     // Handle youtube.com/watch URLs
-    const watchMatch = url.match(/youtube\.com\/watch\?.*[&?]v=([a-zA-Z0-9_-]{11})/);
-    if (watchMatch && watchMatch[1]) {
-      return watchMatch[1];
+    // Try ?v=VIDEO_ID first (common case)
+    const watchMatch1 = url.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/);
+    if (watchMatch1 && watchMatch1[1]) {
+      return watchMatch1[1];
+    }
+    // Try &v=VIDEO_ID (when v is not the first parameter)
+    const watchMatch2 = url.match(/youtube\.com\/watch\?.*&v=([a-zA-Z0-9_-]{11})/);
+    if (watchMatch2 && watchMatch2[1]) {
+      return watchMatch2[1];
     }
     
     // Handle youtube.com/embed URLs
@@ -5157,10 +5163,15 @@
   }
   
   function saveEditItem() {
+    console.log('saveEditItem called');
+    console.log('Section:', currentEditingSection, 'Category:', currentEditingCategory);
+    console.log('Index:', currentEditingIndex, 'Item:', currentEditingItem);
+    
     const section = currentEditingSection;
     const category = currentEditingCategory;
     
     if (!section || !category) {
+      console.error('Missing section or category');
       showToast('Error: Missing section or category');
       return;
     }
@@ -5234,8 +5245,13 @@
         if (videoId) {
           youtube = videoId;
         } else {
-          showToast('Invalid YouTube URL format');
-          return;
+          // Only show error if it looks like a URL attempt (contains youtube.com or youtu.be)
+          // Otherwise, just ignore invalid input (user might be typing)
+          if (youtubeInput.includes('youtube.com') || youtubeInput.includes('youtu.be')) {
+            showToast('Invalid YouTube URL format. Leave blank or use a valid video URL.');
+            return;
+          }
+          // If it doesn't look like a URL, just ignore it (don't block save)
         }
       }
       
@@ -5243,11 +5259,21 @@
         const parsedTime = parseTime(startTimeInput);
         if (parsedTime !== null) {
           startTime = parsedTime;
+          console.log('Parsed start time:', startTime);
         } else {
-          showToast('Invalid start time format (use seconds like "30" or time like "0:30")');
-          return;
+          // Only block save if it clearly looks like a time format attempt (contains digits and colons)
+          // Allow random text to be ignored
+          if (/^\d+[:]\d+/.test(startTimeInput) || /^\d+$/.test(startTimeInput)) {
+            console.warn('Invalid start time format:', startTimeInput);
+            showToast('Invalid start time format (use seconds like "30" or time like "0:30")');
+            return;
+          }
+          // If it doesn't look like a time format, just ignore it and continue
+          console.log('Ignoring non-time input in startTime field:', startTimeInput);
         }
       }
+      
+      console.log('Creating newItem with:', { text, song, artist, youtube, startTime });
       
       const newItem = {
         t: text,
@@ -5258,10 +5284,14 @@
       // Add YouTube properties if provided
       if (youtube) {
         newItem.youtube = youtube;
+        console.log('Added youtube property:', youtube);
       }
       if (startTime !== null) {
         newItem.startTime = startTime;
+        console.log('Added startTime property:', startTime);
       }
+      
+      console.log('Final newItem:', newItem);
       
       const wasAdultSpell = section === 'spells' && currentEditingItem?.adult;
       const isAdultSpell = section === 'spells' && editAdult.checked;
@@ -5375,10 +5405,17 @@
       }
     }
     
-    saveUserItems(userItems);
-    debugLog('Saved user items:', userItems);
-    closeEditModal();
-    render();
+    console.log('About to save userItems:', userItems);
+    try {
+      saveUserItems(userItems);
+      console.log('Successfully saved user items');
+      debugLog('Saved user items:', userItems);
+      closeEditModal();
+      render();
+    } catch (error) {
+      console.error('Error in saveEditItem:', error);
+      showToast('Error saving item: ' + error.message);
+    }
   }
   
   function deleteEditItem() {
@@ -5532,7 +5569,16 @@
     }
   });
   
-  saveEditBtn.addEventListener('click', saveEditItem);
+  if (saveEditBtn) {
+    saveEditBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Save button clicked');
+      saveEditItem();
+    });
+  } else {
+    console.error('saveEditBtn not found!');
+  }
   
   // YouTube player modal event listeners
   if (youtubePlayerClose) {
