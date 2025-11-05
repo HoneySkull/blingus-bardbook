@@ -5257,8 +5257,16 @@
             showToast('Invalid YouTube URL format. Leave blank or use a valid video URL.');
             return;
           }
-          // If it doesn't look like a URL, just ignore it (don't block save)
-          console.log('Ignoring non-URL input in YouTube field:', youtubeInput);
+          // If it's a partial video ID (like "g1lmQ&list=..."), try to extract just the ID part
+          // Check if it looks like it might be part of a video ID (alphanumeric, 11 chars or less)
+          const partialMatch = youtubeInput.match(/([a-zA-Z0-9_-]{11})/);
+          if (partialMatch && partialMatch[1]) {
+            console.log('Found potential video ID in partial input:', partialMatch[1]);
+            youtube = partialMatch[1];
+          } else {
+            // If it doesn't look like a URL or partial ID, just ignore it (don't block save)
+            console.log('Ignoring non-URL input in YouTube field:', youtubeInput);
+          }
         }
       }
       
@@ -5294,12 +5302,13 @@
         newItem.youtube = youtube;
         console.log('Added youtube property:', youtube);
       }
-      if (startTime !== null) {
+      if (startTime !== null && startTime !== undefined) {
         newItem.startTime = startTime;
         console.log('Added startTime property:', startTime);
       }
       
       console.log('Final newItem:', newItem);
+      console.log('About to process save logic for section:', section, 'category:', category);
       
       const wasAdultSpell = section === 'spells' && currentEditingItem?.adult;
       const isAdultSpell = section === 'spells' && editAdult.checked;
@@ -5413,15 +5422,29 @@
       }
     }
     
+    console.log('=== SAVE COMPLETE - About to persist ===');
     console.log('About to save userItems:', userItems);
+    console.log('UserItems keys:', Object.keys(userItems));
+    
     try {
       saveUserItems(userItems);
-      console.log('Successfully saved user items');
+      console.log('✓ Successfully saved user items to localStorage');
       debugLog('Saved user items:', userItems);
-      closeEditModal();
-      render();
+      
+      // Small delay to ensure save completes before closing modal
+      setTimeout(() => {
+        console.log('Closing modal and rendering...');
+        closeEditModal();
+        render();
+        console.log('✓ Modal closed and render completed');
+      }, 100);
     } catch (error) {
-      console.error('Error in saveEditItem:', error);
+      console.error('✗ ERROR in saveEditItem:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
       showToast('Error saving item: ' + error.message);
     }
   }
