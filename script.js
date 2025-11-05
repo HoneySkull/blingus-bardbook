@@ -5172,18 +5172,27 @@
   }
   
   function saveEditItem() {
-    console.log('saveEditItem called');
+    console.log('=== saveEditItem FUNCTION CALLED ===');
+    console.log('Timestamp:', new Date().toISOString());
     console.log('Section:', currentEditingSection, 'Category:', currentEditingCategory);
     console.log('Index:', currentEditingIndex, 'Item:', currentEditingItem);
+    console.log('editText exists:', !!editText, 'value:', editText?.value);
+    console.log('editSong exists:', !!editSong, 'value:', editSong?.value);
+    console.log('editArtist exists:', !!editArtist, 'value:', editArtist?.value);
+    
+    // Show immediate feedback
+    showToast('Saving...');
     
     const section = currentEditingSection;
     const category = currentEditingCategory;
     
     if (!section || !category) {
-      console.error('Missing section or category');
+      console.error('✗ ERROR: Missing section or category', { section, category });
       showToast('Error: Missing section or category');
       return;
     }
+    
+    console.log('✓ Section and category validated:', section, category);
     
     const isActions = section === 'actions' || section === 'criticalHits' || section === 'criticalFailures';
     const isDefaultItem = currentEditingItem?._isDefaultItem;
@@ -5609,16 +5618,56 @@
     }
   });
   
-  if (saveEditBtn) {
-    saveEditBtn.addEventListener('click', function(e) {
+  // Multiple ways to attach save button listener to ensure it works
+  const saveBtnElement = document.getElementById('saveEditBtn');
+  
+  if (saveBtnElement) {
+    console.log('Save button found, attaching listener');
+    saveBtnElement.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
-      console.log('Save button clicked');
-      saveEditItem();
+      console.log('=== SAVE BUTTON CLICKED ===');
+      console.log('Event:', e);
+      console.log('Calling saveEditItem...');
+      try {
+        saveEditItem();
+      } catch (err) {
+        console.error('ERROR calling saveEditItem:', err);
+        showToast('Error: ' + err.message);
+      }
+      return false;
     });
   } else {
-    console.error('saveEditBtn not found!');
+    console.error('✗ saveEditBtn not found by getElementById!');
   }
+  
+  // Also use the $ selector version
+  if (saveEditBtn) {
+    console.log('saveEditBtn also found via $ selector');
+    // Don't attach twice if it's the same element
+    if (saveEditBtn !== saveBtnElement) {
+      saveEditBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Save button clicked (via $ selector)');
+        saveEditItem();
+        return false;
+      });
+    }
+  } else {
+    console.error('✗ saveEditBtn not found via $ selector either!');
+  }
+  
+  // Use event delegation as ultimate fallback
+  document.addEventListener('click', function(e) {
+    if (e.target && (e.target.id === 'saveEditBtn' || e.target.closest('#saveEditBtn'))) {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Save button clicked (via document delegation)');
+      saveEditItem();
+      return false;
+    }
+  });
   
   // YouTube player modal event listeners
   if (youtubePlayerClose) {
@@ -5687,7 +5736,10 @@
   });
   modalClose.addEventListener('click', closeEditModal);
   editModal.addEventListener('click', (e) => {
-    if (e.target === editModal) {
+    // Only close if clicking directly on the modal background (not on content or buttons)
+    // Don't interfere with clicks on buttons or inputs inside the modal
+    if (e.target === editModal && !e.target.closest('.modal__content')) {
+      console.log('Clicked on modal background, closing modal');
       closeEditModal();
     }
   });
