@@ -5234,29 +5234,37 @@
       }
       
       // Parse YouTube URL and start time
-      const youtubeInput = editYoutube.value.trim();
-      const startTimeInput = editStartTime.value.trim();
+      // Safely access YouTube input elements (they may be null if not found)
+      // Don't block save if elements don't exist - just skip YouTube fields
+      const youtubeInput = editYoutube ? (editYoutube.value || '').trim() : '';
+      const startTimeInput = editStartTime ? (editStartTime.value || '').trim() : '';
+      
+      console.log('YouTube inputs:', { youtubeInput, startTimeInput, editYoutube: !!editYoutube, editStartTime: !!editStartTime });
       
       let youtube = null;
       let startTime = null;
       
       if (youtubeInput) {
         const videoId = parseYouTubeUrl(youtubeInput);
+        console.log('Parsed YouTube URL:', youtubeInput, '-> Video ID:', videoId);
         if (videoId) {
           youtube = videoId;
         } else {
           // Only show error if it looks like a URL attempt (contains youtube.com or youtu.be)
           // Otherwise, just ignore invalid input (user might be typing)
           if (youtubeInput.includes('youtube.com') || youtubeInput.includes('youtu.be')) {
+            console.warn('Invalid YouTube URL format:', youtubeInput);
             showToast('Invalid YouTube URL format. Leave blank or use a valid video URL.');
             return;
           }
           // If it doesn't look like a URL, just ignore it (don't block save)
+          console.log('Ignoring non-URL input in YouTube field:', youtubeInput);
         }
       }
       
       if (startTimeInput) {
         const parsedTime = parseTime(startTimeInput);
+        console.log('Parsed start time input:', startTimeInput, '-> Parsed:', parsedTime);
         if (parsedTime !== null) {
           startTime = parsedTime;
           console.log('Parsed start time:', startTime);
