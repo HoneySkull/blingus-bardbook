@@ -2754,8 +2754,23 @@
   function loadUserItems() {
     try {
       const raw = localStorage.getItem(userItemsKey);
-      return raw ? JSON.parse(raw) : { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {}, criticalFailures: {} };
+      const defaultStructure = { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {}, criticalFailures: {} };
+      if (!raw) {
+        return defaultStructure;
+      }
+      const parsed = JSON.parse(raw);
+      // Ensure all sections exist (in case data is incomplete)
+      return {
+        spells: parsed.spells || {},
+        adultSpells: parsed.adultSpells || {},
+        bardic: parsed.bardic || {},
+        mockery: parsed.mockery || {},
+        actions: parsed.actions || {},
+        criticalHits: parsed.criticalHits || {},
+        criticalFailures: parsed.criticalFailures || {}
+      };
     } catch(e) {
+      console.error('Error loading user items:', e);
       return { spells: {}, adultSpells: {}, bardic: {}, mockery: {}, actions: {}, criticalHits: {}, criticalFailures: {} };
     }
   }
@@ -5405,6 +5420,9 @@
               }
             }
             // Add to regular spells
+            if (!userItems.spells) {
+              userItems.spells = {};
+            }
             if (!userItems.spells[category]) {
               userItems.spells[category] = [];
             }
@@ -5421,6 +5439,9 @@
               }
             }
             // Add to adult spells
+            if (!userItems.adultSpells) {
+              userItems.adultSpells = {};
+            }
             if (!userItems.adultSpells[category]) {
               userItems.adultSpells[category] = [];
             }
@@ -5430,6 +5451,9 @@
           }
           // If it stays in the same category
           else if (isAdultSpell) {
+            if (!userItems.adultSpells) {
+              userItems.adultSpells = {};
+            }
             if (!userItems.adultSpells[category]) {
               userItems.adultSpells[category] = [];
             }
@@ -5437,6 +5461,9 @@
             userItems.adultSpells[category][currentEditingIndex] = newItem;
             showToast('Adult spell updated');
           } else {
+            if (!userItems.spells) {
+              userItems.spells = {};
+            }
             if (!userItems.spells[category]) {
               userItems.spells[category] = [];
             }
@@ -5445,6 +5472,9 @@
           }
         } else {
           // Non-spell sections
+          if (!userItems[section]) {
+            userItems[section] = {};
+          }
           if (!userItems[section][category]) {
             userItems[section][category] = [];
           }
@@ -5466,6 +5496,9 @@
         
         // Add edited version to user items
         if (section === 'spells' && isAdultSpell) {
+          if (!userItems.adultSpells) {
+            userItems.adultSpells = {};
+          }
           if (!userItems.adultSpells[category]) {
             userItems.adultSpells[category] = [];
           }
@@ -5473,6 +5506,9 @@
           userItems.adultSpells[category].push(newItem);
           showToast('Default spell edited (original hidden)');
         } else {
+          if (!userItems[section]) {
+            userItems[section] = {};
+          }
           if (!userItems[section][category]) {
             userItems[section][category] = [];
           }
@@ -5484,6 +5520,9 @@
         // Adding new item
         if (section === 'spells' && isAdultSpell) {
           // Adult spell
+          if (!userItems.adultSpells) {
+            userItems.adultSpells = {};
+          }
           if (!userItems.adultSpells[category]) {
             userItems.adultSpells[category] = [];
           }
@@ -5492,6 +5531,9 @@
           showToast('Adult spell added');
         } else {
           // Regular item
+          if (!userItems[section]) {
+            userItems[section] = {};
+          }
           if (!userItems[section][category]) {
             userItems[section][category] = [];
           }
