@@ -67,20 +67,48 @@ try {
             
             // Save data to JSON file
             $input = file_get_contents('php://input');
+            error_log('Blingus API: Raw input length = ' . strlen($input));
+            
+            if (empty($input)) {
+                throw new Exception('Empty request body');
+            }
+            
             $request = json_decode($input, true);
             
-            if (!$request || !isset($request['data'])) {
-                throw new Exception('Invalid data format');
+            if ($request === null) {
+                $jsonError = json_last_error_msg();
+                error_log('Blingus API: JSON decode error = ' . $jsonError);
+                throw new Exception('Invalid JSON format: ' . $jsonError);
+            }
+            
+            if (!isset($request['data'])) {
+                error_log('Blingus API: Missing data field. Request keys: ' . implode(', ', array_keys($request)));
+                throw new Exception('Invalid data format: missing "data" field');
             }
             
             $data = $request['data'];
+            
+            // Validate data directory is writable
+            if (!is_writable($dataDir) && !is_writable(dirname($dataDir))) {
+                throw new Exception('Data directory is not writable: ' . $dataDir);
+            }
+            
             $data['serverTimestamp'] = date('c');
             
             // Write to file
-            $json = json_encode($data, JSON_PRETTY_PRINT);
-            if (file_put_contents($dataFile, $json) === false) {
-                throw new Exception('Failed to write data file');
+            $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            if ($json === false) {
+                $jsonError = json_last_error_msg();
+                throw new Exception('Failed to encode data as JSON: ' . $jsonError);
             }
+            
+            $result = @file_put_contents($dataFile, $json);
+            if ($result === false) {
+                $error = error_get_last();
+                throw new Exception('Failed to write data file: ' . ($error ? $error['message'] : 'Unknown error') . ' (Path: ' . $dataFile . ')');
+            }
+            
+            error_log('Blingus API: Successfully saved ' . strlen($json) . ' bytes to ' . $dataFile);
             
             echo json_encode([
                 'success' => true,

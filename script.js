@@ -2431,6 +2431,15 @@
     
     try {
       const data = getAllUserData();
+      
+      // Validate data can be serialized
+      try {
+        JSON.stringify(data);
+      } catch (e) {
+        console.error('Error serializing data:', e);
+        throw new Error('Data contains invalid values that cannot be serialized: ' + e.message);
+      }
+      
       const requestBody = {
         action: 'save',
         data: data
@@ -2467,26 +2476,49 @@
         }
       } else {
         let errorText = '';
+        let errorMessage = '';
         try {
           errorText = await response.text();
-          const errorJson = JSON.parse(errorText);
-          if (errorJson.error) {
-            throw new Error(errorJson.error);
+          console.error('Server error response:', errorText);
+          try {
+            const errorJson = JSON.parse(errorText);
+            if (errorJson.error) {
+              errorMessage = errorJson.error;
+            } else if (errorJson.message) {
+              errorMessage = errorJson.message;
+            }
+          } catch (e) {
+            // Not JSON, use raw text
+            errorMessage = errorText || response.statusText;
           }
         } catch (e) {
-          // Not JSON, use raw text
+          errorMessage = response.statusText;
         }
-        console.error('HTTP error:', response.status, response.statusText, errorText);
+        
+        console.error('HTTP error:', response.status, response.statusText);
+        console.error('Error message:', errorMessage);
+        console.error('Full error text:', errorText);
+        
+        if (response.status === 400) {
+          console.error('400 Bad Request Details:', {
+            url: window.location.origin + API_ENDPOINT,
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            bodySize: JSON.stringify(requestBody).length,
+            errorMessage: errorMessage
+          });
+          throw new Error(`400 Bad Request: ${errorMessage || 'Invalid request format. Check server logs for details.'}`);
+        }
         if (response.status === 405) {
           console.error('405 Error Details:', {
             url: window.location.origin + API_ENDPOINT,
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            bodySize: JSON.stringify({ action: 'save', data: data }).length
+            bodySize: JSON.stringify(requestBody).length
           });
           throw new Error('405 Method Not Allowed - Server/web server is blocking POST requests. Check nginx/apache configuration or PHP setup.');
         }
-        throw new Error(`HTTP ${response.status}: ${response.statusText}${errorText ? ' - ' + errorText : ''}`);
+        throw new Error(`HTTP ${response.status}: ${response.statusText}${errorMessage ? ' - ' + errorMessage : ''}`);
       }
     } catch (error) {
       console.error('Error saving to server:', error);
