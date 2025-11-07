@@ -109,7 +109,11 @@ try {
             
             // Get absolute path for better error messages
             $absoluteDataDir = realpath($dataDir) ?: $dataDir;
-            $absoluteDataFile = $absoluteDataDir . '/blingus-data.json';
+            // Ensure we have a trailing slash
+            if (substr($absoluteDataDir, -1) !== DIRECTORY_SEPARATOR) {
+                $absoluteDataDir .= DIRECTORY_SEPARATOR;
+            }
+            $absoluteDataFile = $absoluteDataDir . 'blingus-data.json';
             
             // Validate data directory is writable
             if (!is_writable($absoluteDataDir) && !is_writable(dirname($absoluteDataDir))) {

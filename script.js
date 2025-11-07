@@ -5761,7 +5761,7 @@
       console.log('About to process save logic for section:', section, 'category:', category);
       
       const wasAdultSpell = section === 'spells' && currentEditingItem?.adult;
-      const isAdultSpell = section === 'spells' && editAdult.checked;
+      const isAdultSpell = section === 'spells' && editAdult && editAdult.checked;
       
       if (currentEditingIndex !== null && currentEditingIndex !== undefined && currentEditingIndex >= 0) {
         // Editing existing user item
@@ -5843,6 +5843,9 @@
         const originalId = getItemId(section, originalItem);
         const deleteSection = (section === 'spells' && isAdultSpell) ? 'adultSpells' : section;
         
+        if (!deletedDefaults[deleteSection]) {
+          deletedDefaults[deleteSection] = {};
+        }
         if (!deletedDefaults[deleteSection][category]) {
           deletedDefaults[deleteSection][category] = [];
         }
@@ -5936,6 +5939,9 @@
       const itemId = getItemId(section, currentEditingItem._text || currentEditingItem._actionText || currentEditingItem);
       const deleteSection = (section === 'spells' && currentEditingItem?.adult) ? 'adultSpells' : section;
       
+      if (!deletedDefaults[deleteSection]) {
+        deletedDefaults[deleteSection] = {};
+      }
       if (!deletedDefaults[deleteSection][category]) {
         deletedDefaults[deleteSection][category] = [];
       }
