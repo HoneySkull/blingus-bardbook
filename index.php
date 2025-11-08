@@ -61,11 +61,6 @@ $stylesVersion = file_exists($stylesCss) ? filemtime($stylesCss) : time();
       <!-- Checkbox Filters Row -->
       <div class="toolbar__row toolbar__row--filters">
       <label class="toggle">
-        <input type="checkbox" id="adultToggle" />
-        <span>Show adult/risqué</span>
-      </label>
-
-      <label class="toggle">
         <input type="checkbox" id="favoritesOnly" />
         <span>Only favorites</span>
       </label>

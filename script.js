@@ -116,6 +116,32 @@
       {t:"Fix you—when you're broken; healing's spoken, no token.", s:"Fix You", a:"Coldplay"},
       {t:"Rise up—from the floor; healing's door, no more.", s:"Rise Up", a:"Andra Day"},
       {t:"Even a rust monster would appreciate this healing—and they don't appreciate anything.", s:"Blingus' Obsession", a:"Mockery"}
+    ],
+    'Shatter': [
+      {t:"Thunderstruck—armor's bust; sonic boom, doom's thrust.", s:"Thunderstruck", a:"AC/DC"},
+      {t:"Another one bites the dust—and another one's gone; shatter's song, damage's strong.", s:"Another One Bites the Dust", a:"Queen"},
+      {t:"We will rock you—with sound that breaks; shatter shakes, no mistakes.", s:"We Will Rock You", a:"Queen"},
+      {t:"Boom boom pow—sonic blast now; shatter's how, damage's wow.", s:"Boom Boom Pow", a:"The Black Eyed Peas"},
+      {t:"Sound of silence? Not this time; shatter's chime, breaking rhyme.", s:"The Sound of Silence", a:"Simon & Garfunkel"},
+      {t:"I heard it through the grapevine—and now you hear it too; shatter's through, damage's due.", s:"I Heard It Through the Grapevine", a:"Marvin Gaye"},
+      {t:"Like a rolling stone—shatter's thrown; sonic zone, damage's own.", s:"Like a Rolling Stone", a:"Bob Dylan"},
+      {t:"Break on through to the other side—of broken; shatter's token, armor's spoken.", s:"Break On Through (To the Other Side)", a:"The Doors"},
+      {t:"Even a stone golem would feel this—and they're made of stone.", s:"D&D Lore", a:"Mockery"},
+      {t:"Thunder only happens when it's shattering—your armor, that is.", s:"Landslide", a:"Fleetwood Mac"},
+      {t:"I can't get no satisfaction—but shatter can; damage's plan, sonic's fan.", s:"(I Can't Get No) Satisfaction", a:"The Rolling Stones"}
+    ],
+    'Silence': [
+      {t:"Hello darkness, my old friend—shhh, we ghost again; quiet to the end.", s:"The Sound of Silence", a:"Simon & Garfunkel"},
+      {t:"Enjoy the silence—words are needless; footprints, feckless.", s:"Enjoy the Silence", a:"Depeche Mode"},
+      {t:"Hush, hush—keep it down now; silence's crown, no sound.", s:"Hush", a:"Deep Purple"},
+      {t:"Quiet riot—silence's plot; magic's not, sound forgot.", s:"Quiet Riot", a:"Quiet Riot"},
+      {t:"Shhh—silence is golden; magic's olden, sound's folden.", s:"Silence Is Golden", a:"The Tremeloes"},
+      {t:"Yesterday—all my noise seemed far away; now silence leads the way.", s:"Yesterday", a:"The Beatles"},
+      {t:"Turn down for what? Silence, that's what; magic's cut, sound's shut.", s:"Turn Down for What", a:"DJ Snake & Lil Jon"},
+      {t:"You're like Prismeer's silence—confusing and slightly concerning.", s:"Blingus' Feywild Reference", a:"Mockery"},
+      {t:"Even a banshee would be quiet—and that's saying something.", s:"D&D Lore", a:"Mockery"},
+      {t:"The sound of silence—is the sound of victory; magic's history, spell's mystery.", s:"The Sound of Silence", a:"Simon & Garfunkel"},
+      {t:"Quiet storm—silence's form; magic's norm, sound's dorm.", s:"Quiet Storm", a:"Smokey Robinson"}
     ]
   };
 
@@ -267,6 +293,14 @@
     'Healing Word': [
       {t:"Let's get it on—your heartbeat; slow jam lift you to your feet.", s:"Let's Get It On", a:"Marvin Gaye", adult:true},
       {t:"I kissed a girl—healed your world; don't ask the science, flags unfurled.", s:"I Kissed a Girl", a:"Katy Perry", adult:true}
+    ],
+    'Shatter': [
+      {t:"Boom boom pow—shatter's how; armor's down, damage's wow.", s:"Boom Boom Pow", a:"The Black Eyed Peas", adult:true},
+      {t:"I like big butts and I cannot lie—but shatter's breaking more than that; armor's flat.", s:"Baby Got Back", a:"Sir Mix-a-Lot", adult:true}
+    ],
+    'Silence': [
+      {t:"Shhh—silence is golden; magic's olden, sound's folden—and so's your spell.", s:"Silence Is Golden", a:"The Tremeloes", adult:true},
+      {t:"Hush, hush—keep it down now; silence's crown, no sound—magic's bound.", s:"Hush", a:"Deep Purple", adult:true}
     ]
   };
 
@@ -2544,7 +2578,6 @@
   
   const sectionSelect = $('#sectionSelect');
   const categorySelect = $('#categorySelect');
-  const adultToggle = $('#adultToggle');
   const favoritesOnly = $('#favoritesOnly');
   const searchInput = $('#searchInput');
   const clearBtn = $('#clearBtn');
@@ -3523,7 +3556,7 @@
     
     if (section === 'spells') {
       const base = getMergedData('spells', cat);
-      const add = adultToggle.checked ? getMergedAdultSpells(cat) : [];
+      const add = getMergedAdultSpells(cat);
       const result = [...base, ...add];
       debugLog(`getActiveList spells: base=${base.length}, add=${add.length}, result=${result.length}`);
       return result;
@@ -3570,19 +3603,17 @@
       }
     }
     
-    // Search adult spells (if adult toggle is on)
-    if (adultToggle.checked) {
-      const adultCategories = Object.keys(adultSpells || {});
-      for (const cat of adultCategories) {
-        const adultList = getMergedAdultSpells(cat);
-        const filtered = adultList.filter(item => {
-          return item.t.toLowerCase().includes(q) || 
-                 (item.s && item.s.toLowerCase().includes(q)) || 
-                 (item.a && item.a.toLowerCase().includes(q));
-        });
-        for (const item of filtered) {
-          allResults.push({ section: 'spells', category: cat, item, isAdult: true });
-        }
+    // Search adult spells (always included)
+    const adultCategories = Object.keys(adultSpells || {});
+    for (const cat of adultCategories) {
+      const adultList = getMergedAdultSpells(cat);
+      const filtered = adultList.filter(item => {
+        return item.t.toLowerCase().includes(q) || 
+               (item.s && item.s.toLowerCase().includes(q)) || 
+               (item.a && item.a.toLowerCase().includes(q));
+      });
+      for (const item of filtered) {
+        allResults.push({ section: 'spells', category: cat, item, isAdult: true });
       }
     }
     
@@ -3952,11 +3983,11 @@
         const deletedIds = deletedDefaults.spells?.[cat] || [];
         return !deletedIds.includes(itemId);
       });
-      const adultList = adultToggle.checked ? (adultSpells[cat] || []).filter(item => {
+      const adultList = (adultSpells[cat] || []).filter(item => {
         const itemId = getItemId('spells', item);
         const deletedIds = deletedDefaults.adultSpells?.[cat] || [];
         return !deletedIds.includes(itemId);
-      }) : [];
+      });
       baseList = [...spellList, ...adultList];
     } else if (section === 'bardic') {
       const bardicList = (bardic[cat] || []).filter(item => {
@@ -3981,7 +4012,7 @@
     
     // Add user items
     const userList = userItems[section]?.[cat] || [];
-    if (section === 'spells' && adultToggle.checked) {
+    if (section === 'spells') {
       const userAdultList = userItems.adultSpells?.[cat] || [];
       baseList = [...baseList, ...userList, ...userAdultList];
     } else {
@@ -4239,10 +4270,10 @@
           const itemId = getItemId('spells', item);
           return !(deletedDefaults.spells?.[cat] || []).includes(itemId);
         }).length;
-        const adultCount = adultToggle.checked ? (adultSpells[cat] || []).filter(item => {
+        const adultCount = (adultSpells[cat] || []).filter(item => {
           const itemId = getItemId('spells', item);
           return !(deletedDefaults.adultSpells?.[cat] || []).includes(itemId);
-        }).length : 0;
+        }).length;
         defaultCount = spellCount + adultCount;
       } else {
         const defaults = section === 'bardic' ? bardic : mockery;
@@ -4274,7 +4305,7 @@
       let isAdultSpell = false;
       
       if (isUserAdded) {
-        if (section === 'spells' && adultToggle.checked && item.adult) {
+        if (section === 'spells' && item.adult) {
           const userSpells = userItems.spells[cat] || [];
           const spellDefaultCount = (spells[cat] || []).filter(item => {
             const itemId = getItemId('spells', item);
@@ -5998,10 +6029,8 @@
     const section = sectionSelect.value;
     // Hide/show toggles based on section
     if (section === 'actions') {
-      adultToggle.parentElement.style.display = 'none';
       favoritesOnly.parentElement.style.display = 'none';
     } else {
-      adultToggle.parentElement.style.display = '';
       favoritesOnly.parentElement.style.display = '';
     }
     // Ensure a category is selected after building categories
@@ -6013,7 +6042,6 @@
     }, RENDER_DELAY_MS);
   });
   categorySelect.addEventListener('change', render);
-  adultToggle.addEventListener('change', render);
   if (favoritesOnly) favoritesOnly.addEventListener('change', render);
   
   // Dark mode toggle
@@ -6712,20 +6740,50 @@
   (async function initializeFileStorage() {
     const initialized = await initFileStorage();
     if (initialized) {
-      // Try to load data from file
-      const loaded = await loadDataFromFile();
-      if (loaded) {
-        // Reload favorites and other data from localStorage (which was updated by loadDataFromFile)
-        favorites = loadFavorites();
-        // Trigger a re-render to show loaded data
-        setTimeout(() => {
-          const section = sectionSelect.value;
-          if (section === 'actions') {
-            renderActions();
-          } else {
-            render();
-          }
-        }, 100);
+      // Data was loaded from server into localStorage, now reload all JavaScript variables
+      debugLog('Server data loaded, reloading JavaScript variables from localStorage...');
+      userItems = loadUserItems();
+      deletedDefaults = loadDeletedDefaults();
+      favorites = loadFavorites();
+      
+      // Trigger a re-render to show loaded data
+      setTimeout(() => {
+        const section = sectionSelect.value;
+        if (section === 'actions') {
+          renderActions();
+        } else if (section === 'criticalHits') {
+          renderCriticalHits();
+        } else if (section === 'criticalFailures') {
+          renderCriticalFailures();
+        } else {
+          render();
+        }
+      }, 100);
+    } else {
+      // Not using server storage, try local file system
+      try {
+        const loaded = await loadDataFromFile();
+        if (loaded) {
+          // Reload favorites and other data from localStorage (which was updated by loadDataFromFile)
+          userItems = loadUserItems();
+          deletedDefaults = loadDeletedDefaults();
+          favorites = loadFavorites();
+          // Trigger a re-render to show loaded data
+          setTimeout(() => {
+            const section = sectionSelect.value;
+            if (section === 'actions') {
+              renderActions();
+            } else if (section === 'criticalHits') {
+              renderCriticalHits();
+            } else if (section === 'criticalFailures') {
+              renderCriticalFailures();
+            } else {
+              render();
+            }
+          }, 100);
+        }
+      } catch (error) {
+        debugLog('Local file system load failed:', error);
       }
     }
   })();
