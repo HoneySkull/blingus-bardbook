@@ -3124,6 +3124,38 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const content = $('#content');
   
+  // Safe DOM manipulation helpers to prevent XSS
+  /**
+   * Safely clears an element's content
+   * @param {HTMLElement} element - Element to clear
+   */
+  function clearElement(element) {
+    if (element) {
+      while (element.firstChild) {
+        element.removeChild(element.firstChild);
+      }
+    }
+  }
+  
+  /**
+   * Safely sets text content on an element
+   * @param {HTMLElement} element - Element to set text on
+   * @param {string} text - Text content (will be escaped)
+   */
+  function setTextContent(element, text) {
+    if (element) {
+      element.textContent = text;
+    }
+  }
+  
+  /**
+   * Creates a safe text node
+   * @param {string} text - Text content
+   * @returns {Text} Text node
+   */
+  function createTextNode(text) {
+    return document.createTextNode(text);
+  }
   
   // Debug helper function - can be called from console (only in debug mode)
   if (DEBUG) {
@@ -3227,25 +3259,201 @@
   const cancelGeneratorBtn = $('#cancelGeneratorBtn');
   const deleteGeneratorBtn = $('#deleteGeneratorBtn');
 
-  // Constants
-  const MAX_HISTORY_ITEMS = 10;
-  const AUTO_SAVE_DEBOUNCE_MS = 500;
-  const AUTO_SAVE_TOAST_INTERVAL_MS = 10000;
-  const AUTO_SAVE_TOAST_DURATION_MS = 1500;
-  const RELOAD_DELAY_MS = 1000;
-  const TOAST_DURATION_MS = 5000;
-  const MAX_DELETED_DEFAULTS = 1000; // Safety threshold for corruption detection
-  const ERROR_TOAST_DURATION_MS = 3000; // Longer duration for error messages
-  const TOAST_AUTO_HIDE_DURATION_MS = 1200; // Duration before auto-hiding toast
-  const RENDER_DELAY_MS = 100; // Delay for re-rendering after DOM changes
+  // ============================================================================
+  // CONSTANTS CONFIGURATION
+  // ============================================================================
   
-  // Centralized error handler
+  /**
+   * Application constants - all magic numbers and strings centralized here
+   */
+  const CONFIG = {
+    // Timing constants (in milliseconds)
+    TIMING: {
+      MAX_HISTORY_ITEMS: 10,
+      AUTO_SAVE_DEBOUNCE_MS: 500,
+      AUTO_SAVE_TOAST_INTERVAL_MS: 10000,
+      AUTO_SAVE_TOAST_DURATION_MS: 1500,
+      RELOAD_DELAY_MS: 1000,
+      TOAST_DURATION_MS: 5000,
+      ERROR_TOAST_DURATION_MS: 3000,
+      TOAST_AUTO_HIDE_DURATION_MS: 1200,
+      RENDER_DELAY_MS: 100
+    },
+    
+    // Storage configuration
+    STORAGE: {
+      DATA_FILENAME: 'blingus-data.json',
+      DATA_DIR_NAME: 'data',
+      API_ENDPOINT: '/api/blingus-data.php',
+      // API key for server authentication (set via localStorage or environment)
+      // To use: localStorage.setItem('blingusApiKey', 'your-key-here')
+      API_KEY: localStorage.getItem('blingusApiKey') || null
+    },
+    
+    // Safety limits
+    LIMITS: {
+      MAX_DELETED_DEFAULTS: 1000, // Safety threshold for corruption detection
+      MAX_DATA_SIZE_MB: 10 // Maximum data size for server uploads
+    },
+    
+    // CSS class names (for consistency)
+    CLASSES: {
+      CARD: 'card',
+      CARD_HIGHLIGHTED: 'highlighted',
+      CARD_ACTION: 'action-card',
+      CARD_FAV: 'card__fav',
+      CARD_FAV_ON: 'on',
+      CARD_COPY: 'card__copy',
+      CARD_EDIT: 'card__edit',
+      CARD_META: 'card__meta',
+      CARD_CHIP: 'card__chip',
+      MODAL: 'modal',
+      MODAL_SHOW: 'show',
+      DARK_MODE: 'dark-mode'
+    }
+  };
+  
+  // Extract timing constants for backward compatibility
+  const MAX_HISTORY_ITEMS = CONFIG.TIMING.MAX_HISTORY_ITEMS;
+  const AUTO_SAVE_DEBOUNCE_MS = CONFIG.TIMING.AUTO_SAVE_DEBOUNCE_MS;
+  const AUTO_SAVE_TOAST_INTERVAL_MS = CONFIG.TIMING.AUTO_SAVE_TOAST_INTERVAL_MS;
+  const AUTO_SAVE_TOAST_DURATION_MS = CONFIG.TIMING.AUTO_SAVE_TOAST_DURATION_MS;
+  const RELOAD_DELAY_MS = CONFIG.TIMING.RELOAD_DELAY_MS;
+  const TOAST_DURATION_MS = CONFIG.TIMING.TOAST_DURATION_MS;
+  const MAX_DELETED_DEFAULTS = CONFIG.LIMITS.MAX_DELETED_DEFAULTS;
+  const ERROR_TOAST_DURATION_MS = CONFIG.TIMING.ERROR_TOAST_DURATION_MS;
+  const TOAST_AUTO_HIDE_DURATION_MS = CONFIG.TIMING.TOAST_AUTO_HIDE_DURATION_MS;
+  const RENDER_DELAY_MS = CONFIG.TIMING.RENDER_DELAY_MS;
+  
+  // ============================================================================
+  // INPUT VALIDATION
+  // ============================================================================
+  
+  /**
+   * Validates text input (sanitizes and checks length)
+   * @param {string} text - Text to validate
+   * @param {number} maxLength - Maximum allowed length
+   * @param {string} fieldName - Name of the field for error messages
+   * @returns {Object} {valid: boolean, value: string, error: string|null}
+   */
+  function validateTextInput(text, maxLength = 10000, fieldName = 'Text') {
+    if (typeof text !== 'string') {
+      return { valid: false, value: '', error: `${fieldName} must be a string` };
+    }
+    
+    const trimmed = text.trim();
+    
+    if (trimmed.length === 0) {
+      return { valid: false, value: '', error: `${fieldName} cannot be empty` };
+    }
+    
+    if (trimmed.length > maxLength) {
+      return { 
+        valid: false, 
+        value: trimmed, 
+        error: `${fieldName} is too long (max ${maxLength} characters)` 
+      };
+    }
+    
+    // Basic XSS prevention - remove script tags and dangerous attributes
+    const sanitized = trimmed
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/javascript:/gi, '')
+      .replace(/on\w+\s*=/gi, '');
+    
+    return { valid: true, value: sanitized, error: null };
+  }
+  
+  /**
+   * Validates YouTube URL or video ID
+   * @param {string} url - YouTube URL or video ID
+   * @returns {Object} {valid: boolean, videoId: string|null, error: string|null}
+   */
+  function validateYouTubeUrl(url) {
+    if (!url || typeof url !== 'string') {
+      return { valid: false, videoId: null, error: 'YouTube URL is required' };
+    }
+    
+    const trimmed = url.trim();
+    if (trimmed.length === 0) {
+      return { valid: true, videoId: null, error: null }; // Optional field
+    }
+    
+    // Extract video ID from various YouTube URL formats
+    let videoId = null;
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+      /^([a-zA-Z0-9_-]{11})$/ // Direct video ID
+    ];
+    
+    for (const pattern of patterns) {
+      const match = trimmed.match(pattern);
+      if (match) {
+        videoId = match[1];
+        break;
+      }
+    }
+    
+    if (!videoId) {
+      return { valid: false, videoId: null, error: 'Invalid YouTube URL or video ID format' };
+    }
+    
+    return { valid: true, videoId, error: null };
+  }
+  
+  /**
+   * Validates time format (seconds or mm:ss)
+   * @param {string} time - Time string to validate
+   * @returns {Object} {valid: boolean, seconds: number|null, error: string|null}
+   */
+  function validateTimeFormat(time) {
+    if (!time || typeof time !== 'string') {
+      return { valid: true, seconds: null, error: null }; // Optional field
+    }
+    
+    const trimmed = time.trim();
+    if (trimmed.length === 0) {
+      return { valid: true, seconds: null, error: null };
+    }
+    
+    // Try to parse as mm:ss format
+    const mmssMatch = trimmed.match(/^(\d+):(\d{2})$/);
+    if (mmssMatch) {
+      const minutes = parseInt(mmssMatch[1], 10);
+      const seconds = parseInt(mmssMatch[2], 10);
+      if (seconds >= 60) {
+        return { valid: false, seconds: null, error: 'Seconds must be less than 60' };
+      }
+      return { valid: true, seconds: minutes * 60 + seconds, error: null };
+    }
+    
+    // Try to parse as plain seconds
+    const seconds = parseInt(trimmed, 10);
+    if (isNaN(seconds) || seconds < 0) {
+      return { valid: false, seconds: null, error: 'Invalid time format. Use seconds (e.g., 30) or mm:ss (e.g., 1:30)' };
+    }
+    
+    return { valid: true, seconds, error: null };
+  }
+  
+  // ============================================================================
+  // ERROR HANDLING
+  // ============================================================================
+  
+  /**
+   * Centralized error handler
+   * @param {string} context - Context where error occurred
+   * @param {Error|string} error - Error object or message
+   * @param {string|null} userMessage - User-friendly error message
+   */
   function handleError(context, error, userMessage = null) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error(`[${context}]`, error);
+    
     if (userMessage) {
-      showToast(userMessage);
-    } else if (error.message) {
-      showToast(`Error: ${error.message}`);
+      showToast(userMessage, ERROR_TOAST_DURATION_MS);
+    } else if (errorMessage) {
+      showToast(`Error: ${errorMessage}`, ERROR_TOAST_DURATION_MS);
     }
   }
   
@@ -3284,10 +3492,9 @@
   
   // File-based storage - auto-detect server vs local
   let dataDirectoryHandle = null;
-  const DATA_FILENAME = 'blingus-data.json';
-  const DATA_DIR_NAME = 'data';
-  // API endpoint - adjust if your server path is different
-  const API_ENDPOINT = '/api/blingus-data.php';
+  const DATA_FILENAME = CONFIG.STORAGE.DATA_FILENAME;
+  const DATA_DIR_NAME = CONFIG.STORAGE.DATA_DIR_NAME;
+  const API_ENDPOINT = CONFIG.STORAGE.API_ENDPOINT;
   
   // Debug: Log the endpoint being used
   debugLog('API Endpoint:', API_ENDPOINT);
@@ -3310,7 +3517,7 @@
       return false; // Can't use PHP API with file:// protocol
     }
     try {
-      const response = await fetch(API_ENDPOINT + '?action=load', { method: 'GET' });
+      const response = await fetch(API_ENDPOINT + '?action=load', createFetchOptions('GET'));
       // If we get a response (even 404/error), PHP is available
       // 404 means PHP is working but no data file exists yet
       // Network errors mean PHP is not available
@@ -3372,6 +3579,36 @@
     }
   }
   
+  /**
+   * Creates fetch options with authentication if API key is configured
+   * @param {string} method - HTTP method (GET, POST, etc.)
+   * @param {Object} body - Request body (will be JSON stringified)
+   * @param {Object} additionalHeaders - Additional headers to include
+   * @returns {Object} Fetch options object
+   */
+  function createFetchOptions(method, body = null, additionalHeaders = {}) {
+    const headers = {
+      'Content-Type': 'application/json',
+      ...additionalHeaders
+    };
+    
+    // Add API key if configured
+    if (CONFIG.STORAGE.API_KEY) {
+      headers['Authorization'] = `Bearer ${CONFIG.STORAGE.API_KEY}`;
+    }
+    
+    const options = {
+      method,
+      headers
+    };
+    
+    if (body !== null) {
+      options.body = JSON.stringify(body);
+    }
+    
+    return options;
+  }
+  
   // Server-side storage functions
   async function saveDataToServer() {
     // Use server storage if PHP API is available OR if we're on a remote server
@@ -3400,13 +3637,7 @@
         bodySize: JSON.stringify(requestBody).length
       });
       
-      const response = await fetch(API_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody)
-      });
+      const response = await fetch(API_ENDPOINT, createFetchOptions('POST', requestBody));
       
       debugLog('Response received:', {
         status: response.status,
@@ -3481,7 +3712,7 @@
     if (!phpApiAvailable && !isOnServer) return false;
     
     try {
-      const response = await fetch(API_ENDPOINT + '?action=load');
+      const response = await fetch(API_ENDPOINT + '?action=load', createFetchOptions('GET'));
       if (response.ok) {
         const result = await response.json();
         if (result.success && result.data) {
@@ -4097,7 +4328,7 @@
   }
 
   function buildCategories() {
-    categorySelect.innerHTML = '';
+    clearElement(categorySelect);
     const section = sectionSelect.value;
     
     // Safety check - ensure section is valid
@@ -4329,7 +4560,7 @@
     debugLog(`renderGlobalSearch: found ${filteredResults.length} results across all sections`);
     
     // Clear content
-    content.innerHTML = '';
+    clearElement(content);
     
     // Group results by section/category for better organization
     const grouped = {};
@@ -4601,7 +4832,11 @@
     
     if (!cat) {
       console.warn('No category selected');
-      content.innerHTML = '<div class="card">Please select a category</div>';
+      clearElement(content);
+      const emptyCard = document.createElement('div');
+      emptyCard.className = 'card';
+      emptyCard.textContent = 'Please select a category';
+      content.appendChild(emptyCard);
       // Try to build categories if they're missing
       if (categorySelect.options.length === 0) {
         buildCategories();
@@ -4681,7 +4916,7 @@
     
     debugLog(`render: final list length=${list.length} for ${section}`);
     
-    content.innerHTML = '';
+    clearElement(content);
     
     // Add random button at the top (uses full baseList, not filtered)
     if (baseList.length > 0) {
@@ -5040,7 +5275,11 @@
     
     if (!cat) {
       console.warn('No category selected for actions');
-      content.innerHTML = '<div class="card">Please select a category from the dropdown above</div>';
+      clearElement(content);
+      const emptyCard = document.createElement('div');
+      emptyCard.className = 'card';
+      emptyCard.textContent = 'Please select a category from the dropdown above';
+      content.appendChild(emptyCard);
       // Try to select first category if available
       if (categorySelect.options.length > 0) {
         categorySelect.selectedIndex = 0;
@@ -5074,9 +5313,9 @@
     debugLog(`renderActions: content element exists:`, !!content);
     debugLog(`renderActions: Sample filteredActions (first 3):`, filteredActions.slice(0, 3));
     
-    content.innerHTML = '';
+    clearElement(content);
     
-    debugLog(`renderActions: content.innerHTML cleared`);
+    debugLog(`renderActions: content cleared`);
     
     // Add random button at the top (uses full list, not filtered)
     if (fullActions.length > 0) {
@@ -5249,7 +5488,11 @@
     
     if (!cat) {
       console.warn('renderCriticalHits: No category selected');
-      content.innerHTML = '<div class="card">Please select a category</div>';
+      clearElement(content);
+      const emptyCard = document.createElement('div');
+      emptyCard.className = 'card';
+      emptyCard.textContent = 'Please select a category';
+      content.appendChild(emptyCard);
       if (categorySelect.options.length === 0) {
         buildCategories();
         if (categorySelect.options.length > 0) {
@@ -5283,7 +5526,7 @@
     
     debugLog(`renderCriticalHits: final filteredHits=${filteredHits.length}, will render ${filteredHits.length} cards`);
     
-    content.innerHTML = '';
+    clearElement(content);
     
     // Add random button at the top (uses full list, not filtered)
     if (fullHits.length > 0) {
@@ -5443,7 +5686,11 @@
     
     if (!cat) {
       console.warn('renderCriticalFailures: No category selected');
-      content.innerHTML = '<div class="card">Please select a category</div>';
+      clearElement(content);
+      const emptyCard = document.createElement('div');
+      emptyCard.className = 'card';
+      emptyCard.textContent = 'Please select a category';
+      content.appendChild(emptyCard);
       if (categorySelect.options.length === 0) {
         buildCategories();
         if (categorySelect.options.length > 0) {
@@ -5477,7 +5724,7 @@
     
     debugLog(`renderCriticalFailures: final filteredFailures=${filteredFailures.length}, will render ${filteredFailures.length} cards`);
     
-    content.innerHTML = '';
+    clearElement(content);
     
     // Add random button at the top (uses full list, not filtered)
     if (fullFailures.length > 0) {
@@ -5637,7 +5884,11 @@
     
     if (!cat) {
       console.warn('renderSkillChecks: No category selected');
-      content.innerHTML = '<div class="card">Please select a category</div>';
+      clearElement(content);
+      const emptyCard = document.createElement('div');
+      emptyCard.className = 'card';
+      emptyCard.textContent = 'Please select a category';
+      content.appendChild(emptyCard);
       if (categorySelect.options.length === 0) {
         buildCategories();
         if (categorySelect.options.length > 0) {
@@ -5671,7 +5922,7 @@
     
     debugLog(`renderSkillChecks: final filteredChecks=${filteredChecks.length}, will render ${filteredChecks.length} cards`);
     
-    content.innerHTML = '';
+    clearElement(content);
     
     // Add random button at the top (uses full list, not filtered)
     if (fullChecks.length > 0) {
@@ -5913,10 +6164,13 @@
       });
     });
 
-    generatorsList.innerHTML = '';
+    clearElement(generatorsList);
 
     if (itemsWithMeta.length === 0) {
-      generatorsList.innerHTML = '<div style="text-align: center; padding: 20px; opacity: 0.7;">No items yet. Add one to get started!</div>';
+      const emptyMsg = document.createElement('div');
+      emptyMsg.style.cssText = 'text-align: center; padding: 20px; opacity: 0.7;';
+      emptyMsg.textContent = 'No items yet. Add one to get started!';
+      generatorsList.appendChild(emptyMsg);
       return;
     }
 
@@ -7303,10 +7557,13 @@
   // History modal functions
   function showHistoryModal() {
     const history = loadHistory();
-    historyList.innerHTML = '';
+    clearElement(historyList);
     
     if (history.length === 0) {
-      historyList.innerHTML = '<div style="text-align: center; padding: 20px; opacity: 0.7;">No recently used items yet. Copy some items to see them here!</div>';
+      const emptyMsg = document.createElement('div');
+      emptyMsg.style.cssText = 'text-align: center; padding: 20px; opacity: 0.7;';
+      emptyMsg.textContent = 'No recently used items yet. Copy some items to see them here!';
+      historyList.appendChild(emptyMsg);
     } else {
       const isDark = document.body.classList.contains('dark-mode');
       history.forEach(entry => {
@@ -7384,7 +7641,16 @@
         const storageStatus = document.createElement('div');
         storageStatus.id = 'storageStatus';
         storageStatus.style.cssText = 'margin-top: 8px; font-size: 12px; color: var(--burnt); opacity: 0.8; display: flex; align-items: center; justify-content: center; gap: 6px; text-align: center;';
-        storageStatus.innerHTML = '<span style="color: #667eea;">🔷</span> <strong>Server Storage Active:</strong> Data saved to server via PHP API';
+        const icon = document.createElement('span');
+        icon.style.color = '#667eea';
+        icon.textContent = '🔷';
+        const strong = document.createElement('strong');
+        strong.textContent = 'Server Storage Active:';
+        const text = createTextNode(' Data saved to server via PHP API');
+        storageStatus.appendChild(icon);
+        storageStatus.appendChild(document.createTextNode(' '));
+        storageStatus.appendChild(strong);
+        storageStatus.appendChild(text);
         footer.appendChild(storageStatus);
       }
     } else {
@@ -7647,7 +7913,11 @@
     render();
   } catch (error) {
     console.error('Error in render during init:', error);
-    content.innerHTML = '<div class="card">Error loading content. Please refresh the page.</div>';
+    clearElement(content);
+    const errorCard = document.createElement('div');
+    errorCard.className = 'card';
+    errorCard.textContent = 'Error loading content. Please refresh the page.';
+    content.appendChild(errorCard);
   }
   
   debugLog('Initialization complete');

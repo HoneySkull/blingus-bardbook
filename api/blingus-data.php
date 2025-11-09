@@ -5,14 +5,36 @@
  * Simple JSON file-based storage for user data.
  * Automatically used when running on a web server.
  * 
- * SECURITY: For production use, add authentication!
+ * SECURITY: Configure authentication via environment variable or config file
  */
+
+// Configuration - Set API key via environment variable or uncomment and set below
+// For production, use environment variables or a secure config file outside web root
+$API_KEY = getenv('BLINGUS_API_KEY') ?: '';
+// Uncomment and set if not using environment variable:
+// $API_KEY = 'your-secret-api-key-here';
+
+// If API key is set, require authentication
+$requireAuth = !empty($API_KEY);
 
 // Set headers first
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
+
+// CORS configuration - restrict to your domain in production
+$allowedOrigins = [
+    'http://localhost',
+    'http://127.0.0.1',
+    // Add your production domain here:
+    // 'https://yourdomain.com',
+];
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $allowedOrigins) || empty($allowedOrigins)) {
+    header('Access-Control-Allow-Origin: ' . ($origin ?: '*'));
+} else {
+    header('Access-Control-Allow-Origin: ' . ($allowedOrigins[0] ?? '*'));
+}
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 // Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -20,13 +42,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Log request details for debugging
+// Authentication check
+if ($requireAuth) {
+    $providedKey = $_GET['key'] ?? $_POST['key'] ?? '';
+    // Also check Authorization header
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+        $providedKey = $matches[1];
+    }
+    
+    if (empty($providedKey) || $providedKey !== $API_KEY) {
+        http_response_code(401);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Unauthorized: Invalid or missing API key'
+        ]);
+        exit;
+    }
+}
+
+// Log request details for debugging (without sensitive data)
 error_log('Blingus API: Request method = ' . $_SERVER['REQUEST_METHOD']);
-error_log('Blingus API: Request URI = ' . $_SERVER['REQUEST_URI']);
-error_log('Blingus API: Query string = ' . ($_SERVER['QUERY_STRING'] ?? 'none'));
-error_log('Blingus API: Content-Type = ' . ($_SERVER['CONTENT_TYPE'] ?? 'none'));
-error_log('Blingus API: POST data = ' . print_r($_POST, true));
-error_log('Blingus API: GET data = ' . print_r($_GET, true));
+error_log('Blingus API: Request URI = ' . ($_SERVER['REQUEST_URI'] ?? 'unknown'));
+// Don't log query string or POST/GET data as they may contain sensitive information
 
 // Configuration
 // Use realpath to resolve the absolute path properly
@@ -62,7 +100,8 @@ $action = $_GET['action'] ?? $_POST['action'] ?? '';
 // If no action and it's a POST request, try to parse JSON body
 if (empty($action) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = file_get_contents('php://input');
-    error_log('Blingus API: Raw input = ' . substr($input, 0, 200));
+    // Only log input length, not content (may contain sensitive data)
+    error_log('Blingus API: Raw input length = ' . strlen($input));
     $request = json_decode($input, true);
     if ($request && isset($request['action'])) {
         $action = $request['action'];
@@ -71,7 +110,6 @@ if (empty($action) && $_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 error_log('Blingus API: Final action = ' . $action);
-error_log('Blingus API: Request method = ' . $_SERVER['REQUEST_METHOD']);
 
 // Don't reject here - let the switch handle it
 // The 405 might be coming from web server, not PHP
@@ -101,11 +139,23 @@ try {
             }
             
             if (!isset($request['data'])) {
-                error_log('Blingus API: Missing data field. Request keys: ' . implode(', ', array_keys($request)));
+                // Don't log request keys as they may contain sensitive data
+                error_log('Blingus API: Missing data field in request');
                 throw new Exception('Invalid data format: missing "data" field');
             }
             
+            // Validate data structure
             $data = $request['data'];
+            if (!is_array($data)) {
+                throw new Exception('Invalid data format: data must be an object');
+            }
+            
+            // Validate data size (prevent DoS)
+            $jsonSize = strlen(json_encode($data));
+            $maxSize = 10 * 1024 * 1024; // 10MB limit
+            if ($jsonSize > $maxSize) {
+                throw new Exception('Data too large: maximum size is ' . ($maxSize / 1024 / 1024) . 'MB');
+            }
             
             // Get absolute path for better error messages
             $absoluteDataDir = realpath($dataDir) ?: $dataDir;
@@ -118,11 +168,11 @@ try {
             // Validate data directory is writable
             if (!is_writable($absoluteDataDir) && !is_writable(dirname($absoluteDataDir))) {
                 error_log('Blingus API: Data directory not writable. Path: ' . $absoluteDataDir);
-                error_log('Blingus API: Current user: ' . get_current_user());
+                // Don't log current user as it may be sensitive
                 if (is_dir($absoluteDataDir)) {
                     error_log('Blingus API: Directory permissions: ' . substr(sprintf('%o', fileperms($absoluteDataDir)), -4));
                 }
-                throw new Exception('Data directory is not writable: ' . $absoluteDataDir . ' (Current user: ' . get_current_user() . ')');
+                throw new Exception('Data directory is not writable');
             }
             
             $data['serverTimestamp'] = date('c');
