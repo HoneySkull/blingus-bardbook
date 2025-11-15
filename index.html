@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Blingus' Bardbook</title>
-  <link rel="stylesheet" href="styles.css?v=6" />
+  <link rel="stylesheet" href="styles.css?v=11" />
 </head>
 <body>
   <header class="banner">
@@ -43,17 +43,17 @@
         <input id="searchInput" type="search" placeholder="Search all lyrics, songs, artists, or actions..." />
       </label>
 
-      <button id="clearBtn" class="btn btn--secondary">Clear</button>
+      <button id="clearBtn" class="btn btn--secondary" data-tooltip="Clear search (Esc)">Clear</button>
       </div>
 
       <!-- Checkbox Filters Row -->
       <div class="toolbar__row toolbar__row--filters">
-      <label class="toggle">
+      <label class="toggle" data-tooltip="Show only starred items (Ctrl+F)">
         <input type="checkbox" id="favoritesOnly" />
         <span>Only favorites</span>
       </label>
 
-      <label class="toggle">
+      <label class="toggle" data-tooltip="Toggle dark theme (Ctrl+D)">
         <input type="checkbox" id="darkModeToggle" />
         <span>🌙 Dark mode</span>
       </label>
@@ -75,7 +75,7 @@
 
   <footer class="footer">
     <div>Tip: Click any line to copy • Star to favorite • Use the toolbar to filter (adult/favorites/search).</div>
-    <div style="margin-top: 8px; font-size: 14px;">⌨️ Keyboard: Arrow keys to navigate, Enter to copy</div>
+    <div style="margin-top: 8px; font-size: 14px;">⌨️ Keyboard: Arrow keys to navigate, Enter to copy • <strong>Press ? for all shortcuts</strong></div>
   </footer>
 
   <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -253,6 +253,18 @@
     </div>
   </div>
 
-  <script src="script.js?v=10"></script>
+  <!-- Utility modules -->
+  <script src="js/ui-utils.js?v=11"></script>
+  <script src="js/storage-utils.js?v=11"></script>
+
+  <!-- Search enhancements -->
+  <script src="js/search-utils.js?v=11"></script>
+  <script src="js/search-enhancements.js?v=11"></script>
+
+  <!-- Keyboard shortcuts -->
+  <script src="js/keyboard-shortcuts.js?v=11"></script>
+
+  <!-- Main application script -->
+  <script src="script.js?v=11"></script>
 </body>
 </html>

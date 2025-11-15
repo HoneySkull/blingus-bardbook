@@ -249,19 +249,86 @@ body.dark-mode .card:focus {
   background: #3d3d5e;
 }
 
-.card:hover { box-shadow: 0 4px 10px var(--shadow); }
+.card {
+  cursor: pointer;
+}
+
+.card:hover {
+  box-shadow: 0 6px 14px var(--shadow);
+  transform: translateY(-2px);
+  transition: all 0.2s ease;
+  background: #fffbf0;
+}
+
+body.dark-mode .card:hover {
+  background: #353548;
+}
 .card__meta { font-size: 12px; opacity: .75; margin-top: 6px; }
 .card__chip { display: inline-block; font-size: 11px; padding: 2px 6px; border-radius: 999px; border: 1px solid var(--accent); color: var(--accent); background: #fff2ea; margin-right: 6px; transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
 
 body.dark-mode .card__chip {
   background: #3d3d5e;
 }
-.card__copy { position: absolute; right: 10px; top: 10px; font-size: 12px; border: 1px solid var(--accent-2); color: #fff; background: var(--accent-2); padding: 4px 8px; border-radius: 6px; cursor: pointer; }
-.card__copy:hover { filter: brightness(1.1); }
-.card__youtube { position: absolute; right: 10px; top: 38px; font-size: 16px; border: 1px solid #ff0000; color: #fff; background: #ff0000; padding: 4px 8px; border-radius: 6px; cursor: pointer; min-width: 36px; text-align: center; text-decoration: none; display: inline-block; }
-.card__youtube:hover { filter: brightness(1.1); background: #ff3333; }
-body.dark-mode .card__youtube { border-color: #ff4444; background: #cc0000; }
-body.dark-mode .card__youtube:hover { background: #ff2222; }
+.card__copy {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  font-size: 12px;
+  border: 1px solid var(--accent-2);
+  color: #fff;
+  background: var(--accent-2);
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.card__copy:hover {
+  filter: brightness(1.2);
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.card__copy:active {
+  transform: scale(0.98);
+}
+.card__youtube {
+  position: absolute;
+  right: 10px;
+  top: 38px;
+  font-size: 16px;
+  border: 1px solid #ff0000;
+  color: #fff;
+  background: #ff0000;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 36px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.card__youtube:hover {
+  filter: brightness(1.2);
+  background: #ff3333;
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
+}
+
+.card__youtube:active {
+  transform: scale(0.98);
+}
+
+body.dark-mode .card__youtube {
+  border-color: #ff4444;
+  background: #cc0000;
+}
+
+body.dark-mode .card__youtube:hover {
+  background: #ff2222;
+}
 
 /* YouTube suggestion box dark mode */
 body.dark-mode #youtubeSuggestion {
@@ -272,8 +339,36 @@ body.dark-mode #youtubeSuggestionText {
   color: var(--ink);
 }
 
-.card__edit { position: absolute; right: 10px; top: 66px; font-size: 18px; border: 2px solid var(--accent); color: var(--accent); background: #fff2ea; padding: 6px 10px; border-radius: 6px; cursor: pointer; z-index: 10; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap; min-width: 36px; text-align: center; transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
-.card__edit:hover { filter: brightness(1.1); background: #ffe8d4; transform: scale(1.05); }
+.card__edit {
+  position: absolute;
+  right: 10px;
+  top: 66px;
+  font-size: 18px;
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  background: #fff2ea;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 10;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  white-space: nowrap;
+  min-width: 36px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.card__edit:hover {
+  filter: brightness(1.1);
+  background: #ffe8d4;
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.card__edit:active {
+  transform: scale(1.02);
+}
 
 body.dark-mode .card__edit {
   background: #3d3d5e;
@@ -284,8 +379,90 @@ body.dark-mode .card__edit:hover {
 }
 
 /* Favorite star */
-.card__fav { position: absolute; left: 10px; top: 8px; font-size: 18px; line-height: 1; background: transparent; border: none; color: #b88a3b; cursor: pointer; padding: 2px 4px; }
-.card__fav.on { color: #d4a017; text-shadow: 0 1px 0 #fff; }
+.card__fav {
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  font-size: 18px;
+  line-height: 1;
+  background: transparent;
+  border: none;
+  color: #b88a3b;
+  cursor: pointer;
+  padding: 2px 4px;
+  transition: all 0.2s ease;
+}
+
+.card__fav:hover {
+  transform: scale(1.2);
+  filter: brightness(1.2);
+}
+
+.card__fav:active {
+  transform: scale(1.05);
+}
+
+.card__fav.on {
+  color: #d4a017;
+  text-shadow: 0 1px 0 #fff, 0 0 10px rgba(212, 160, 23, 0.5);
+}
+
+body.dark-mode .card__fav.on {
+  text-shadow: 0 1px 0 rgba(255,255,255,0.3), 0 0 10px rgba(212, 160, 23, 0.7);
+}
+
+/* Tooltip styles */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  font-size: 12px;
+  font-weight: normal;
+  white-space: nowrap;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 1000;
+}
+
+[data-tooltip]::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-2px);
+  border: 5px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.9);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 1000;
+}
+
+[data-tooltip]:hover::before,
+[data-tooltip]:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+body.dark-mode [data-tooltip]::before {
+  background: rgba(255, 255, 255, 0.95);
+  color: #1a1a2e;
+}
+
+body.dark-mode [data-tooltip]::after {
+  border-top-color: rgba(255, 255, 255, 0.95);
+}
 
 .footer { padding: 18px; text-align: center; opacity: .8; transition: opacity 0.3s ease; }
 
@@ -387,7 +564,139 @@ body.dark-mode #generatorText {
   padding-top: 12px;
 }
 
+/* Tablet breakpoint for better intermediate responsiveness */
+@media (max-width: 768px) {
+  .toolbar__container {
+    padding: 10px;
+  }
+
+  .toolbar__row {
+    gap: 8px 10px;
+  }
+
+  /* Make buttons more touch-friendly */
+  .btn {
+    min-height: 44px; /* iOS recommended touch target */
+    padding: 10px 14px;
+  }
+
+  .btn--secondary {
+    min-height: 40px;
+    padding: 8px 12px;
+  }
+
+  /* Improve card button touch targets */
+  .card__fav {
+    font-size: 24px;
+    padding: 6px 8px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .card__copy {
+    min-height: 36px;
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+
+  .card__youtube {
+    min-height: 36px;
+    min-width: 42px;
+    font-size: 18px;
+    padding: 6px 10px;
+  }
+
+  .card__edit {
+    min-height: 36px;
+    min-width: 42px;
+    font-size: 20px;
+    padding: 8px 12px;
+  }
+}
+
+/* Mobile breakpoint for phone optimization */
 @media (max-width: 520px) {
   .banner h1 { font-size: 24px; }
-  select, input[type="search"] { min-width: 150px; }
+
+  select, input[type="search"] {
+    min-width: 100%;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  .toolbar__row {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .toolbar__row > * {
+    width: 100%;
+  }
+
+  label {
+    width: 100%;
+  }
+
+  /* Stack generator buttons */
+  .toolbar__row--generators .btn {
+    width: 100%;
+    margin-bottom: 4px;
+  }
+
+  /* Larger touch targets on mobile */
+  .btn {
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  .card {
+    padding: 40px 12px 12px 12px;
+    position: relative;
+  }
+
+  .card__fav {
+    left: 5px;
+    top: 5px;
+    font-size: 28px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .card__copy {
+    right: 5px;
+    top: 5px;
+    min-height: 44px;
+    min-width: 60px;
+  }
+
+  .card__youtube {
+    right: 5px;
+    top: 54px;
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .card__edit {
+    right: 5px;
+    top: 103px;
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Better modal sizing on mobile */
+  .modal__content {
+    width: 95%;
+    max-width: 95%;
+    padding: 16px;
+  }
+
+  .modal__header h2 {
+    font-size: 20px;
+  }
+
+  /* Content grid adjustment for mobile */
+  .content {
+    grid-template-columns: 1fr;
+    padding: 12px;
+    gap: 12px;
+  }
 }
