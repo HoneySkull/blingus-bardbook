@@ -3306,7 +3306,7 @@
   const editText = $('#editText');
   const editSong = $('#editSong');
   const editArtist = $('#editArtist');
-  const editAdult = $('#editAdult');
+  // const editAdult = $('#editAdult'); // Removed: adult content UI removed
   const editYoutube = $('#editYoutube');
   const editStartTime = $('#editStartTime');
   const youtubeFields = $('#youtubeFields');
@@ -3317,7 +3317,7 @@
   const modalTitle = $('#modalTitle');
   const songLabel = $('#songLabel');
   const artistLabel = $('#artistLabel');
-  const adultLabel = $('#adultLabel');
+  // const adultLabel = $('#adultLabel'); // Removed: adult content UI removed
   const modalClose = $('.modal__close', editModal);
   const youtubePlayerModal = $('#youtubePlayerModal');
   const youtubePlayerFrame = $('#youtubePlayerFrame');
@@ -6765,14 +6765,14 @@
       editText.value = text;
       songLabel.style.display = 'none';
       artistLabel.style.display = 'none';
-      adultLabel.style.display = 'none';
+      // adultLabel.style.display = 'none'; // Removed: adult content UI removed
       youtubeFields.style.display = 'none';
     } else {
       // Song-based sections: spells, bardic, mockery
       editText.value = item?.t || '';
       editSong.value = item?.s || '';
       editArtist.value = item?.a || '';
-      editAdult.checked = item?.adult || false;
+      // editAdult.checked = item?.adult || false; // Removed: adult content UI removed
       
       // Show YouTube fields for song-based sections
       const youtubeUrl = item?.youtube || '';
@@ -6801,7 +6801,7 @@
       
       songLabel.style.display = 'block';
       artistLabel.style.display = 'block';
-      adultLabel.style.display = section === 'spells' ? 'block' : 'none';
+      // adultLabel.style.display = section === 'spells' ? 'block' : 'none'; // Removed: adult content UI removed
       youtubeFields.style.display = 'block';
     }
     
@@ -6820,7 +6820,7 @@
     editText.value = '';
     editSong.value = '';
     editArtist.value = '';
-    editAdult.checked = false;
+    // editAdult.checked = false; // Removed: adult content UI removed
     editYoutube.value = '';
     editStartTime.value = '';
     
@@ -6986,146 +6986,56 @@
       
       console.log('Final newItem:', newItem);
       console.log('About to process save logic for section:', section, 'category:', category);
-      
-      const wasAdultSpell = section === 'spells' && currentEditingItem?.adult;
-      const isAdultSpell = section === 'spells' && editAdult && editAdult.checked;
+
+      // Removed: adult spell branching logic - all user items saved to regular section
+      // const wasAdultSpell = section === 'spells' && currentEditingItem?.adult;
+      // const isAdultSpell = section === 'spells' && editAdult && editAdult.checked;
       
       if (currentEditingIndex !== null && currentEditingIndex !== undefined && currentEditingIndex >= 0) {
-        // Editing existing user item
-        if (section === 'spells') {
-          // If it was an adult spell but now isn't, remove from adult and add to regular
-          if (wasAdultSpell && !isAdultSpell) {
-            // Remove from adult spells
-            if (userItems.adultSpells[category]) {
-              userItems.adultSpells[category].splice(currentEditingIndex, 1);
-              if (userItems.adultSpells[category].length === 0) {
-                delete userItems.adultSpells[category];
-              }
-            }
-            // Add to regular spells
-            if (!userItems.spells) {
-              userItems.spells = {};
-            }
-            if (!userItems.spells[category]) {
-              userItems.spells[category] = [];
-            }
-            userItems.spells[category].push(newItem);
-            showToast('Spell updated (moved to regular)');
-          }
-          // If it wasn't an adult spell but now is, remove from regular and add to adult
-          else if (!wasAdultSpell && isAdultSpell) {
-            // Remove from regular spells
-            if (userItems.spells[category]) {
-              userItems.spells[category].splice(currentEditingIndex, 1);
-              if (userItems.spells[category].length === 0) {
-                delete userItems.spells[category];
-              }
-            }
-            // Add to adult spells
-            if (!userItems.adultSpells) {
-              userItems.adultSpells = {};
-            }
-            if (!userItems.adultSpells[category]) {
-              userItems.adultSpells[category] = [];
-            }
-            newItem.adult = true;
-            userItems.adultSpells[category].push(newItem);
-            showToast('Spell updated (moved to adult)');
-          }
-          // If it stays in the same category
-          else if (isAdultSpell) {
-            if (!userItems.adultSpells) {
-              userItems.adultSpells = {};
-            }
-            if (!userItems.adultSpells[category]) {
-              userItems.adultSpells[category] = [];
-            }
-            newItem.adult = true;
-            userItems.adultSpells[category][currentEditingIndex] = newItem;
-            showToast('Adult spell updated');
-          } else {
-            if (!userItems.spells) {
-              userItems.spells = {};
-            }
-            if (!userItems.spells[category]) {
-              userItems.spells[category] = [];
-            }
-            userItems.spells[category][currentEditingIndex] = newItem;
-            showToast('Spell updated');
-          }
-        } else {
-          // Non-spell sections
-          if (!userItems[section]) {
-            userItems[section] = {};
-          }
-          if (!userItems[section][category]) {
-            userItems[section][category] = [];
-          }
-          userItems[section][category][currentEditingIndex] = newItem;
-          showToast('Item updated');
+        // Editing existing user item - simplified without adult/regular branching
+        if (!userItems[section]) {
+          userItems[section] = {};
         }
+        if (!userItems[section][category]) {
+          userItems[section][category] = [];
+        }
+        userItems[section][category][currentEditingIndex] = newItem;
+        showToast('Item updated');
       } else if (currentEditingIndex === -1 && isDefaultItem) {
-        // Editing a default item - hide original and add edited version
+        // Editing a default item - hide original and add edited version (simplified)
         const originalItem = currentEditingItem;
         const originalId = getItemId(section, originalItem);
-        const deleteSection = (section === 'spells' && isAdultSpell) ? 'adultSpells' : section;
-        
-        if (!deletedDefaults[deleteSection]) {
-          deletedDefaults[deleteSection] = {};
+
+        if (!deletedDefaults[section]) {
+          deletedDefaults[section] = {};
         }
-        if (!deletedDefaults[deleteSection][category]) {
-          deletedDefaults[deleteSection][category] = [];
+        if (!deletedDefaults[section][category]) {
+          deletedDefaults[section][category] = [];
         }
-        if (!deletedDefaults[deleteSection][category].includes(originalId)) {
-          deletedDefaults[deleteSection][category].push(originalId);
+        if (!deletedDefaults[section][category].includes(originalId)) {
+          deletedDefaults[section][category].push(originalId);
         }
-        
+
         // Add edited version to user items
-        if (section === 'spells' && isAdultSpell) {
-          if (!userItems.adultSpells) {
-            userItems.adultSpells = {};
-          }
-          if (!userItems.adultSpells[category]) {
-            userItems.adultSpells[category] = [];
-          }
-          newItem.adult = true;
-          userItems.adultSpells[category].push(newItem);
-          showToast('Default spell edited (original hidden)');
-        } else {
-          if (!userItems[section]) {
-            userItems[section] = {};
-          }
-          if (!userItems[section][category]) {
-            userItems[section][category] = [];
-          }
-          userItems[section][category].push(newItem);
-          showToast('Default item edited (original hidden)');
+        if (!userItems[section]) {
+          userItems[section] = {};
         }
+        if (!userItems[section][category]) {
+          userItems[section][category] = [];
+        }
+        userItems[section][category].push(newItem);
+        showToast('Default item edited (original hidden)');
         saveDeletedDefaults(deletedDefaults);
       } else {
-        // Adding new item
-        if (section === 'spells' && isAdultSpell) {
-          // Adult spell
-          if (!userItems.adultSpells) {
-            userItems.adultSpells = {};
-          }
-          if (!userItems.adultSpells[category]) {
-            userItems.adultSpells[category] = [];
-          }
-          newItem.adult = true;
-          userItems.adultSpells[category].push(newItem);
-          showToast('Adult spell added');
-        } else {
-          // Regular item
-          if (!userItems[section]) {
-            userItems[section] = {};
-          }
-          if (!userItems[section][category]) {
-            userItems[section][category] = [];
-          }
-          userItems[section][category].push(newItem);
-          showToast('Item added');
+        // Adding new item (simplified)
+        if (!userItems[section]) {
+          userItems[section] = {};
         }
+        if (!userItems[section][category]) {
+          userItems[section][category] = [];
+        }
+        userItems[section][category].push(newItem);
+        showToast('Item added');
       }
     }
     
