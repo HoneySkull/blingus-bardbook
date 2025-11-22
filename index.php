@@ -20,7 +20,8 @@ $moduleFiles = [
 
 $versions = [];
 foreach ($moduleFiles as $file) {
-  $filePath = __DIR__ . '/' . ($file === 'styles.css' ? $file : 'js/' . $file);
+  // script.js and styles.css are at root level, others are in js/ folder
+  $filePath = __DIR__ . '/' . (($file === 'styles.css' || $file === 'script.js') ? $file : 'js/' . $file);
   $versions[$file] = file_exists($filePath) ? filemtime($filePath) : time();
 }
 ?>
@@ -343,6 +344,6 @@ foreach ($moduleFiles as $file) {
   <script src="js/keyboard-shortcuts.js?v=<?php echo $versions['keyboard-shortcuts.js']; ?>"></script>
 
   <!-- Main application script -->
-  <script src="js/script.js?v=<?php echo $versions['script.js']; ?>"></script>
+  <script src="script.js?v=<?php echo $versions['script.js']; ?>"></script>
 </body>
 </html>
