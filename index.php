@@ -5,11 +5,24 @@
  */
 
 // Get version numbers based on file modification times
-$scriptJs = __DIR__ . '/script.js';
-$stylesCss = __DIR__ . '/styles.css';
+$moduleFiles = [
+  'constants.js',
+  'shared-utils.js',
+  'storage-utils.js',
+  'ui-utils.js',
+  'tab-navigation.js',
+  'search-utils.js',
+  'search-enhancements.js',
+  'keyboard-shortcuts.js',
+  'script.js',
+  'styles.css'
+];
 
-$scriptVersion = file_exists($scriptJs) ? filemtime($scriptJs) : time();
-$stylesVersion = file_exists($stylesCss) ? filemtime($stylesCss) : time();
+$versions = [];
+foreach ($moduleFiles as $file) {
+  $filePath = __DIR__ . '/' . ($file === 'styles.css' ? $file : 'js/' . $file);
+  $versions[$file] = file_exists($filePath) ? filemtime($filePath) : time();
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -20,7 +33,7 @@ $stylesVersion = file_exists($stylesCss) ? filemtime($stylesCss) : time();
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Blingus' Bardbook</title>
-  <link rel="stylesheet" href="styles.css?v=<?php echo $stylesVersion; ?>" />
+  <link rel="stylesheet" href="styles.css?v=<?php echo $versions['styles.css']; ?>" />
 </head>
 <body>
   <header class="banner">
@@ -34,61 +47,129 @@ $stylesVersion = file_exists($stylesCss) ? filemtime($stylesCss) : time();
 
   <nav class="toolbar" aria-label="Controls">
     <div class="toolbar__container">
-      <!-- Primary Controls Row -->
-      <div class="toolbar__row toolbar__row--primary">
-      <label>Section
-        <select id="sectionSelect">
-          <option value="spells">Spell Parodies</option>
-          <option value="bardic">Bardic Inspiration</option>
-          <option value="mockery">Vicious Mockery</option>
-          <option value="actions">What's Your Character Doing?</option>
-          <option value="criticalHits">Critical Hit Description</option>
-          <option value="criticalFailures">Critical Failure Description</option>
-          <option value="skillChecks">Skill Check Results</option>
-        </select>
-      </label>
-
-      <label id="categoryLabel">Category
-        <select id="categorySelect"></select>
-      </label>
-
-      <label class="search">
-        <input id="searchInput" type="search" placeholder="Search all lyrics, songs, artists, or actions..." />
-      </label>
-
-      <button id="clearBtn" class="btn btn--secondary">Clear</button>
+      <!-- Section Tabs Row -->
+      <div class="toolbar__row toolbar__row--tabs">
+        <div class="tabs" role="tablist" aria-label="Content sections">
+          <button class="tab tab--active" role="tab" data-section="spells" aria-selected="true" data-tooltip="Spell song parodies (Press 1)">
+            <span class="tab__icon">🔮</span>
+            <span class="tab__label">Spells</span>
+          </button>
+          <button class="tab" role="tab" data-section="bardic" aria-selected="false" data-tooltip="Bardic inspiration lines (Press 2)">
+            <span class="tab__icon">✨</span>
+            <span class="tab__label">Bardic</span>
+          </button>
+          <button class="tab" role="tab" data-section="mockery" aria-selected="false" data-tooltip="Vicious mockery insults (Press 3)">
+            <span class="tab__icon">🗡️</span>
+            <span class="tab__label">Mockery</span>
+          </button>
+          <button class="tab" role="tab" data-section="actions" aria-selected="false" data-tooltip="Character action ideas (Press 4)">
+            <span class="tab__icon">🎭</span>
+            <span class="tab__label">Actions</span>
+          </button>
+          <button class="tab" role="tab" data-section="criticalHits" aria-selected="false" data-tooltip="Critical hit descriptions (Press 5)">
+            <span class="tab__icon">⚔️</span>
+            <span class="tab__label">Crit Hits</span>
+          </button>
+          <button class="tab" role="tab" data-section="criticalFailures" aria-selected="false" data-tooltip="Critical failure descriptions (Press 6)">
+            <span class="tab__icon">💥</span>
+            <span class="tab__label">Crit Fails</span>
+          </button>
+          <button class="tab" role="tab" data-section="skillChecks" aria-selected="false" data-tooltip="Skill check results (Press 7)">
+            <span class="tab__icon">🎲</span>
+            <span class="tab__label">Skills</span>
+          </button>
+        </div>
       </div>
 
-      <!-- Checkbox Filters Row -->
-      <div class="toolbar__row toolbar__row--filters">
-      <label class="toggle">
-        <input type="checkbox" id="favoritesOnly" />
-        <span>Only favorites</span>
-      </label>
-
-      <label class="toggle">
-        <input type="checkbox" id="darkModeToggle" />
-        <span>🌙 Dark mode</span>
-      </label>
+      <!-- Category Chips Row -->
+      <div class="toolbar__row toolbar__row--chips" id="categoryChipsRow">
+        <div class="chips" role="group" aria-label="Categories" id="categoryChips">
+          <!-- Category chips will be dynamically populated -->
+        </div>
       </div>
 
-      <!-- Action Buttons Row -->
-      <div class="toolbar__row toolbar__row--actions">
-      <button id="clearCacheBtn" class="btn btn--secondary btn--cache" title="Force reload and clear browser cache">🔄 Clear Cache</button>
-      <button id="addEditBtn" class="btn">Add/Edit Items</button>
-      <button id="manageGeneratorsBtn" class="btn">🎲 Manage Generators</button>
+      <!-- Hidden selects for backward compatibility -->
+      <select id="sectionSelect" style="display: none;" aria-hidden="true">
+        <option value="spells">Spell Parodies</option>
+        <option value="bardic">Bardic Inspiration</option>
+        <option value="mockery">Vicious Mockery</option>
+        <option value="actions">What's Your Character Doing?</option>
+        <option value="criticalHits">Critical Hit Description</option>
+        <option value="criticalFailures">Critical Failure Description</option>
+        <option value="skillChecks">Skill Check Results</option>
+      </select>
+      <select id="categorySelect" style="display: none;" aria-hidden="true"></select>
+
+      <!-- Search & Quick Filters Row -->
+      <div class="toolbar__row toolbar__row--search">
+        <label class="search" style="flex: 1; min-width: 200px;">
+          <input id="searchInput" type="search" placeholder="Search all lyrics, songs, artists, or actions..." />
+        </label>
+        <button id="clearBtn" class="btn btn--secondary" data-tooltip="Clear search (Esc)">Clear</button>
+        <label class="toggle" data-tooltip="Show only starred items (Ctrl+F)">
+          <input type="checkbox" id="favoritesOnly" />
+          <span>⭐ Favorites</span>
+        </label>
+        <label class="toggle" data-tooltip="Toggle dark theme (Ctrl+D)">
+          <input type="checkbox" id="darkModeToggle" />
+          <span>🌙 Dark</span>
+        </label>
       </div>
 
-      <!-- Generator Row (dynamically added) -->
-      <div class="toolbar__row toolbar__row--generators"></div>
+      <!-- Button Groups Row -->
+      <div class="toolbar__row toolbar__row--button-groups">
+        <!-- Content Actions Group -->
+        <div class="button-group">
+          <span class="button-group__label">Content</span>
+          <div>
+            <button id="addEditBtn" class="btn btn--group" data-tooltip="Add or edit items">✏️ Edit Items</button>
+            <button id="historyBtn" class="btn btn--group" data-tooltip="View recently used items (Press H)">📜 History</button>
+          </div>
+        </div>
+
+        <!-- Generators Group -->
+        <div class="button-group">
+          <span class="button-group__label">Generators</span>
+          <div>
+            <button id="battleCryBtn" class="btn btn--group" data-tooltip="Random battle cry">⚔️</button>
+            <button id="insultBtn" class="btn btn--group" data-tooltip="Random insult">🗡️</button>
+            <button id="complimentBtn" class="btn btn--group" data-tooltip="Random compliment">💬</button>
+            <button id="introductionBtn" class="btn btn--group" data-tooltip="Chaucer introduction">🎭</button>
+            <button id="manageGeneratorsBtn" class="btn btn--group" data-tooltip="Manage generator content">⚙️</button>
+          </div>
+        </div>
+
+        <!-- Data Management Group -->
+        <div class="button-group">
+          <span class="button-group__label">Data</span>
+          <div>
+            <button id="exportBtn" class="btn btn--group" data-tooltip="Export all data">📥 Export</button>
+            <button id="importBtn" class="btn btn--group" data-tooltip="Import data">📤 Import</button>
+            <button id="fileStorageBtn" class="btn btn--group" data-tooltip="File or server storage">💾</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fuzzy Search Toggle (hidden by default, dynamically added by search-enhancements.js) -->
+      <div class="toolbar__row toolbar__row--filters" style="display: none;">
+      </div>
     </div>
   </nav>
 
   <main id="content" class="content" aria-live="polite"></main>
 
   <footer class="footer">
-    <div>Tip: Click any line to copy • Star to favorite • Use the toolbar to filter (adult/favorites/search).</div>
-    <div style="margin-top: 8px; font-size: 14px;">⌨️ Keyboard: Arrow keys to navigate, Enter to copy</div>
+    <div style="font-size: 15px; margin-bottom: 10px;">
+      💡 <strong>Quick Tips:</strong> Click any line to copy • Star your favorites • Use keyboard shortcuts for power users
+    </div>
+    <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; font-size: 13px; opacity: 0.9;">
+      <span>⌨️ <kbd>?</kbd> Help</span>
+      <span>⌨️ <kbd>Ctrl+K</kbd> Search</span>
+      <span>⌨️ <kbd>1-7</kbd> Sections</span>
+      <span>⌨️ <kbd>H</kbd> History</span>
+      <span>⌨️ <kbd>↑↓</kbd> Navigate</span>
+      <span>⌨️ <kbd>Enter</kbd> Copy</span>
+    </div>
   </footer>
 
   <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -140,6 +221,7 @@ $stylesVersion = file_exists($stylesCss) ? filemtime($stylesCss) : time();
               <option value="battleCries">⚔️ Battle Cries</option>
               <option value="insults">🗡️ Insults</option>
               <option value="compliments">💬 Compliments</option>
+              <option value="introductions">🎭 Chaucer Introductions</option>
             </select>
           </label>
         </div>
@@ -217,10 +299,6 @@ $stylesVersion = file_exists($stylesCss) ? filemtime($stylesCss) : time();
           Artist
           <input type="text" id="editArtist" style="width: 100%; padding: 8px; border: 1px solid var(--burnt); border-radius: 6px; font-family: inherit;" />
         </label>
-        <label id="adultLabel" style="display: none;">
-          <input type="checkbox" id="editAdult" />
-          <span>Adult/risqué</span>
-        </label>
         <div id="youtubeFields" style="display: none;">
           <label>
             YouTube URL or Video ID
@@ -246,7 +324,25 @@ $stylesVersion = file_exists($stylesCss) ? filemtime($stylesCss) : time();
     </div>
   </div>
 
-  <script src="script.js?v=<?php echo $scriptVersion; ?>"></script>
+  <!-- Core utilities (load first - other modules depend on these) -->
+  <script src="js/constants.js?v=<?php echo $versions['constants.js']; ?>"></script>
+  <script src="js/shared-utils.js?v=<?php echo $versions['shared-utils.js']; ?>"></script>
+
+  <!-- Utility modules -->
+  <script src="js/storage-utils.js?v=<?php echo $versions['storage-utils.js']; ?>"></script>
+  <script src="js/ui-utils.js?v=<?php echo $versions['ui-utils.js']; ?>"></script>
+
+  <!-- Tab navigation -->
+  <script src="js/tab-navigation.js?v=<?php echo $versions['tab-navigation.js']; ?>"></script>
+
+  <!-- Search enhancements -->
+  <script src="js/search-utils.js?v=<?php echo $versions['search-utils.js']; ?>"></script>
+  <script src="js/search-enhancements.js?v=<?php echo $versions['search-enhancements.js']; ?>"></script>
+
+  <!-- Keyboard shortcuts -->
+  <script src="js/keyboard-shortcuts.js?v=<?php echo $versions['keyboard-shortcuts.js']; ?>"></script>
+
+  <!-- Main application script -->
+  <script src="js/script.js?v=<?php echo $versions['script.js']; ?>"></script>
 </body>
 </html>
-
